@@ -44,10 +44,10 @@ impl From<ExitStatus> for std::process::ExitCode {
 fn main() -> ExitCode {
     let cli = Cli::parse();
 
-    run(&cli).unwrap_or(ExitStatus::Error).into()
+    run(cli).unwrap_or(ExitStatus::Error).into()
 }
 
-fn run(cli: &Cli) -> Result<ExitStatus> {
+fn run(cli: Cli) -> Result<ExitStatus> {
     // Resolve the global settings.
     let globals = GlobalSettings::resolve(&cli.top_level.global_args);
 
@@ -64,7 +64,7 @@ fn run(cli: &Cli) -> Result<ExitStatus> {
         Printer::Default
     };
 
-    match cli.command.as_ref() {
+    match *cli.command {
         Commands::Self_(self_ns) => match self_ns.command {
             SelfCommand::Version {
                 short,
@@ -74,5 +74,10 @@ fn run(cli: &Cli) -> Result<ExitStatus> {
                 Ok(ExitStatus::Success)
             }
         },
+        Commands::Help(args) => commands::help(
+            args.command.unwrap_or_default().as_slice(),
+            printer,
+            args.no_pager,
+        ),
     }
 }

@@ -1,10 +1,6 @@
-use clap::{
-    Args, Parser, Subcommand,
-    builder::{
-        Styles,
-        styling::{AnsiColor, Effects},
-    },
-};
+use clap::builder::Styles;
+use clap::builder::styling::{AnsiColor, Effects, Style};
+use clap::{Args, Parser, Subcommand};
 
 #[derive(Debug, Clone, Copy, clap::ValueEnum)]
 pub enum VersionFormat {
@@ -46,6 +42,7 @@ pub struct TopLevelArgs {
     #[command(flatten)]
     pub global_args: Box<GlobalArgs>,
 
+    /// Display the concise help for this command.
     #[arg(global = true, short, long, action = clap::ArgAction::HelpShort, help_heading = "Global options")]
     help: Option<bool>,
 
@@ -77,8 +74,34 @@ pub struct GlobalArgs {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    /// Manage the seal executable.
     #[command(name = "self")]
     Self_(SelfNamespace),
+    /// Display documentation for a command.
+    // To avoid showing the global options when displaying help for the help command, we are
+    // responsible for maintaining the options using the `after_help`.
+    #[command(help_template = "\
+{about-with-newline}
+{usage-heading} {usage}{after-help}
+",
+        after_help = format!("\
+{heading}Options:{heading:#}
+  {option}--no-pager{option:#} Disable pager when printing help
+",
+            heading = Style::new().bold().underline(),
+            option = Style::new().bold(),
+        ),
+    )]
+    Help(HelpArgs),
+}
+
+#[derive(Args, Debug)]
+pub struct HelpArgs {
+    /// Disable pager when printing help
+    #[arg(long)]
+    pub no_pager: bool,
+
+    pub command: Option<Vec<String>>,
 }
 
 #[derive(Args)]
