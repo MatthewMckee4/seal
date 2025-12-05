@@ -11,15 +11,14 @@ authors = ["Matthew McKee <matthewmckee4@yahoo.co.uk>"]
 license = "MIT"
 
 [workspace.dependencies]
-seal_core = { path = "crates/seal_core" }
-seal_version = { path = "crates/seal_version" }
-
-clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
-serde = { version = "1.0.210", features = ["derive", "rc"] }
-serde_json = { version = "1.0" }
 anstream = { version = "0.6.21" }
 anyhow = { version = "1.0.100" }
+clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
 owo-colors = { version = "4.1.0" }
+seal_core = { path = "crates/seal_core" }
+seal_version = { path = "crates/seal_version" }
+serde = { version = "1.0.210", features = ["derive", "rc"] }
+serde_json = { version = "1.0" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }

@@ -1,6 +1,10 @@
-use clap::builder::Styles;
-use clap::builder::styling::{AnsiColor, Effects};
-use clap::{Args, Parser, Subcommand};
+use clap::{
+    Args, Parser, Subcommand,
+    builder::{
+        Styles,
+        styling::{AnsiColor, Effects},
+    },
+};
 
 #[derive(Debug, Clone, Copy, clap::ValueEnum)]
 pub enum VersionFormat {
