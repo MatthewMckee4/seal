@@ -19,6 +19,8 @@ seal_core = { path = "crates/seal_core" }
 seal_version = { path = "crates/seal_version" }
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
+itertools = { version = "0.14.0" }
+which = { version = "8.0.0" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }

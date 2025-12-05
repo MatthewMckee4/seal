@@ -14,7 +14,7 @@ pub struct VersionInfo {
 impl fmt::Display for VersionInfo {
     /// Formatted version information: "<version>[+<commits>] (<commit> <date>)"
     ///
-    /// This is intended for consumption by `clap` to provide `uv --version`,
+    /// This is intended for consumption by `clap` to provide `seal --version`,
     /// and intentionally omits the name of the package
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.version)?;
