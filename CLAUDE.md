@@ -8,7 +8,7 @@ Seal is a release management tool written in Rust (early development). Cargo wor
 
 ## Style
 
-Do not Add too many comments, only add comments where necassary, if the code is complicated and cannot be simplified.
+Do not Add too many comments, only add comments where necessary, if the code is complicated and cannot be simplified.
 
 ## Development Commands
 
@@ -33,8 +33,8 @@ cargo run -p seal_cli -- <args>
 ### CLI Flow
 
 1. `main.rs` parses args with clap → creates `Printer` from `GlobalSettings`
-2. Routes to command handlers in `src/commands/`
-3. Returns `ExitStatus` enum (Success=0, Failure=1, Error=2, External)
+1. Routes to command handlers in `src/commands/`
+1. Returns `ExitStatus` enum (Success=0, Failure=1, Error=2, External)
 
 ## Code Conventions
 

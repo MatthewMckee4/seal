@@ -104,7 +104,7 @@ fn help_self_command() {
     Global options:
       -q, --quiet...
               Use quiet output.
-
+              
               Repeating this option, e.g., `-qq`, will enable a silent mode in which seal will write no
               output to stdout.
 
@@ -113,7 +113,7 @@ fn help_self_command() {
 
           --no-progress
               Hide all progress outputs.
-
+              
               For example, spinners or progress bars.
 
       -h, --help
