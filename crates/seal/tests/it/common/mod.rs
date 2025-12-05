@@ -72,6 +72,9 @@ pub static INSTA_FILTERS: &[(&str, &str)] = &[
     (r"\r\n", "\n"),
     // Normalize Windows paths
     (r"\\", "/"),
+    // Rewrite Windows output to Unix output
+    (r"\\([\w\d]|\.)", "/$1"),
+    (r"seal\.exe", "seal"),
 ];
 
 /// Get the function name for snapshot naming.
