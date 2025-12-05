@@ -26,6 +26,7 @@ fn help_command() {
 
     Use `seal help <command>` for more information on a specific command.
 
+
     ----- stderr -----
     ");
 }
@@ -54,6 +55,7 @@ fn help_flag() {
       -V, --version      Display the seal version
 
     Use `seal help` for more details.
+
     ----- stderr -----
     ");
 }
@@ -82,6 +84,7 @@ fn help_short_flag() {
       -V, --version      Display the seal version
 
     Use `seal help` for more details.
+
     ----- stderr -----
     ");
 }
@@ -120,6 +123,7 @@ fn help_self_command() {
               Display the concise help for this command
 
     Use `seal help self <command>` for more information on a specific command.
+
 
     ----- stderr -----
     ");

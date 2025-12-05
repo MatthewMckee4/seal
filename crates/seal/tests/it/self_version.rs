@@ -8,7 +8,8 @@ fn self_version() {
     success: true
     exit_code: 0
     ----- stdout -----
-    seal 0.0.0
+    seal [VERSION]
+
     ----- stderr -----
     ");
 }
@@ -17,11 +18,18 @@ fn self_version() {
 fn self_version_short() {
     let context = TestContext::new();
 
-    seal_snapshot!(context.command().arg("self").arg("version").arg("--short"), @r"
+    let filters = context
+        .filters()
+        .into_iter()
+        .chain([(r"\d+\.\d+\.\d+(-alpha\.\d+)?", r"[VERSION]")])
+        .collect::<Vec<_>>();
+
+    seal_snapshot!(filters, context.command().arg("self").arg("version").arg("--short"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    0.0.0
+    [VERSION]
+
     ----- stderr -----
     ");
 }
@@ -30,14 +38,24 @@ fn self_version_short() {
 fn self_version_json() {
     let context = TestContext::new();
 
-    seal_snapshot!(context.command().arg("self").arg("version").arg("--output-format").arg("json"), @r#"
+    let filters = context
+        .filters()
+        .into_iter()
+        .chain([(
+            r#"version": "\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?(\+\d+)?""#,
+            r#"version": "[VERSION]""#,
+        )])
+        .collect::<Vec<_>>();
+
+    seal_snapshot!(filters, context.command().arg("self").arg("version").arg("--output-format").arg("json"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     {
       "package_name": "seal",
-      "version": "0.0.0"
+      "version": "[VERSION]"
     }
+
     ----- stderr -----
     "#);
 }
@@ -50,7 +68,8 @@ fn version_flag() {
     success: true
     exit_code: 0
     ----- stdout -----
-    seal 0.0.0
+    seal [VERSION]
+
     ----- stderr -----
     ");
 }
@@ -63,7 +82,8 @@ fn version_short_flag() {
     success: true
     exit_code: 0
     ----- stdout -----
-    seal 0.0.0
+    seal [VERSION]
+
     ----- stderr -----
     ");
 }
