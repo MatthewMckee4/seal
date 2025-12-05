@@ -1,6 +1,6 @@
 # seal
 
-A fast, simple Python release management tool written in Rust.
+An extremely fast Python release management tool, written in Rust.
 
 ## What is seal?
 
