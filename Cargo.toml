@@ -1,0 +1,57 @@
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.89"
+homepage = "https://github.com/MatthewMckee4/seal"
+repository = "https://github.com/MatthewMckee4/seal"
+authors = ["Matthew McKee <matthewmckee4@yahoo.co.uk>"]
+license = "MIT"
+
+[workspace.dependencies]
+seal_core = { path = "crates/seal_core" }
+seal_version = { path = "crates/seal_version" }
+
+clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
+serde = { version = "1.0.210", features = ["derive", "rc"] }
+serde_json = { version = "1.0" }
+anstream = { version = "0.6.21" }
+anyhow = { version = "1.0.100" }
+owo-colors = { version = "4.1.0" }
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -2 }
+# Allowed pedantic lints
+char_lit_as_u8 = "allow"
+collapsible_else_if = "allow"
+collapsible_if = "allow"
+implicit_hasher = "allow"
+map_unwrap_or = "allow"
+match_same_arms = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+similar_names = "allow"
+struct_excessive_bools = "allow"
+too_many_arguments = "allow"
+too_many_lines = "allow"
+used_underscore_binding = "allow"
+# Disallowed restriction lints
+print_stdout = "warn"
+print_stderr = "warn"
+dbg_macro = "warn"
+empty_drop = "warn"
+empty_structs_with_brackets = "warn"
+exit = "warn"
+get_unwrap = "warn"
+rc_buffer = "warn"
+rc_mutex = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+if_not_else = "allow"
+use_self = "warn"
+
+# Diagnostics are not actionable: Enable once https://github.com/rust-lang/rust-clippy/issues/13774 is resolved.
+large_stack_arrays = "allow"
