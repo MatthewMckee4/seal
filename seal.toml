@@ -1,0 +1,6 @@
+[release]
+current-version = "0.0.0"
+version-files = ["Cargo.toml"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+tag-format = "v{version}"

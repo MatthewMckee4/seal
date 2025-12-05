@@ -22,10 +22,10 @@ which = { workspace = true }
 regex = { workspace = true }
 
 [dev-dependencies]
-assert_cmd = "2.0"
-insta = { version = "1.41", features = ["filters", "json"] }
-predicates = "3.1"
-tempfile = "3.14"
+assert_cmd = { workspace = true }
+insta = { workspace = true, features = ["filters", "json"] }
+predicates = { workspace = true }
+tempfile = { workspace = true }
 
 [lints]
 workspace = true
