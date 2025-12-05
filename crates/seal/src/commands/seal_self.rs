@@ -1,6 +1,7 @@
+use std::fmt::Write;
+
 use anyhow::Result;
 use owo_colors::OwoColorize;
-use std::fmt::Write;
 
 use crate::{ExitStatus, cli::VersionFormat, printer::Printer, version::VersionInfo};
 
