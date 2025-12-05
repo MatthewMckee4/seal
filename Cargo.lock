@@ -436,6 +436,7 @@ dependencies = [
  "itertools",
  "owo-colors",
  "predicates",
+ "regex",
  "seal_version",
  "serde",
  "serde_json",
