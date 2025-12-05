@@ -17,8 +17,8 @@ Do not Add too many comments, only add comments where necassary, if the code is 
 cargo build
 cargo test
 
-# Format (requires nightly)
-cargo +nightly fmt
+# Format
+cargo fmt
 
 # Run CLI
 cargo run -p seal_cli -- <args>
