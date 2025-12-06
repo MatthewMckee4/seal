@@ -13,7 +13,7 @@ fn validate_config_valid() {
         "v{version}",
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -52,7 +52,7 @@ fn validate_config_minimal() {
     let context = TestContext::new();
     context.minimal_seal_toml("0.1.0");
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -64,22 +64,22 @@ fn validate_config_minimal() {
 
 #[test]
 fn validate_config_file_not_found() {
-    let context = TestContext::new();
+    let context = TestContext::new().with_filtered_missing_file_error();
 
-    seal_snapshot!(context.filters(), context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: No such file or directory (os error 2)
-      Caused by: No such file or directory (os error 2)
+    error: Failed to read config file [TEMP]/seal.toml: [OS ERROR 2]
+      Caused by: [OS ERROR 2]
     ");
 }
 
 #[test]
 fn validate_config_explicit_path_not_found() {
-    let context = TestContext::new();
+    let context = TestContext::new().with_filtered_missing_file_error();
     let missing_config = context.root.child("missing.toml");
 
     seal_snapshot!(context.filters(), context.command().arg("validate").arg("config").arg("--config-file").arg(missing_config.path()), @r"
@@ -88,8 +88,8 @@ fn validate_config_explicit_path_not_found() {
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/missing.toml: No such file or directory (os error 2)
-      Caused by: No such file or directory (os error 2)
+    error: Failed to read config file [TEMP]/missing.toml: [OS ERROR 2]
+      Caused by: [OS ERROR 2]
     ");
 }
 
@@ -103,7 +103,7 @@ current-version = "1.0.0"
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -128,7 +128,7 @@ version-files = ["Cargo.toml"]
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -153,7 +153,7 @@ commit-message = ""
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -178,7 +178,7 @@ branch-name = ""
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -203,7 +203,7 @@ tag-format = ""
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -228,7 +228,7 @@ commit-message = "Release without placeholder"
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -253,7 +253,7 @@ branch-name = "release-branch"
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -278,7 +278,7 @@ tag-format = "release"
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -303,7 +303,7 @@ version-files = []
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -324,7 +324,7 @@ version-files = ["Cargo.toml", ""]
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -345,7 +345,7 @@ unknown-field = "value"
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -370,7 +370,7 @@ commit-message = "   "
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -395,7 +395,7 @@ version-files = ["Cargo.toml", "pyproject.toml", "package.json", "VERSION"]
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -416,7 +416,7 @@ fn validate_config_custom_patterns() {
         "{version}",
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("config"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----

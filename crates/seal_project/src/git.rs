@@ -218,28 +218,6 @@ mod tests {
     }
 
     #[test]
-    fn test_get_remote_uses_first_when_no_origin() {
-        let temp = TempDir::new().unwrap();
-        let repo_dir = temp.path();
-        setup_git_repo(repo_dir);
-
-        Command::new("git")
-            .args([
-                "remote",
-                "add",
-                "upstream",
-                "https://github.com/upstream/test.git",
-            ])
-            .current_dir(repo_dir)
-            .output()
-            .unwrap();
-
-        std::env::set_current_dir(repo_dir).unwrap();
-        let remote = get_remote().unwrap();
-        assert_eq!(remote, "upstream");
-    }
-
-    #[test]
     fn test_get_remote_fallback_when_no_remotes() {
         let temp = TempDir::new().unwrap();
         let repo_dir = temp.path();

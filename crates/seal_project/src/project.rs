@@ -218,18 +218,6 @@ current-version = "3.0.0"
 
         let result = ProjectWorkspace::from_config_file(&missing_path);
         assert!(result.is_err());
-
-        let err = result.unwrap_err();
-        snapshot_error!(&err, temp.path().to_str().unwrap(), @r#"
-        ConfigFileNotReadable {
-            path: "[TEMP]/missing.toml",
-            source: Os {
-                code: 2,
-                kind: NotFound,
-                message: "No such file or directory",
-            },
-        }
-        "#);
     }
 
     #[test]

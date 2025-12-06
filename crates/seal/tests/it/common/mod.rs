@@ -125,6 +125,24 @@ tag-format = "{tag}"
             .collect()
     }
 
+    /// Add extra standard filtering for Windows-compatible missing file errors.
+    pub fn with_filtered_missing_file_error(mut self) -> Self {
+        // The exact message string depends on the system language, so we remove it.
+        // We want to only remove the phrase after `Caused by:`
+        self.filters.push((
+            r"[^:\n]* \(os error 2\)".to_string(),
+            " [OS ERROR 2]".to_string(),
+        ));
+        // Replace the Windows "The system cannot find the path specified. (os error 3)"
+        // with the Unix "No such file or directory (os error 2)"
+        // and mask the language-dependent message.
+        self.filters.push((
+            r"[^:\n]* \(os error 3\)".to_string(),
+            " [OS ERROR 2]".to_string(),
+        ));
+        self
+    }
+
     /// Create a `seal help` command with options shared across scenarios.
     #[allow(clippy::unused_self)]
     pub fn help(&self) -> Command {
@@ -136,7 +154,9 @@ tag-format = "{tag}"
     /// Create a seal command for testing.
     #[allow(clippy::unused_self)]
     pub fn command(&self) -> Command {
-        Self::new_command()
+        let mut command = Self::new_command();
+        command.current_dir(self.root.path());
+        command
     }
 
     /// Creates a new `Command` that is intended to be suitable for use in

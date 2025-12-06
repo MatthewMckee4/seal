@@ -7,7 +7,7 @@ fn validate_project_simple() {
     let context = TestContext::new();
     context.minimal_seal_toml("1.0.0");
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("project"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("project"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -49,16 +49,16 @@ fn validate_project_short_flag() {
 
 #[test]
 fn validate_project_not_found() {
-    let context = TestContext::new();
+    let context = TestContext::new().with_filtered_missing_file_error();
 
-    seal_snapshot!(context.filters(), context.command().current_dir(&context.root).arg("validate").arg("project"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("project"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: No such file or directory (os error 2)
-      Caused by: No such file or directory (os error 2)
+    error: Failed to read config file [TEMP]/seal.toml: [OS ERROR 2]
+      Caused by: [OS ERROR 2]
     ");
 }
 
@@ -102,7 +102,7 @@ current-version = "0.2.0"
         )
         .unwrap();
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("project"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("project"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -130,7 +130,7 @@ current-version = "1.0.0"
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().current_dir(&context.root).arg("validate").arg("project"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("project"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -154,7 +154,7 @@ current-version = "1.0.0"
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().current_dir(&context.root).arg("validate").arg("project"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("project"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -192,7 +192,7 @@ commit-message = "No placeholder"
         )
         .unwrap();
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("project"), @r#"
+    seal_snapshot!(context.command().arg("validate").arg("project"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -237,12 +237,49 @@ current-version = "1.0.0"
 "#,
     );
 
-    seal_snapshot!(context.command().current_dir(&context.root).arg("validate").arg("project"), @r"
+    seal_snapshot!(context.command().arg("validate").arg("project"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Project validation successful
     Found 4 workspace member(s)
+
+    ----- stderr -----
+    ");
+}
+
+#[test]
+fn validate_sub_project() {
+    let context = TestContext::new().with_filtered_missing_file_error();
+
+    let pkg1_dir = context.root.child("packages/pkg1");
+    pkg1_dir.create_dir_all().unwrap();
+
+    context.seal_toml(
+        r#"
+[members]
+pkg1 = "packages/pkg1"
+
+[release]
+current-version = "1.0.0"
+"#,
+    );
+
+    pkg1_dir
+        .child("seal.toml")
+        .write_str(
+            r#"
+[release]
+current-version = "0.1.0"
+"#,
+        )
+        .unwrap();
+
+    seal_snapshot!(context.command().arg("validate").arg("project").arg("-p").arg(pkg1_dir.path()), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Project validation successful
 
     ----- stderr -----
     ");
