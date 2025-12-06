@@ -60,6 +60,7 @@ fn find_config_file(start_dir: &Path) -> Result<Option<PathBuf>, ProjectError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_json_snapshot;
     use std::fs;
     use tempfile::TempDir;
 
@@ -69,6 +70,16 @@ mod tests {
             .current_dir(dir)
             .output()
             .unwrap();
+    }
+
+    macro_rules! snapshot_error {
+        ($err:expr, $temp_path:expr, @$snapshot:literal) => {{
+            let mut settings = insta::Settings::clone_current();
+            settings.add_filter($temp_path, "[TEMP_DIR]");
+            settings.bind(|| {
+                insta::assert_debug_snapshot!($err, @$snapshot);
+            });
+        }};
     }
 
     #[test]
@@ -86,7 +97,19 @@ mod tests {
 
         let config = find_project_config(Some(repo_dir)).unwrap();
         assert!(config.is_some());
-        assert_eq!(config.unwrap().release.version_files, vec!["test.txt"]);
+        assert_json_snapshot!(config.unwrap(), @r#"
+        {
+          "release": {
+            "current-version": "1.0.0",
+            "version-files": [
+              "test.txt"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 
     #[test]
@@ -107,7 +130,19 @@ mod tests {
 
         let config = find_project_config(Some(&subdir)).unwrap();
         assert!(config.is_some());
-        assert_eq!(config.unwrap().release.version_files, vec!["parent.txt"]);
+        assert_json_snapshot!(config.unwrap(), @r#"
+        {
+          "release": {
+            "current-version": "1.0.0",
+            "version-files": [
+              "parent.txt"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 
     #[test]
@@ -118,6 +153,22 @@ mod tests {
 
         let config = find_project_config(Some(repo_dir)).unwrap();
         assert!(config.is_none());
+    }
+
+    #[test]
+    fn test_not_in_git_repository() {
+        let temp = TempDir::new().unwrap();
+        let non_git_dir = temp.path();
+
+        let result = find_project_config(Some(non_git_dir));
+        assert!(result.is_err());
+
+        let err = result.unwrap_err();
+        snapshot_error!(&err, non_git_dir.to_str().unwrap(), @r#"
+        NotInGitRepository {
+            path: "[TEMP_DIR]",
+        }
+        "#);
     }
 
     #[test]
@@ -138,6 +189,18 @@ mod tests {
 
         let config = find_project_config(Some(&deep_dir)).unwrap();
         assert!(config.is_some());
-        assert_eq!(config.unwrap().release.version_files, vec!["root.txt"]);
+        assert_json_snapshot!(config.unwrap(), @r#"
+        {
+          "release": {
+            "current-version": "1.0.0",
+            "version-files": [
+              "root.txt"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 }

@@ -50,50 +50,51 @@ pub enum ConfigValidationError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_project_error_display() {
         let err = ProjectError::NotInGitRepository {
             path: PathBuf::from("/tmp/test"),
         };
-        assert_eq!(err.to_string(), "Not in a git repository: /tmp/test");
+        assert_snapshot!(err.to_string(), @"Not in a git repository: /tmp/test");
 
         let err = ProjectError::GitCommandFailed {
             command: "git status".to_string(),
             stderr: "fatal: not a git repository".to_string(),
         };
-        assert_eq!(
+        assert_snapshot!(
             err.to_string(),
-            "Git command 'git status' failed: fatal: not a git repository"
+            @"Git command 'git status' failed: fatal: not a git repository"
         );
     }
 
     #[test]
     fn test_config_validation_error_display() {
         let err = ConfigValidationError::EmptyCommitMessage;
-        assert_eq!(err.to_string(), "release.commit-message cannot be empty");
+        assert_snapshot!(err.to_string(), @"release.commit-message cannot be empty");
 
         let err = ConfigValidationError::EmptyBranchName;
-        assert_eq!(err.to_string(), "release.branch-name cannot be empty");
+        assert_snapshot!(err.to_string(), @"release.branch-name cannot be empty");
 
         let err = ConfigValidationError::EmptyTagFormat;
-        assert_eq!(err.to_string(), "release.tag-format cannot be empty");
+        assert_snapshot!(err.to_string(), @"release.tag-format cannot be empty");
 
         let err = ConfigValidationError::MissingVersionPlaceholder {
             field: "commit-message".to_string(),
             value: "Release".to_string(),
         };
-        assert_eq!(
+        assert_snapshot!(
             err.to_string(),
-            "release.commit-message must contain '{version}' placeholder, got: 'Release'"
+            @"release.commit-message must contain '{version}' placeholder, got: 'Release'"
         );
 
         let err = ConfigValidationError::InvalidVersion {
             value: String::new(),
         };
-        assert_eq!(
+        assert_snapshot!(
             err.to_string(),
-            "release.current-version is not a valid version: ''"
+            @"release.current-version is not a valid version: ''"
         );
     }
 
@@ -101,9 +102,9 @@ mod tests {
     fn test_project_error_from_config_validation() {
         let validation_err = ConfigValidationError::EmptyCommitMessage;
         let project_err: ProjectError = validation_err.into();
-        assert_eq!(
+        assert_snapshot!(
             project_err.to_string(),
-            "Invalid configuration file: release.commit-message cannot be empty"
+            @"Invalid configuration file: release.commit-message cannot be empty"
         );
     }
 }

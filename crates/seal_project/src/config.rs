@@ -9,7 +9,8 @@ const DEFAULT_COMMIT_MESSAGE: &str = "Release v{version}";
 const DEFAULT_BRANCH_NAME: &str = "release/v{version}";
 const DEFAULT_TAG_FORMAT: &str = "v{version}";
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(transparent)]
 pub struct CommitMessage(String);
 
 impl CommitMessage {
@@ -56,7 +57,8 @@ impl<'de> Deserialize<'de> for CommitMessage {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(transparent)]
 pub struct BranchName(String);
 
 impl BranchName {
@@ -103,7 +105,8 @@ impl<'de> Deserialize<'de> for BranchName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(transparent)]
 pub struct TagFormat(String);
 
 impl TagFormat {
@@ -475,79 +478,72 @@ tag-format = ""
     #[test]
     fn test_commit_message_new_valid() {
         let msg = CommitMessage::new("Release v{version}".to_string()).unwrap();
-        assert_eq!(msg.as_str(), "Release v{version}");
-        assert_eq!(msg.to_string(), "Release v{version}");
+        insta::assert_snapshot!(msg.as_str(), @"Release v{version}");
+        insta::assert_snapshot!(msg.to_string(), @"Release v{version}");
     }
 
     #[test]
     fn test_commit_message_new_empty() {
-        let result = CommitMessage::new("".to_string());
+        let result = CommitMessage::new(String::new());
         assert!(result.is_err());
-        assert!(matches!(
-            result.unwrap_err(),
-            ConfigValidationError::EmptyCommitMessage
-        ));
+        assert_debug_snapshot!(result.unwrap_err(), @"EmptyCommitMessage");
     }
 
     #[test]
     fn test_commit_message_new_missing_placeholder() {
         let result = CommitMessage::new("Release".to_string());
         assert!(result.is_err());
-        match result.unwrap_err() {
-            ConfigValidationError::MissingVersionPlaceholder { field, value } => {
-                assert_eq!(field, "commit-message");
-                assert_eq!(value, "Release");
-            }
-            _ => panic!("Expected MissingVersionPlaceholder error"),
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        MissingVersionPlaceholder {
+            field: "commit-message",
+            value: "Release",
         }
+        "#);
     }
 
     #[test]
     fn test_commit_message_whitespace_only() {
         let result = CommitMessage::new("   ".to_string());
         assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @"EmptyCommitMessage");
     }
 
     #[test]
     fn test_branch_name_new_valid() {
         let name = BranchName::new("release/v{version}".to_string()).unwrap();
-        assert_eq!(name.as_str(), "release/v{version}");
-        assert_eq!(name.to_string(), "release/v{version}");
+        insta::assert_snapshot!(name.as_str(), @"release/v{version}");
+        insta::assert_snapshot!(name.to_string(), @"release/v{version}");
     }
 
     #[test]
     fn test_branch_name_new_empty() {
-        let result = BranchName::new("".to_string());
+        let result = BranchName::new(String::new());
         assert!(result.is_err());
-        assert!(matches!(
-            result.unwrap_err(),
-            ConfigValidationError::EmptyBranchName
-        ));
+        assert_debug_snapshot!(result.unwrap_err(), @"EmptyBranchName");
     }
 
     #[test]
     fn test_branch_name_new_missing_placeholder() {
         let result = BranchName::new("release".to_string());
         assert!(result.is_err());
-        match result.unwrap_err() {
-            ConfigValidationError::MissingVersionPlaceholder { field, value } => {
-                assert_eq!(field, "branch-name");
-                assert_eq!(value, "release");
-            }
-            _ => panic!("Expected MissingVersionPlaceholder error"),
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        MissingVersionPlaceholder {
+            field: "branch-name",
+            value: "release",
         }
+        "#);
     }
 
     #[test]
     fn test_tag_format_new_valid() {
         let tag = TagFormat::new("v{version}".to_string()).unwrap();
-        assert_eq!(tag.as_str(), "v{version}");
-        assert_eq!(tag.to_string(), "v{version}");
+        insta::assert_snapshot!(tag.as_str(), @"v{version}");
+        insta::assert_snapshot!(tag.to_string(), @"v{version}");
     }
 
     #[test]
     fn test_tag_format_new_empty() {
-        let result = TagFormat::new("".to_string());
+        let result = TagFormat::new(String::new());
         assert!(result.is_err());
         assert!(matches!(
             result.unwrap_err(),
@@ -559,13 +555,12 @@ tag-format = ""
     fn test_tag_format_new_missing_placeholder() {
         let result = TagFormat::new("release".to_string());
         assert!(result.is_err());
-        match result.unwrap_err() {
-            ConfigValidationError::MissingVersionPlaceholder { field, value } => {
-                assert_eq!(field, "tag-format");
-                assert_eq!(value, "release");
-            }
-            _ => panic!("Expected MissingVersionPlaceholder error"),
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        MissingVersionPlaceholder {
+            field: "tag-format",
+            value: "release",
         }
+        "#);
     }
 
     #[test]
@@ -583,10 +578,19 @@ tag-format = ""
         let toml_str = toml::to_string(&config).unwrap();
         let parsed = Config::from_toml_str(&toml_str).unwrap();
 
-        assert_eq!(parsed.release.current_version, "1.2.3");
-        assert_eq!(parsed.release.commit_message.as_str(), "Release v{version}");
-        assert_eq!(parsed.release.branch_name.as_str(), "release/v{version}");
-        assert_eq!(parsed.release.tag_format.as_str(), "v{version}");
+        assert_json_snapshot!(parsed, @r#"
+        {
+          "release": {
+            "current-version": "1.2.3",
+            "version-files": [
+              "Cargo.toml"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 
     #[test]
@@ -599,6 +603,25 @@ commit-message = "Release {version} with {version} tag"
 
         let result = Config::from_toml_str(toml);
         assert!(result.is_ok());
+        assert_debug_snapshot!(result.unwrap(), @r#"
+        Config {
+            release: ReleaseConfig {
+                current_version: "1.0.0",
+                version_files: [
+                    "Cargo.toml",
+                ],
+                commit_message: CommitMessage(
+                    "Release {version} with {version} tag",
+                ),
+                branch_name: BranchName(
+                    "release/v{version}",
+                ),
+                tag_format: TagFormat(
+                    "v{version}",
+                ),
+            },
+        }
+        "#);
     }
 
     #[test]
@@ -611,6 +634,23 @@ commit-message = "Release {VERSION}"
 
         let result = Config::from_toml_str(toml);
         assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        ConfigParseError {
+            source: TomlError {
+                message: "release.commit-message must contain '{version}' placeholder, got: 'Release {VERSION}'",
+                raw: Some(
+                    "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"Release {VERSION}\"\n",
+                ),
+                keys: [
+                    "release",
+                    "commit-message",
+                ],
+                span: Some(
+                    54..73,
+                ),
+            },
+        }
+        "#);
     }
 
     #[test]
@@ -622,11 +662,27 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
-        assert_eq!(config.release.version_files.len(), 3);
-        assert_eq!(
-            config.release.version_files,
-            vec!["Cargo.toml", "package.json", "VERSION"]
-        );
+        assert_debug_snapshot!(config, @r#"
+        Config {
+            release: ReleaseConfig {
+                current_version: "1.0.0",
+                version_files: [
+                    "Cargo.toml",
+                    "package.json",
+                    "VERSION",
+                ],
+                commit_message: CommitMessage(
+                    "Release v{version}",
+                ),
+                branch_name: BranchName(
+                    "release/v{version}",
+                ),
+                tag_format: TagFormat(
+                    "v{version}",
+                ),
+            },
+        }
+        "#);
     }
 
     #[test]
@@ -638,21 +694,22 @@ version-files = []
 "#;
 
         let config = Config::from_toml_str(toml);
-        assert!(config.is_ok());
-    }
-
-    #[test]
-    fn test_wrapper_types_clone_and_eq() {
-        let msg1 = CommitMessage::new("Release v{version}".to_string()).unwrap();
-        let msg2 = msg1.clone();
-        assert_eq!(msg1, msg2);
-
-        let branch1 = BranchName::new("release/v{version}".to_string()).unwrap();
-        let branch2 = branch1.clone();
-        assert_eq!(branch1, branch2);
-
-        let tag1 = TagFormat::new("v{version}".to_string()).unwrap();
-        let tag2 = tag1.clone();
-        assert_eq!(tag1, tag2);
+        assert_debug_snapshot!(config.unwrap(), @r#"
+        Config {
+            release: ReleaseConfig {
+                current_version: "1.0.0",
+                version_files: [],
+                commit_message: CommitMessage(
+                    "Release v{version}",
+                ),
+                branch_name: BranchName(
+                    "release/v{version}",
+                ),
+                tag_format: TagFormat(
+                    "v{version}",
+                ),
+            },
+        }
+        "#);
     }
 }

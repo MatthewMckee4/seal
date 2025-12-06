@@ -36,8 +36,19 @@ impl Project {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_json_snapshot;
     use std::fs;
     use tempfile::TempDir;
+
+    macro_rules! snapshot_error {
+        ($err:expr, $temp_path:expr, @$snapshot:literal) => {{
+            let mut settings = insta::Settings::clone_current();
+            settings.add_filter($temp_path, "[TEMP]");
+            settings.bind(|| {
+                insta::assert_debug_snapshot!($err, @$snapshot);
+            });
+        }};
+    }
 
     #[test]
     fn test_discover_with_explicit_config_path() {
@@ -55,8 +66,19 @@ version-files = ["test.txt"]
         .unwrap();
 
         let project = Project::discover(None, Some(&config_path)).unwrap();
-        assert_eq!(project.config.release.current_version, "1.0.0");
-        assert_eq!(project.config.release.version_files, vec!["test.txt"]);
+        assert_json_snapshot!(project.config, @r#"
+        {
+          "release": {
+            "current-version": "1.0.0",
+            "version-files": [
+              "test.txt"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 
     #[test]
@@ -76,7 +98,19 @@ version-files = ["Cargo.toml"]
         .unwrap();
 
         let project = Project::discover(Some(project_dir), None).unwrap();
-        assert_eq!(project.config.release.current_version, "2.0.0");
+        assert_json_snapshot!(project.config, @r#"
+        {
+          "release": {
+            "current-version": "2.0.0",
+            "version-files": [
+              "Cargo.toml"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 
     #[test]
@@ -96,7 +130,19 @@ current-version = "3.0.0"
 
         std::env::set_current_dir(project_dir).unwrap();
         let project = Project::discover(None, None).unwrap();
-        assert_eq!(project.config.release.current_version, "3.0.0");
+        assert_json_snapshot!(project.config, @r#"
+        {
+          "release": {
+            "current-version": "3.0.0",
+            "version-files": [
+              "Cargo.toml"
+            ],
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "tag-format": "v{version}"
+          }
+        }
+        "#);
     }
 
     #[test]
@@ -106,6 +152,18 @@ current-version = "3.0.0"
 
         let result = Project::discover(None, Some(&missing_path));
         assert!(result.is_err());
+
+        let err = result.unwrap_err();
+        snapshot_error!(&err, temp.path().to_str().unwrap(), @r#"
+        ConfigFileNotReadable {
+            path: "[TEMP]/missing.toml",
+            source: Os {
+                code: 2,
+                kind: NotFound,
+                message: "No such file or directory",
+            },
+        }
+        "#);
     }
 
     #[test]
@@ -117,5 +175,21 @@ current-version = "3.0.0"
 
         let result = Project::discover(None, Some(&config_path));
         assert!(result.is_err());
+
+        let err = result.unwrap_err();
+        snapshot_error!(&err, temp.path().to_str().unwrap(), @r#"
+        ConfigParseError {
+            source: TomlError {
+                message: "expected `.`, `=`",
+                raw: Some(
+                    "invalid toml content [[[",
+                ),
+                keys: [],
+                span: Some(
+                    8..9,
+                ),
+            },
+        }
+        "#);
     }
 }
