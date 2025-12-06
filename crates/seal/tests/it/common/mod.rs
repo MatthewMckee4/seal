@@ -30,6 +30,17 @@ impl TestContext {
                 .map(|pattern| (pattern, "[TEMP]/".to_string())),
         );
 
+        if cfg!(windows) {
+            // Windows temp directory pattern
+            let pattern = regex::escape(
+                &dunce::simplified(root.path())
+                    .display()
+                    .to_string()
+                    .replace('/', "\\"),
+            );
+            filters.push((pattern, "[TEMP]".to_string()));
+        }
+
         Self {
             root: ChildPath::new(root.path()),
             _root: root,
