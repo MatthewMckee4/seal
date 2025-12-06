@@ -1,13 +1,78 @@
+use std::collections::BTreeMap;
 use std::fmt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+use crate::ProjectName;
 use crate::error::{ConfigValidationError, ProjectError};
 
 const DEFAULT_COMMIT_MESSAGE: &str = "Release v{version}";
 const DEFAULT_BRANCH_NAME: &str = "release/v{version}";
 const DEFAULT_TAG_FORMAT: &str = "v{version}";
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub struct Config {
+    #[serde(default)]
+    pub members: Option<MembersConfig>,
+    pub release: ReleaseConfig,
+}
+
+impl Config {
+    pub fn from_toml_str(content: &str) -> Result<Self, ProjectError> {
+        toml::from_str(content).map_err(ProjectError::ConfigParseError)
+    }
+
+    pub fn from_file(path: &Path) -> Result<Self, ProjectError> {
+        let content =
+            std::fs::read_to_string(path).map_err(|e| ProjectError::ConfigFileNotReadable {
+                path: path.to_path_buf(),
+                source: e,
+            })?;
+        Self::from_toml_str(&content)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct MembersConfig {
+    pub members: BTreeMap<ProjectName, PathBuf>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
+pub struct ReleaseConfig {
+    pub current_version: String,
+
+    #[serde(default = "default_version_files")]
+    pub version_files: Vec<String>,
+
+    #[serde(default = "default_commit_message_value")]
+    pub commit_message: CommitMessage,
+
+    #[serde(default = "default_branch_name_value")]
+    pub branch_name: BranchName,
+
+    #[serde(default = "default_tag_format_value")]
+    pub tag_format: TagFormat,
+}
+
+fn default_version_files() -> Vec<String> {
+    vec![]
+}
+
+fn default_commit_message_value() -> CommitMessage {
+    CommitMessage::new(DEFAULT_COMMIT_MESSAGE.to_string()).expect("default is valid")
+}
+
+fn default_branch_name_value() -> BranchName {
+    BranchName::new(DEFAULT_BRANCH_NAME.to_string()).expect("default is valid")
+}
+
+fn default_tag_format_value() -> TagFormat {
+    TagFormat::new(DEFAULT_TAG_FORMAT.to_string()).expect("default is valid")
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[repr(transparent)]
@@ -153,61 +218,6 @@ impl<'de> Deserialize<'de> for TagFormat {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct Config {
-    pub release: ReleaseConfig,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case", deny_unknown_fields)]
-pub struct ReleaseConfig {
-    pub current_version: String,
-
-    #[serde(default = "default_version_files")]
-    pub version_files: Vec<String>,
-
-    #[serde(default = "default_commit_message_value")]
-    pub commit_message: CommitMessage,
-
-    #[serde(default = "default_branch_name_value")]
-    pub branch_name: BranchName,
-
-    #[serde(default = "default_tag_format_value")]
-    pub tag_format: TagFormat,
-}
-
-impl Config {
-    pub fn from_toml_str(content: &str) -> Result<Self, ProjectError> {
-        toml::from_str(content).map_err(|e| ProjectError::ConfigParseError { source: e })
-    }
-
-    pub fn from_file(path: &Path) -> Result<Self, ProjectError> {
-        let content =
-            std::fs::read_to_string(path).map_err(|e| ProjectError::ConfigFileNotReadable {
-                path: path.to_path_buf(),
-                source: e,
-            })?;
-        Self::from_toml_str(&content)
-    }
-}
-
-fn default_version_files() -> Vec<String> {
-    vec!["Cargo.toml".to_string()]
-}
-
-fn default_commit_message_value() -> CommitMessage {
-    CommitMessage::new(DEFAULT_COMMIT_MESSAGE.to_string()).expect("default is valid")
-}
-
-fn default_branch_name_value() -> BranchName {
-    BranchName::new(DEFAULT_BRANCH_NAME.to_string()).expect("default is valid")
-}
-
-fn default_tag_format_value() -> TagFormat {
-    TagFormat::new(DEFAULT_TAG_FORMAT.to_string()).expect("default is valid")
-}
-
 #[cfg(test)]
 mod tests {
     use insta::{assert_debug_snapshot, assert_json_snapshot};
@@ -228,6 +238,7 @@ tag-format = "{version}"
         let config = Config::from_toml_str(toml).unwrap();
         assert_json_snapshot!(config, @r#"
         {
+          "members": null,
           "release": {
             "current-version": "1.2.3",
             "version-files": [
@@ -253,6 +264,7 @@ version-files = ["VERSION"]
         let config = Config::from_toml_str(toml).unwrap();
         assert_json_snapshot!(config, @r#"
         {
+          "members": null,
           "release": {
             "current-version": "0.1.0",
             "version-files": [
@@ -284,8 +296,8 @@ unknown-field = "value"
         assert!(result.is_err());
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`",
                 raw: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
@@ -297,7 +309,7 @@ unknown-field = "value"
                     11..24,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -312,8 +324,8 @@ commit-message = "Release without placeholder"
         let result = Config::from_toml_str(toml);
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.commit-message must contain '{version}' placeholder, got: 'Release without placeholder'",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"Release without placeholder\"\n",
@@ -326,7 +338,7 @@ commit-message = "Release without placeholder"
                     54..83,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -341,8 +353,8 @@ branch-name = "release-branch"
         let result = Config::from_toml_str(toml);
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.branch-name must contain '{version}' placeholder, got: 'release-branch'",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\nbranch-name = \"release-branch\"\n",
@@ -355,7 +367,7 @@ branch-name = "release-branch"
                     51..67,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -370,8 +382,8 @@ tag-format = "release"
         let result = Config::from_toml_str(toml);
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.tag-format must contain '{version}' placeholder, got: 'release'",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ntag-format = \"release\"\n",
@@ -384,7 +396,7 @@ tag-format = "release"
                     50..59,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -399,8 +411,8 @@ commit-message = ""
         let result = Config::from_toml_str(toml);
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.commit-message cannot be empty",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"\"\n",
@@ -413,7 +425,7 @@ commit-message = ""
                     54..56,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -428,8 +440,8 @@ branch-name = ""
         let result = Config::from_toml_str(toml);
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.branch-name cannot be empty",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\nbranch-name = \"\"\n",
@@ -442,7 +454,7 @@ branch-name = ""
                     51..53,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -457,8 +469,8 @@ tag-format = ""
         let result = Config::from_toml_str(toml);
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.tag-format cannot be empty",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ntag-format = \"\"\n",
@@ -471,7 +483,7 @@ tag-format = ""
                     50..52,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -566,6 +578,7 @@ tag-format = ""
     #[test]
     fn test_serialization_round_trip() {
         let config = Config {
+            members: None,
             release: ReleaseConfig {
                 current_version: "1.2.3".to_string(),
                 version_files: vec!["Cargo.toml".to_string()],
@@ -580,6 +593,7 @@ tag-format = ""
 
         assert_json_snapshot!(parsed, @r#"
         {
+          "members": null,
           "release": {
             "current-version": "1.2.3",
             "version-files": [
@@ -605,6 +619,7 @@ commit-message = "Release {version} with {version} tag"
         assert!(result.is_ok());
         assert_debug_snapshot!(result.unwrap(), @r#"
         Config {
+            members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
                 version_files: [
@@ -635,8 +650,8 @@ commit-message = "Release {VERSION}"
         let result = Config::from_toml_str(toml);
         assert!(result.is_err());
         assert_debug_snapshot!(result.unwrap_err(), @r#"
-        ConfigParseError {
-            source: TomlError {
+        ConfigParseError(
+            TomlError {
                 message: "release.commit-message must contain '{version}' placeholder, got: 'Release {VERSION}'",
                 raw: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"Release {VERSION}\"\n",
@@ -649,7 +664,7 @@ commit-message = "Release {VERSION}"
                     54..73,
                 ),
             },
-        }
+        )
         "#);
     }
 
@@ -664,6 +679,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
         let config = Config::from_toml_str(toml).unwrap();
         assert_debug_snapshot!(config, @r#"
         Config {
+            members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
                 version_files: [
@@ -696,6 +712,7 @@ version-files = []
         let config = Config::from_toml_str(toml);
         assert_debug_snapshot!(config.unwrap(), @r#"
         Config {
+            members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
                 version_files: [],

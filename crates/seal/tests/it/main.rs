@@ -5,3 +5,4 @@ pub(crate) mod common;
 
 mod help;
 mod self_version;
+mod validate;

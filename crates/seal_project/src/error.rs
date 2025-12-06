@@ -13,14 +13,20 @@ pub enum ProjectError {
         source: std::io::Error,
     },
 
-    #[error("Failed to parse seal.toml: {source}")]
-    ConfigParseError { source: toml::de::Error },
+    #[error(transparent)]
+    ConfigParseError(#[from] toml::de::Error),
 
     #[error("Not in a git repository: {path}")]
     NotInGitRepository { path: PathBuf },
 
     #[error("Git command '{command}' failed: {stderr}")]
     GitCommandFailed { command: String, stderr: String },
+
+    #[error("Workspace member '{member}' is missing seal.toml at path: {path}")]
+    MemberMissingSealToml { member: String, path: PathBuf },
+
+    #[error("Workspace member '{member}' path does not exist: {path}")]
+    MemberPathNotFound { member: String, path: PathBuf },
 }
 
 #[derive(Error, Debug)]
@@ -45,6 +51,14 @@ pub enum ConfigValidationError {
 
     #[error("release.current-version is not a valid version: '{value}'")]
     InvalidVersion { value: String },
+
+    #[error("project name cannot be empty")]
+    EmptyProjectName,
+
+    #[error(
+        "project name '{name}' contains invalid characters (only alphanumeric, dash, and underscore allowed)"
+    )]
+    InvalidProjectName { name: String },
 }
 
 #[cfg(test)]

@@ -99,6 +99,7 @@ mod tests {
         assert!(config.is_some());
         assert_json_snapshot!(config.unwrap(), @r#"
         {
+          "members": null,
           "release": {
             "current-version": "1.0.0",
             "version-files": [
@@ -132,6 +133,7 @@ mod tests {
         assert!(config.is_some());
         assert_json_snapshot!(config.unwrap(), @r#"
         {
+          "members": null,
           "release": {
             "current-version": "1.0.0",
             "version-files": [
@@ -191,6 +193,7 @@ mod tests {
         assert!(config.is_some());
         assert_json_snapshot!(config.unwrap(), @r#"
         {
+          "members": null,
           "release": {
             "current-version": "1.0.0",
             "version-files": [

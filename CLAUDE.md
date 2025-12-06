@@ -36,6 +36,10 @@ cargo run -p seal_cli -- <args>
 1. Routes to command handlers in `src/commands/`
 1. Returns `ExitStatus` enum (Success=0, Failure=1, Error=2, External)
 
+### Command Functions
+
+**Critical**: All command functions MUST return `Result<ExitStatus>` from `anyhow`. Use `?` to propagate errors - they will be automatically displayed to the user by the error handling in `main.rs`.
+
 ## Code Conventions
 
 - **Edition 2024, MSRV 1.89**

@@ -2,38 +2,77 @@
 #![allow(dead_code, unreachable_pub)]
 
 use assert_cmd::Command;
+use assert_fs::TempDir;
+use assert_fs::prelude::*;
 use regex::Regex;
 use std::path::{Path, PathBuf};
 
 /// Test context for running seal commands.
 pub struct TestContext {
-    pub root: PathBuf,
+    /// The temporary directory for this test.
+    pub temp_dir: TempDir,
     /// Standard filters for this test context.
     filters: Vec<(String, String)>,
-    /// The root temporary directory for this test.
-    _root: tempfile::TempDir,
 }
 
 impl TestContext {
     /// Create a new test context with a temporary directory.
     pub fn new() -> Self {
-        let _root = tempfile::TempDir::new().expect("Failed to create temp dir");
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
 
         let filters = Vec::new();
 
-        Self {
-            root: _root.path().to_path_buf(),
-            filters,
-            _root,
-        }
+        Self { temp_dir, filters }
     }
 
-    /// Get the path to the temporary directory.
-    pub fn temp_path(&self) -> PathBuf {
-        self.root.clone()
+    /// Create a seal.toml file with the given content.
+    pub fn seal_toml(&self, content: &str) -> &Self {
+        self.temp_dir
+            .child("seal.toml")
+            .write_str(content)
+            .expect("Failed to write seal.toml");
+        self
+    }
+
+    /// Create a minimal seal.toml with just current-version.
+    pub fn minimal_seal_toml(&self, version: &str) -> &Self {
+        self.seal_toml(&format!(
+            r#"
+[release]
+current-version = "{version}"
+"#
+        ))
+    }
+
+    /// Create a full seal.toml with all common fields.
+    pub fn full_seal_toml(
+        &self,
+        version: &str,
+        version_files: &[&str],
+        commit_msg: &str,
+        branch: &str,
+        tag: &str,
+    ) -> &Self {
+        let files = version_files
+            .iter()
+            .map(|f| format!("\"{f}\""))
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        self.seal_toml(&format!(
+            r#"
+[release]
+current-version = "{version}"
+version-files = [{files}]
+commit-message = "{commit_msg}"
+branch-name = "{branch}"
+tag-format = "{tag}"
+"#
+        ))
     }
 
     /// Standard snapshot filters _plus_ those for this test context.
+    #[allow(unused)]
     pub fn filters(&self) -> Vec<(&str, &str)> {
         // Put test context snapshots before the default filters
         // This ensures we don't replace other patterns inside paths from the test context first
@@ -98,6 +137,10 @@ pub static INSTA_FILTERS: &[(&str, &str)] = &[
         r"seal(-.*)? \d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?",
         r"seal [VERSION]",
     ),
+    // Filter temp directory paths
+    (r"/tmp/\.tmp[a-zA-Z0-9]+", "[TEMP]"),
+    // Strip ANSI color codes
+    (r"\x1b\[[0-9;]*m", ""),
 ];
 
 /// Get the function name for snapshot naming.

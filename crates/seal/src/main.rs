@@ -2,6 +2,7 @@ use std::process::ExitCode;
 
 use anyhow::Result;
 use clap::Parser;
+use owo_colors::OwoColorize;
 
 mod cli;
 mod commands;
@@ -9,7 +10,7 @@ mod printer;
 mod settings;
 mod version;
 
-use cli::{Cli, Commands, SelfCommand};
+use cli::{Cli, Commands, SelfCommand, ValidateCommand};
 
 use crate::{printer::Printer, settings::GlobalSettings};
 
@@ -44,7 +45,28 @@ impl From<ExitStatus> for std::process::ExitCode {
 fn main() -> ExitCode {
     let cli = Cli::parse();
 
-    run(cli).unwrap_or(ExitStatus::Error).into()
+    match run(cli) {
+        Ok(status) => status.into(),
+        Err(err) => {
+            #[allow(clippy::print_stderr)]
+            {
+                let mut causes = err.chain();
+                eprintln!(
+                    "{}: {}",
+                    "error".red().bold(),
+                    causes.next().unwrap().to_string().trim()
+                );
+                for cause in causes {
+                    eprintln!(
+                        "  {}: {}",
+                        "Caused by".red().bold(),
+                        cause.to_string().trim()
+                    );
+                }
+            }
+            ExitStatus::Error.into()
+        }
+    }
 }
 
 fn run(cli: Cli) -> Result<ExitStatus> {
@@ -73,6 +95,12 @@ fn run(cli: Cli) -> Result<ExitStatus> {
                 commands::self_version(short, output_format, printer)?;
                 Ok(ExitStatus::Success)
             }
+        },
+        Commands::Validate(validate_ns) => match validate_ns.command {
+            ValidateCommand::Config { config_file } => {
+                commands::validate_config(config_file, printer)
+            }
+            ValidateCommand::Project { project } => commands::validate_project(project, printer),
         },
         Commands::Help(args) => commands::help(
             args.command.unwrap_or_default().as_slice(),

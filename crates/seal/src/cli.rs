@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::builder::Styles;
 use clap::builder::styling::{AnsiColor, Effects, Style};
 use clap::{Args, Parser, Subcommand};
@@ -77,6 +79,8 @@ pub enum Commands {
     /// Manage the seal executable.
     #[command(name = "self")]
     Self_(SelfNamespace),
+    /// Validate project configuration and structure.
+    Validate(ValidateNamespace),
     /// Display documentation for a command.
     // To avoid showing the global options when displaying help for the help command, we are
     // responsible for maintaining the options using the `after_help`.
@@ -119,5 +123,31 @@ pub enum SelfCommand {
         short: bool,
         #[arg(long, value_enum, default_value = "text")]
         output_format: VersionFormat,
+    },
+}
+
+#[derive(Args)]
+pub struct ValidateNamespace {
+    #[command(subcommand)]
+    pub command: ValidateCommand,
+}
+
+#[derive(Subcommand)]
+pub enum ValidateCommand {
+    /// Validate workspace configuration file
+    ///
+    /// If no config path is provided, discovers seal.toml in the current directory.
+    Config {
+        /// Path to the config file (seal.toml)
+        #[arg(long)]
+        config_file: Option<PathBuf>,
+    },
+    /// Validate full project workspace including members
+    ///
+    /// If no project path is provided, uses the current directory.
+    Project {
+        /// Path to the project directory
+        #[arg(long, short)]
+        project: Option<PathBuf>,
     },
 }
