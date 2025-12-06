@@ -13,11 +13,11 @@ fn validate_config_valid() {
         "v{version}",
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -37,11 +37,11 @@ version-files = ["VERSION"]
         )
         .unwrap();
 
-    seal_snapshot!(context.command().arg("validate").arg("config").arg("--config-file").arg(custom_config.path()), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config").arg("--config-file").arg(custom_config.path()), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/custom.toml` is valid
 
     ----- stderr -----
     ");
@@ -52,11 +52,11 @@ fn validate_config_minimal() {
     let context = TestContext::new();
     context.minimal_seal_toml("0.1.0");
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -303,11 +303,11 @@ version-files = []
 "#,
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -324,11 +324,11 @@ version-files = ["Cargo.toml", ""]
 "#,
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -395,11 +395,11 @@ version-files = ["Cargo.toml", "pyproject.toml", "package.json", "VERSION"]
 "#,
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -416,11 +416,11 @@ fn validate_config_custom_patterns() {
         "{version}",
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
-    Configuration is valid
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
     ");

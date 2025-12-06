@@ -115,14 +115,13 @@ tag-format = "{tag}"
 
     /// Generate an escaped regex pattern for the given path.
     fn path_pattern(path: impl AsRef<Path>) -> String {
-        let path_str = dunce::simplified(path.as_ref()).display().to_string();
-        // Replace backslashes with forward slashes before escaping to avoid
-        // creating invalid hex escape sequences like \x in the regex
-        let normalized = path_str.replace('\\', "/");
         format!(
             // Trim the trailing separator for cross-platform directories filters
-            r"{}/?",
-            regex::escape(&normalized)
+            r"{}\\?/?",
+            regex::escape(&dunce::simplified(path.as_ref()).display().to_string())
+                // Make separators platform agnostic because on Windows we will display
+                // paths with Unix-style separators sometimes
+                .replace(r"\\", r"(\\|\/)")
         )
     }
 

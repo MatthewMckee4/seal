@@ -11,13 +11,17 @@ use crate::{ExitStatus, printer::Printer};
 pub fn validate_config(config_file: Option<PathBuf>, printer: Printer) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
 
-    let _workspace = if let Some(path) = config_file {
+    let workspace = if let Some(path) = config_file {
         ProjectWorkspace::from_config_file(&path)?
     } else {
         ProjectWorkspace::discover()?
     };
 
-    writeln!(stdout, "Configuration is valid")?;
+    writeln!(
+        stdout,
+        "Config file `{}` is valid",
+        workspace.config_file().display()
+    )?;
     Ok(ExitStatus::Success)
 }
 
@@ -33,11 +37,11 @@ pub fn validate_project(project_path: Option<PathBuf>, printer: Printer) -> Resu
     };
 
     writeln!(stdout, "Project validation successful")?;
-    if !workspace.members.is_empty() {
+    if !workspace.members().is_empty() {
         writeln!(
             stdout,
             "Found {} workspace member(s)",
-            workspace.members.len()
+            workspace.members().len()
         )?;
     }
     Ok(ExitStatus::Success)

@@ -5,9 +5,17 @@ use crate::{Config, ProjectError, ProjectName, WorkspaceMember};
 
 #[derive(Debug, Clone)]
 pub struct ProjectWorkspace {
-    pub root: PathBuf,
-    pub config: Config,
-    pub members: BTreeMap<ProjectName, WorkspaceMember>,
+    /// Root directory of the workspace
+    root: PathBuf,
+
+    /// Path to the workspace configuration file
+    config_file: PathBuf,
+
+    /// Configuration of the workspace
+    config: Config,
+
+    /// Members of the workspace
+    members: BTreeMap<ProjectName, WorkspaceMember>,
 }
 
 impl ProjectWorkspace {
@@ -39,6 +47,7 @@ impl ProjectWorkspace {
 
         Ok(Self {
             root,
+            config_file: config_path.to_path_buf(),
             config,
             members,
         })
@@ -53,6 +62,7 @@ impl ProjectWorkspace {
 
         Ok(Self {
             root: project_path.to_path_buf(),
+            config_file: seal_toml_path.clone(),
             config,
             members,
         })
@@ -92,6 +102,22 @@ impl ProjectWorkspace {
         }
 
         Ok(members)
+    }
+
+    pub fn root(&self) -> &PathBuf {
+        &self.root
+    }
+
+    pub fn config(&self) -> &Config {
+        &self.config
+    }
+
+    pub fn members(&self) -> &BTreeMap<ProjectName, WorkspaceMember> {
+        &self.members
+    }
+
+    pub fn config_file(&self) -> &PathBuf {
+        &self.config_file
     }
 }
 
