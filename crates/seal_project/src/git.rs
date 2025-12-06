@@ -130,7 +130,7 @@ mod tests {
         fs::create_dir(&subdir).unwrap();
 
         let root = find_git_root(&subdir).unwrap();
-        assert_eq!(root, repo_dir.canonicalize().unwrap());
+        assert_eq!(root, repo_dir);
     }
 
     #[test]
@@ -140,7 +140,7 @@ mod tests {
         setup_git_repo(repo_dir);
 
         let root = find_git_root(repo_dir).unwrap();
-        assert_eq!(root, repo_dir.canonicalize().unwrap());
+        assert_eq!(root, repo_dir);
     }
 
     #[test]

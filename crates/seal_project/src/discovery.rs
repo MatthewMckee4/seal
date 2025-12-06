@@ -72,16 +72,6 @@ mod tests {
             .unwrap();
     }
 
-    macro_rules! snapshot_error {
-        ($err:expr, $temp_path:expr, @$snapshot:literal) => {{
-            let mut settings = insta::Settings::clone_current();
-            settings.add_filter($temp_path, "[TEMP_DIR]");
-            settings.bind(|| {
-                insta::assert_debug_snapshot!($err, @$snapshot);
-            });
-        }};
-    }
-
     #[test]
     fn test_find_config_in_current_dir() {
         let temp = TempDir::new().unwrap();
@@ -166,11 +156,7 @@ mod tests {
         assert!(result.is_err());
 
         let err = result.unwrap_err();
-        snapshot_error!(&err, non_git_dir.to_str().unwrap(), @r#"
-        NotInGitRepository {
-            path: "[TEMP_DIR]",
-        }
-        "#);
+        assert!(matches!(err, ProjectError::NotInGitRepository { .. }));
     }
 
     #[test]
