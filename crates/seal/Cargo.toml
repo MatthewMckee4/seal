@@ -10,6 +10,7 @@ license.workspace = true
 
 [dependencies]
 seal_version = { workspace = true }
+seal_project = { workspace = true }
 
 clap = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
@@ -20,12 +21,13 @@ owo-colors = { workspace = true }
 itertools = { workspace = true }
 which = { workspace = true }
 regex = { workspace = true }
+dunce = { workspace = true }
 
 [dev-dependencies]
-assert_cmd = "2.0"
-insta = { version = "1.41", features = ["filters", "json"] }
-predicates = "3.1"
-tempfile = "3.14"
+assert_cmd = { workspace = true }
+assert_fs = { workspace = true }
+insta = { workspace = true, features = ["filters", "json"] }
+tempfile = { workspace = true }
 
 [lints]
 workspace = true

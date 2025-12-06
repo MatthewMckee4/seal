@@ -2,35 +2,127 @@
 #![allow(dead_code, unreachable_pub)]
 
 use assert_cmd::Command;
+use assert_fs::fixture::ChildPath;
+use assert_fs::prelude::*;
 use regex::Regex;
 use std::path::{Path, PathBuf};
 
 /// Test context for running seal commands.
 pub struct TestContext {
-    pub root: PathBuf,
+    pub root: ChildPath,
     /// Standard filters for this test context.
     filters: Vec<(String, String)>,
-    /// The root temporary directory for this test.
-    _root: tempfile::TempDir,
+    /// The temporary directory for this test.
+    pub _root: tempfile::TempDir,
 }
 
 impl TestContext {
     /// Create a new test context with a temporary directory.
     pub fn new() -> Self {
-        let _root = tempfile::TempDir::new().expect("Failed to create temp dir");
+        let root = tempfile::TempDir::with_prefix("seal-test")
+            .expect("Failed to create test root directory");
 
-        let filters = Vec::new();
+        let mut filters = Vec::new();
+
+        filters.extend(
+            Self::path_patterns(root.path())
+                .into_iter()
+                .map(|pattern| (pattern, "[TEMP]/".to_string())),
+        );
+
+        if cfg!(windows) {
+            // Windows temp directory pattern
+            let pattern = regex::escape(
+                &dunce::simplified(root.path())
+                    .display()
+                    .to_string()
+                    .replace('/', "\\"),
+            );
+            filters.push((pattern, "[TEMP]".to_string()));
+        }
 
         Self {
-            root: _root.path().to_path_buf(),
+            root: ChildPath::new(root.path()),
+            _root: root,
             filters,
-            _root,
         }
     }
 
-    /// Get the path to the temporary directory.
-    pub fn temp_path(&self) -> PathBuf {
-        self.root.clone()
+    /// Create a seal.toml file with the given content.
+    pub fn seal_toml(&self, content: &str) -> &Self {
+        self.root
+            .child("seal.toml")
+            .write_str(content)
+            .expect("Failed to write seal.toml");
+        self
+    }
+
+    /// Create a minimal seal.toml with just current-version.
+    pub fn minimal_seal_toml(&self, version: &str) -> &Self {
+        self.seal_toml(&format!(
+            r#"
+[release]
+current-version = "{version}"
+"#
+        ))
+    }
+
+    /// Create a full seal.toml with all common fields.
+    pub fn full_seal_toml(
+        &self,
+        version: &str,
+        version_files: &[&str],
+        commit_msg: &str,
+        branch: &str,
+        tag: &str,
+    ) -> &Self {
+        let files = version_files
+            .iter()
+            .map(|f| format!("\"{f}\""))
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        self.seal_toml(&format!(
+            r#"
+[release]
+current-version = "{version}"
+version-files = [{files}]
+commit-message = "{commit_msg}"
+branch-name = "{branch}"
+tag-format = "{tag}"
+"#
+        ))
+    }
+
+    /// Generate various escaped regex patterns for the given path.
+    pub fn path_patterns(path: impl AsRef<Path>) -> Vec<String> {
+        let mut patterns = Vec::new();
+
+        // We can only canonicalize paths that exist already
+        if path.as_ref().exists() {
+            patterns.push(Self::path_pattern(
+                path.as_ref()
+                    .canonicalize()
+                    .expect("Failed to create canonical path"),
+            ));
+        }
+
+        // Include a non-canonicalized version
+        patterns.push(Self::path_pattern(path));
+
+        patterns
+    }
+
+    /// Generate an escaped regex pattern for the given path.
+    fn path_pattern(path: impl AsRef<Path>) -> String {
+        format!(
+            // Trim the trailing separator for cross-platform directories filters
+            r"{}\\?/?",
+            regex::escape(&dunce::simplified(path.as_ref()).display().to_string())
+                // Make separators platform agnostic because on Windows we will display
+                // paths with Unix-style separators sometimes
+                .replace(r"\\", r"(\\|\/)")
+        )
     }
 
     /// Standard snapshot filters _plus_ those for this test context.
@@ -44,6 +136,24 @@ impl TestContext {
             .collect()
     }
 
+    /// Add extra standard filtering for Windows-compatible missing file errors.
+    pub fn with_filtered_missing_file_error(mut self) -> Self {
+        // The exact message string depends on the system language, so we remove it.
+        // We want to only remove the phrase after `Caused by:`
+        self.filters.push((
+            r"[^:\n]* \(os error 2\)".to_string(),
+            " [OS ERROR 2]".to_string(),
+        ));
+        // Replace the Windows "The system cannot find the path specified. (os error 3)"
+        // with the Unix "No such file or directory (os error 2)"
+        // and mask the language-dependent message.
+        self.filters.push((
+            r"[^:\n]* \(os error 3\)".to_string(),
+            " [OS ERROR 2]".to_string(),
+        ));
+        self
+    }
+
     /// Create a `seal help` command with options shared across scenarios.
     #[allow(clippy::unused_self)]
     pub fn help(&self) -> Command {
@@ -55,7 +165,9 @@ impl TestContext {
     /// Create a seal command for testing.
     #[allow(clippy::unused_self)]
     pub fn command(&self) -> Command {
-        Self::new_command()
+        let mut command = Self::new_command();
+        command.current_dir(self.root.path());
+        command
     }
 
     /// Creates a new `Command` that is intended to be suitable for use in
@@ -98,6 +210,8 @@ pub static INSTA_FILTERS: &[(&str, &str)] = &[
         r"seal(-.*)? \d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?",
         r"seal [VERSION]",
     ),
+    // Strip ANSI color codes (match ESC character using character class)
+    (r"[\x1b]\[[0-9;]*m", ""),
 ];
 
 /// Get the function name for snapshot naming.

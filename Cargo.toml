@@ -13,14 +13,21 @@ license = "MIT"
 [workspace.dependencies]
 anstream = { version = "0.6.21" }
 anyhow = { version = "1.0.100" }
+assert_cmd = "2.0"
+assert_fs = "1.1"
 clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
+dunce = { version = "1.0.5" }
+insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
 owo-colors = { version = "4.1.0" }
 regex = { version = "1.12.2" }
-seal_core = { path = "crates/seal_core" }
+seal_project = { path = "crates/seal_project" }
 seal_version = { path = "crates/seal_version" }
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
+tempfile = { version = "3.14" }
+thiserror = { version = "2.0" }
+toml = { version = "0.8" }
 which = { version = "8.0.0" }
 
 [workspace.lints.clippy]

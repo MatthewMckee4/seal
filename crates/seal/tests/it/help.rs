@@ -14,8 +14,9 @@ fn help_command() {
     Usage: seal [OPTIONS] <COMMAND>
 
     Commands:
-      self  Manage the seal executable
-      help  Display documentation for a command
+      self      Manage the seal executable
+      validate  Validate project configuration and structure
+      help      Display documentation for a command
 
     Global options:
       -q, --quiet...     Use quiet output
@@ -44,8 +45,9 @@ fn help_flag() {
     Usage: seal [OPTIONS] <COMMAND>
 
     Commands:
-      self  Manage the seal executable
-      help  Display documentation for a command
+      self      Manage the seal executable
+      validate  Validate project configuration and structure
+      help      Display documentation for a command
 
     Global options:
       -q, --quiet...     Use quiet output
@@ -73,8 +75,9 @@ fn help_short_flag() {
     Usage: seal [OPTIONS] <COMMAND>
 
     Commands:
-      self  Manage the seal executable
-      help  Display documentation for a command
+      self      Manage the seal executable
+      validate  Validate project configuration and structure
+      help      Display documentation for a command
 
     Global options:
       -q, --quiet...     Use quiet output
