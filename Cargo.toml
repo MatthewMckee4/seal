@@ -30,6 +30,8 @@ tempfile = { version = "3.14" }
 thiserror = { version = "2.0" }
 toml = { version = "0.8" }
 which = { version = "8.0.0" }
+fs-err = { version = "3.0.0", features = ["tokio"] }
+dunce = { version = "1.0.5" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }

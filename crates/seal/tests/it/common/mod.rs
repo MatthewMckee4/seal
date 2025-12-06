@@ -2,32 +2,44 @@
 #![allow(dead_code, unreachable_pub)]
 
 use assert_cmd::Command;
-use assert_fs::TempDir;
+use assert_fs::fixture::ChildPath;
 use assert_fs::prelude::*;
 use regex::Regex;
 use std::path::{Path, PathBuf};
 
 /// Test context for running seal commands.
 pub struct TestContext {
-    /// The temporary directory for this test.
-    pub temp_dir: TempDir,
+    pub root: ChildPath,
     /// Standard filters for this test context.
     filters: Vec<(String, String)>,
+    /// The temporary directory for this test.
+    pub _root: tempfile::TempDir,
 }
 
 impl TestContext {
     /// Create a new test context with a temporary directory.
     pub fn new() -> Self {
-        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let root = tempfile::TempDir::with_prefix("seal-test")
+            .expect("Failed to create test root directory");
 
-        let filters = Vec::new();
+        let mut filters = Vec::new();
 
-        Self { temp_dir, filters }
+        filters.extend(
+            Self::path_patterns(root.path())
+                .into_iter()
+                .map(|pattern| (pattern, "[TEMP]/".to_string())),
+        );
+
+        Self {
+            root: ChildPath::new(root.path()),
+            _root: root,
+            filters,
+        }
     }
 
     /// Create a seal.toml file with the given content.
     pub fn seal_toml(&self, content: &str) -> &Self {
-        self.temp_dir
+        self.root
             .child("seal.toml")
             .write_str(content)
             .expect("Failed to write seal.toml");
@@ -71,8 +83,38 @@ tag-format = "{tag}"
         ))
     }
 
+    /// Generate various escaped regex patterns for the given path.
+    pub fn path_patterns(path: impl AsRef<Path>) -> Vec<String> {
+        let mut patterns = Vec::new();
+
+        // We can only canonicalize paths that exist already
+        if path.as_ref().exists() {
+            patterns.push(Self::path_pattern(
+                path.as_ref()
+                    .canonicalize()
+                    .expect("Failed to create canonical path"),
+            ));
+        }
+
+        // Include a non-canonicalized version
+        patterns.push(Self::path_pattern(path));
+
+        patterns
+    }
+
+    /// Generate an escaped regex pattern for the given path.
+    fn path_pattern(path: impl AsRef<Path>) -> String {
+        format!(
+            // Trim the trailing separator for cross-platform directories filters
+            r"{}\\?/?",
+            regex::escape(&dunce::simplified(path.as_ref()).display().to_string())
+                // Make separators platform agnostic because on Windows we will display
+                // paths with Unix-style separators sometimes
+                .replace(r"\\", r"(\\|\/)")
+        )
+    }
+
     /// Standard snapshot filters _plus_ those for this test context.
-    #[allow(unused)]
     pub fn filters(&self) -> Vec<(&str, &str)> {
         // Put test context snapshots before the default filters
         // This ensures we don't replace other patterns inside paths from the test context first
@@ -137,8 +179,6 @@ pub static INSTA_FILTERS: &[(&str, &str)] = &[
         r"seal(-.*)? \d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?",
         r"seal [VERSION]",
     ),
-    // Filter temp directory paths
-    (r"/tmp/\.tmp[a-zA-Z0-9]+", "[TEMP]"),
     // Strip ANSI color codes
     (r"\x1b\[[0-9;]*m", ""),
 ];
