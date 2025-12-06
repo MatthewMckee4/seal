@@ -130,7 +130,9 @@ mod tests {
         fs::create_dir(&subdir).unwrap();
 
         let root = find_git_root(&subdir).unwrap();
-        assert_eq!(root, repo_dir);
+        let canonicalised_root = dunce::canonicalize(root).unwrap();
+        let canonicalised_repo_dir = dunce::canonicalize(repo_dir).unwrap();
+        assert_eq!(canonicalised_root, canonicalised_repo_dir);
     }
 
     #[test]
@@ -140,7 +142,10 @@ mod tests {
         setup_git_repo(repo_dir);
 
         let root = find_git_root(repo_dir).unwrap();
-        assert_eq!(root, repo_dir);
+
+        let canonicalised_root = dunce::canonicalize(root).unwrap();
+        let canonicalised_repo_dir = dunce::canonicalize(repo_dir).unwrap();
+        assert_eq!(canonicalised_root, canonicalised_repo_dir);
     }
 
     #[test]
