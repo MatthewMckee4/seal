@@ -16,6 +16,8 @@ anyhow = { version = "1.0.100" }
 assert_cmd = "2.0"
 assert_fs = "1.1"
 clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
+dunce = { version = "1.0.5" }
+fs-err = { version = "3.0.0", features = ["tokio"] }
 insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
 owo-colors = { version = "4.1.0" }
@@ -30,8 +32,6 @@ tempfile = { version = "3.14" }
 thiserror = { version = "2.0" }
 toml = { version = "0.8" }
 which = { version = "8.0.0" }
-fs-err = { version = "3.0.0", features = ["tokio"] }
-dunce = { version = "1.0.5" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }
