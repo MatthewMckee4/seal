@@ -622,9 +622,7 @@ commit-message = "Release {version} with {version} tag"
             members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
-                version_files: [
-                    "Cargo.toml",
-                ],
+                version_files: [],
                 commit_message: CommitMessage(
                     "Release {version} with {version} tag",
                 ),
