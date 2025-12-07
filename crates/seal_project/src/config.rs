@@ -94,7 +94,7 @@ impl VersionFile {
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
     /// The current version of the project.
-    #[field(value_type = "string", example = "0.1.0")]
+    #[field(value_type = "string", example = r#"current-version = "0.1.0""#)]
     pub current_version: String,
 
     /// The version files that need to be updated.
@@ -115,30 +115,63 @@ pub struct ReleaseConfig {
     pub version_files: Option<Vec<VersionFile>>,
 
     /// The commit message to use when committing the release changes.
-    #[field(default = "null", value_type = "string", example = "Release {version}")]
+    #[field(
+        default = "null",
+        value_type = "string",
+        example = r#"
+        commit-message = "Release {version}"
+    "#
+    )]
     pub commit_message: Option<CommitMessage>,
 
     /// The branch name to use when creating a new release branch.
-    #[field(default = "null", value_type = "string", example = "release-{version}")]
+    #[field(
+        default = "null",
+        value_type = "string",
+        example = r#"
+        branch-name = "release-{version}"
+    "#
+    )]
     pub branch_name: Option<BranchName>,
 
     /// The tag format to use when creating a new tag.
-    #[field(default = "null", value_type = "string", example = "v{version}")]
+    #[field(
+        default = "null",
+        value_type = "string",
+        example = r#"
+        tag-format = "v{version}"
+    "#
+    )]
     pub tag_format: Option<TagFormat>,
 
     /// Whether to push the release changes to the remote repository.
     #[serde(default = "default_push")]
-    #[field(default = "false", value_type = "boolean", example = "false")]
+    #[field(
+        default = "false",
+        value_type = "boolean",
+        example = r#"
+        push = false"#
+    )]
     pub push: bool,
 
     /// Whether to create a pull request for the release changes.
     #[serde(default = "default_create_pr")]
-    #[field(default = "false", value_type = "boolean", example = "true")]
+    #[field(
+        default = "false",
+        value_type = "boolean",
+        example = r#"
+        create-pr = true"#
+    )]
     pub create_pr: bool,
 
     /// Whether to confirm the release changes with the user before proceeding.
     #[serde(default = "default_confirm")]
-    #[field(default = "true", value_type = "boolean", example = "true")]
+    #[field(
+        default = "true",
+        value_type = "boolean",
+        example = r#"
+    confirm = true"#
+    )]
     pub confirm: bool,
 }
 

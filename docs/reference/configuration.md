@@ -36,7 +36,7 @@ The branch name to use when creating a new release branch.
 
     ```toml
     [release]
-    release-{version}
+    branch-name = "release-{version}"
     ```
 
 ---
@@ -56,7 +56,7 @@ The commit message to use when committing the release changes.
 
     ```toml
     [release]
-    Release {version}
+    commit-message = "Release {version}"
     ```
 
 ---
@@ -76,7 +76,7 @@ Whether to confirm the release changes with the user before proceeding.
 
     ```toml
     [release]
-    true
+    confirm = true
     ```
 
 ---
@@ -96,7 +96,7 @@ Whether to create a pull request for the release changes.
 
     ```toml
     [release]
-    true
+    create-pr = true
     ```
 
 ---
@@ -116,7 +116,7 @@ The current version of the project.
 
     ```toml
     [release]
-    0.1.0
+    current-version = "0.1.0"
     ```
 
 ---
@@ -136,7 +136,7 @@ Whether to push the release changes to the remote repository.
 
     ```toml
     [release]
-    false
+    push = false
     ```
 
 ---
@@ -156,7 +156,7 @@ The tag format to use when creating a new tag.
 
     ```toml
     [release]
-    v{version}
+    tag-format = "v{version}"
     ```
 
 ---
