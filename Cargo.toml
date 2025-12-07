@@ -19,9 +19,12 @@ clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"]
 dunce = { version = "1.0.5" }
 insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
+markdown = { version = "1.0.0-alpha.23" }
 owo-colors = { version = "4.1.0" }
 regex = { version = "1.12.2" }
+seal = { path = "crates/seal" }
 seal_bump = { path = "crates/seal_bump" }
+seal_cli = { path = "crates/seal_cli" }
 seal_project = { path = "crates/seal_project" }
 seal_version = { path = "crates/seal_version" }
 semver = { version = "1.0" }

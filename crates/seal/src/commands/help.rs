@@ -10,8 +10,9 @@ use itertools::Itertools;
 use owo_colors::OwoColorize;
 use which::which;
 
+use seal_cli::Cli;
+
 use crate::ExitStatus;
-use crate::cli::Cli;
 use crate::printer::Printer;
 
 pub fn help(query: &[String], printer: Printer, no_pager: bool) -> Result<ExitStatus> {

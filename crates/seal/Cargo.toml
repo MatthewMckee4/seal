@@ -10,6 +10,7 @@ license.workspace = true
 
 [dependencies]
 seal_bump = { workspace = true }
+seal_cli = { workspace = true }
 seal_version = { workspace = true }
 seal_project = { workspace = true }
 

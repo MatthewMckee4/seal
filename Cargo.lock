@@ -389,6 +389,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
+name = "markdown"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5cab8f2cadc416a82d2e783a1946388b31654d391d1c7d92cc1f03e295b1deb"
+dependencies = [
+ "unicode-id",
+]
+
+[[package]]
 name = "memchr"
 version = "2.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -535,6 +544,7 @@ dependencies = [
  "owo-colors",
  "regex",
  "seal_bump",
+ "seal_cli",
  "seal_project",
  "seal_version",
  "semver",
@@ -554,8 +564,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "seal_cli"
+version = "0.0.0"
+dependencies = [
+ "clap",
+ "seal_version",
+]
+
+[[package]]
 name = "seal_core"
 version = "0.0.0"
+
+[[package]]
+name = "seal_dev"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "itertools",
+ "markdown",
+ "seal_cli",
+ "seal_project",
+ "serde",
+ "toml",
+]
 
 [[package]]
 name = "seal_project"
@@ -743,6 +775,12 @@ name = "toml_write"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d99f8c9a7727884afe522e9bd5edbfc91a3312b36a77b5fb8926e4c31a41801"
+
+[[package]]
+name = "unicode-id"
+version = "0.3.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70ba288e709927c043cbe476718d37be306be53fb1fafecd0dbe36d072be2580"
 
 [[package]]
 name = "unicode-ident"

@@ -1,2 +1,8 @@
+# Rust
 /target
+
+# Prek cache
 /node_modules
+
+# Zensical
+/site

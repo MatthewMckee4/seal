@@ -1,0 +1,21 @@
+[package]
+name = "seal_dev"
+version = "0.0.0"
+publish = false
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+
+[dependencies]
+seal_cli = { workspace = true }
+seal_project = { workspace = true }
+
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["wrap_help", "env"] }
+itertools = { workspace = true }
+serde = { workspace = true }
+toml = { workspace = true }
+markdown = { workspace = true }

@@ -8,8 +8,9 @@ use seal_bump::VersionBump;
 use seal_project::ProjectWorkspace;
 use semver::Version;
 
+use seal_cli::BumpArgs;
+
 use crate::ExitStatus;
-use crate::cli::BumpArgs;
 use crate::printer::Printer;
 
 // Compile regex patterns once for auto-detecting version fields

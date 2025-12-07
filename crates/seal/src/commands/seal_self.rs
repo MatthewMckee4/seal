@@ -2,8 +2,9 @@ use std::fmt::Write;
 
 use anyhow::Result;
 use owo_colors::OwoColorize;
+use seal_cli::VersionFormat;
 
-use crate::{ExitStatus, cli::VersionFormat, printer::Printer, version::VersionInfo};
+use crate::{ExitStatus, printer::Printer, version::VersionInfo};
 
 /// Display version information for seal itself (`seal self version`)
 pub fn self_version(
