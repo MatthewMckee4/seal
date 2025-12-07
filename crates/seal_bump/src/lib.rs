@@ -67,6 +67,10 @@ pub enum VersionBumpError {
     /// The provided explicit version is a version prior to the current version
     #[error("explicit version '{new}' is prior to the current version '{current}'")]
     ExplicitVersionPrior { current: String, new: String },
+
+    /// The provided explicit version is the same as the current version
+    #[error("explicit version '{new}' is the same as the current version '{current}'")]
+    ExplicitVersionSame { current: String, new: String },
 }
 
 impl FromStr for VersionBump {
@@ -133,6 +137,13 @@ pub fn calculate_version(current: &str, bump: &VersionBump) -> Result<Version, V
 
         if new_version < current_version {
             return Err(VersionBumpError::ExplicitVersionPrior {
+                current: current_version.to_string(),
+                new: new_version.to_string(),
+            });
+        }
+
+        if new_version == current_version {
+            return Err(VersionBumpError::ExplicitVersionSame {
                 current: current_version.to_string(),
                 new: new_version.to_string(),
             });
