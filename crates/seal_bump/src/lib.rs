@@ -133,7 +133,7 @@ pub fn calculate_version(current: &str, bump: &VersionBump) -> Result<Version, V
 
     if let VersionBump::Explicit(version) = bump {
         let new_version = Version::parse(version)
-            .map_err(|_| VersionBumpError::MalformedVersion(current.to_string()))?;
+            .map_err(|_| VersionBumpError::MalformedVersion(version.to_string()))?;
 
         if new_version < current_version {
             return Err(VersionBumpError::ExplicitVersionPrior {
