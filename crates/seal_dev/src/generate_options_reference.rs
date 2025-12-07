@@ -319,6 +319,7 @@ mod tests {
     use super::{Args, main};
 
     #[test]
+    #[cfg(unix)]
     fn test_generate_options_reference() -> Result<()> {
         main(&Args { mode: Mode::Check })
     }
