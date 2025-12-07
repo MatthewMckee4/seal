@@ -3,14 +3,12 @@ use std::process::ExitCode;
 use anyhow::Result;
 use clap::Parser;
 use owo_colors::OwoColorize;
+use seal_cli::{Cli, Commands, SelfCommand, ValidateCommand};
 
-mod cli;
 mod commands;
 mod printer;
 mod settings;
 mod version;
-
-use cli::{Cli, Commands, SelfCommand, ValidateCommand};
 
 use crate::{printer::Printer, settings::GlobalSettings};
 

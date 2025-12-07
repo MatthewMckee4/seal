@@ -1,4 +1,4 @@
-use crate::cli::GlobalArgs;
+use seal_cli::GlobalArgs;
 
 /// The resolved global settings to use for any invocation of the CLI.
 #[derive(Debug, Clone)]

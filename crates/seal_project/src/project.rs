@@ -74,8 +74,8 @@ impl ProjectWorkspace {
     ) -> Result<BTreeMap<ProjectName, WorkspaceMember>, ProjectError> {
         let mut members = BTreeMap::new();
 
-        if let Some(members_config) = &config.members {
-            for (name, relative_path) in &members_config.members {
+        if let Some(config_members) = &config.members {
+            for (name, relative_path) in config_members {
                 let member_path = root.join(relative_path);
 
                 if !member_path.exists() {

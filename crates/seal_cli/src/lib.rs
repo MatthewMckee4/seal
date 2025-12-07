@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
-use clap::builder::Styles;
-use clap::builder::styling::{AnsiColor, Effects, Style};
-use clap::{Args, Parser, Subcommand};
+pub use clap::builder::Styles;
+pub use clap::builder::styling::{AnsiColor, Effects, Style};
+pub use clap::{Args, Parser, Subcommand};
 
 #[derive(Debug, Clone, Copy, clap::ValueEnum)]
 pub enum VersionFormat {
@@ -20,7 +20,7 @@ const STYLES: Styles = Styles::styled()
     .placeholder(AnsiColor::Cyan.on_default());
 
 #[derive(Parser)]
-#[command(name = "seal", author, version = crate::version::seal_version_string())]
+#[command(name = "seal", author, version = seal_version::version())]
 #[command(about = "An extremely fast release management tool.")]
 #[command(
     after_help = "Use `seal help` for more details.",
@@ -84,8 +84,6 @@ pub enum Commands {
     /// Bump version and create release branch.
     Bump(BumpArgs),
     /// Display documentation for a command.
-    // To avoid showing the global options when displaying help for the help command, we are
-    // responsible for maintaining the options using the `after_help`.
     #[command(help_template = "\
 {about-with-newline}
 {usage-heading} {usage}{after-help}

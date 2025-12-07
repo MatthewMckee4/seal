@@ -38,8 +38,3 @@ pub fn seal_self_version() -> VersionInfo {
         version,
     }
 }
-
-/// Returns just the version string for seal.
-pub fn seal_version_string() -> &'static str {
-    seal_version::version()
-}

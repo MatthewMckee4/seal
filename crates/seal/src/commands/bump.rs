@@ -8,8 +8,9 @@ use seal_bump::VersionBump;
 use seal_project::ProjectWorkspace;
 use semver::Version;
 
+use seal_cli::BumpArgs;
+
 use crate::ExitStatus;
-use crate::cli::BumpArgs;
 use crate::printer::Printer;
 
 // Compile regex patterns once for auto-detecting version fields
@@ -32,7 +33,15 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let workspace = ProjectWorkspace::discover()?;
     let config = workspace.config();
-    let current_version_string = &config.release.current_version;
+
+    let Some(release_config) = config.release.as_ref() else {
+        return Err(anyhow::anyhow!(
+            "No release configuration found in discovered workspace at `{}`",
+            workspace.root().display()
+        ));
+    };
+
+    let current_version_string = &release_config.current_version;
 
     let new_version = seal_bump::calculate_version(current_version_string, &version_bump)
         .context(format!(
@@ -47,20 +56,18 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         "Bumping version from {current_version_string} to {new_version_string}"
     )?;
 
-    let branch_name = config
-        .release
+    let branch_name = release_config
         .branch_name
         .as_ref()
         .map(|bn| bn.as_str().replace("{version}", &new_version_string));
-    let commit_message = config
-        .release
+    let commit_message = release_config
         .commit_message
         .as_ref()
         .map(|cm| cm.as_str().replace("{version}", &new_version_string));
 
     writeln!(stdout)?;
 
-    let version_files = config.release.version_files.as_deref().unwrap_or(&[]);
+    let version_files = release_config.version_files.as_deref().unwrap_or(&[]);
 
     if version_files.is_empty() {
         writeln!(
@@ -104,11 +111,11 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             writeln!(stdout, "  git add -A")?;
             writeln!(stdout, "  git commit -m \"{message}\"")?;
         }
-        if config.release.push {
+        if release_config.push {
             if let Some(branch) = &branch_name {
                 writeln!(stdout, "  git push -u origin {branch}")?;
             }
-            if config.release.create_pr {
+            if release_config.create_pr {
                 writeln!(
                     stdout,
                     "  gh pr create --title \"Release v{new_version_string}\" --body \"Automated release for version {new_version_string}\""
@@ -132,7 +139,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         return Ok(ExitStatus::Success);
     }
 
-    if config.release.confirm {
+    if release_config.confirm {
         writeln!(stdout)?;
         if !confirm_changes(&mut stdout)? {
             writeln!(stdout, "Aborted.")?;
@@ -162,12 +169,12 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         commit_changes(message)?;
     }
 
-    if config.release.push {
+    if release_config.push {
         if let Some(branch) = &branch_name {
             writeln!(stdout, "Pushing branch to remote...")?;
             push_branch(branch)?;
 
-            if config.release.create_pr {
+            if release_config.create_pr {
                 writeln!(stdout, "Creating pull request...")?;
                 create_pull_request(&new_version_string)?;
             }
