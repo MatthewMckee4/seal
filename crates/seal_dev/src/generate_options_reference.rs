@@ -268,8 +268,6 @@ fn format_tab(tab_name: &str, header: &str, content: &str) -> String {
 }
 
 /// Format the TOML header for the example usage for a given option.
-///
-/// For example: `[tool.uv.pip]`.
 fn format_header(scope: Option<&str>, example: &str, parents: &[Set]) -> String {
     let header = None
         .into_iter()
@@ -277,11 +275,9 @@ fn format_header(scope: Option<&str>, example: &str, parents: &[Set]) -> String 
         .chain(scope)
         .join(".");
 
-    // Ex) `[[tool.uv.index]]`
     if example.starts_with(&format!("[[{header}")) {
         return String::new();
     }
-    // Ex) `[tool.uv.sources]`
     if example.starts_with(&format!("[{header}")) {
         return String::new();
     }
