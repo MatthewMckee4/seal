@@ -12,6 +12,7 @@ use crate::cli::BumpArgs;
 use crate::printer::Printer;
 
 // Compile regex patterns once for auto-detecting version fields
+// Using expect() is safe here because these are hardcoded, valid regex patterns
 static VERSION_PATTERNS: LazyLock<[regex::Regex; 3]> = LazyLock::new(|| {
     [
         regex::Regex::new(r#"version\s*=\s*"[^"]+""#).expect("Invalid regex pattern"),
