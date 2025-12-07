@@ -1025,3 +1025,44 @@ confirm = false
     confirm = false
     "###);
 }
+
+#[test]
+/// User tries to bump to a version before the current one.
+fn bump_explicit_prior_version() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["VERSION"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("VERSION")
+        .write_str(r#"version = "1.2.3""#)
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("1.0.0"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Failed to calculate new version from '1.2.3' with bump '1.0.0'
+      Caused by: explicit version '1.0.0' is prior to the current version '1.2.3'
+    ");
+
+    assert_eq!(context.git_current_branch(), "main");
+
+    insta::assert_snapshot!(context.read_file("VERSION"), @r###"version = "1.2.3""###);
+}

@@ -20,28 +20,29 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let workspace = ProjectWorkspace::discover()?;
     let config = workspace.config();
-    let current_version = &config.release.current_version;
+    let current_version_string = &config.release.current_version;
 
-    let new_version =
-        seal_bump::calculate_version(current_version, &version_bump).context(format!(
-            "Failed to calculate new version from '{current_version}' with bump '{version_bump}'"
-        ))?;
+    let new_version_string = seal_bump::calculate_version(current_version_string, &version_bump)
+        .context(format!(
+            "Failed to calculate new version from '{current_version_string}' with bump '{version_bump}'"
+        ))?
+        .to_string();
 
     writeln!(
         stdout,
-        "Bumping version from {current_version} to {new_version}"
+        "Bumping version from {current_version_string} to {new_version_string}"
     )?;
 
     let branch_name = config
         .release
         .branch_name
         .as_ref()
-        .map(|bn| bn.as_str().replace("{version}", &new_version));
+        .map(|bn| bn.as_str().replace("{version}", &new_version_string));
     let commit_message = config
         .release
         .commit_message
         .as_ref()
-        .map(|cm| cm.as_str().replace("{version}", &new_version));
+        .map(|cm| cm.as_str().replace("{version}", &new_version_string));
 
     writeln!(stdout)?;
 
@@ -61,8 +62,8 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
-        current_version,
-        &new_version,
+        current_version_string,
+        &new_version_string,
     )?;
 
     for change in &changes {
@@ -96,7 +97,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             if config.release.create_pr {
                 writeln!(
                     stdout,
-                    "  gh pr create --title \"Release v{new_version}\" --body \"Automated release for version {new_version}\""
+                    "  gh pr create --title \"Release v{new_version_string}\" --body \"Automated release for version {new_version_string}\""
                 )?;
             }
         }
@@ -136,7 +137,11 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     apply_version_file_changes(workspace.root(), &changes)?;
 
     writeln!(stdout, "Updating seal.toml...")?;
-    update_seal_toml(workspace.root(), current_version, &new_version)?;
+    update_seal_toml(
+        workspace.root(),
+        current_version_string,
+        &new_version_string,
+    )?;
 
     if let Some(message) = &commit_message {
         writeln!(stdout, "Committing changes...")?;
@@ -150,12 +155,12 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
             if config.release.create_pr {
                 writeln!(stdout, "Creating pull request...")?;
-                create_pull_request(&new_version)?;
+                create_pull_request(&new_version_string)?;
             }
         }
     }
 
-    writeln!(stdout, "Successfully bumped to {new_version}")?;
+    writeln!(stdout, "Successfully bumped to {new_version_string}")?;
 
     if branch_name.is_none() && commit_message.is_none() {
         writeln!(stdout, "Note: No git branch or commit was created")?;
