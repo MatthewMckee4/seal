@@ -963,7 +963,6 @@ confirm = false
     Creating branch: release/2.0.0
 
     ----- stderr -----
-    error: Failed to create git branch: fatal: not a git repository (or any parent up to mount point /)
-    Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+    error: Failed to create git branch
     "#);
 }

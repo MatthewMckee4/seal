@@ -240,8 +240,7 @@ fn create_git_branch(branch_name: &str) -> Result<()> {
         .context("Failed to execute git checkout")?;
 
     if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Failed to create git branch: {stderr}");
+        anyhow::bail!("Failed to create git branch");
     }
 
     Ok(())
