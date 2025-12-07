@@ -56,21 +56,23 @@ version = "1.2.3"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,3 +1,3 @@
+     [package]
+     name = "test"
     -version = "1.2.3"
     +version = "2.0.0"
 
     diff --git a/package.json b/package.json
     --- a/package.json
     +++ b/package.json
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -{"name": "test", "version": "1.2.3"}
     +{"name": "test", "version": "2.0.0"}
 
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
 
@@ -146,7 +148,9 @@ version = "1.2.3"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,3 +1,3 @@
+     [package]
+     name = "test"
     -version = "1.2.3"
     +version = "1.3.0"
 
@@ -213,7 +217,7 @@ confirm = false
     diff --git a/VERSION.txt b/VERSION.txt
     --- a/VERSION.txt
     +++ b/VERSION.txt
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "2.1.5"
     +version = "2.1.6"
 
@@ -276,7 +280,7 @@ confirm = false
     diff --git a/version.txt b/version.txt
     --- a/version.txt
     +++ b/version.txt
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-alpha.1"
 
@@ -345,9 +349,12 @@ edition = "2021"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "my-app"
     -version = "1.2.3"
     +version = "1.3.0-beta.1"
+     edition = "2021"
 
     Commands to be executed:
       git checkout -b release/1.3.0-beta.1
@@ -412,7 +419,7 @@ confirm = false
     diff --git a/version b/version
     --- a/version
     +++ b/version
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.0.0"
     +version = "1.0.1-rc.1"
 
@@ -472,7 +479,7 @@ confirm = false
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.2.3-alpha.1"
     +version = "1.2.3-alpha.2"
 
@@ -534,7 +541,7 @@ confirm = false
     diff --git a/ver.txt b/ver.txt
     --- a/ver.txt
     +++ b/ver.txt
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "2.0.0-beta.5"
     +version = "2.0.0-beta.6"
 
@@ -594,7 +601,7 @@ confirm = false
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.2.3"
     +version = "3.0.0"
 
@@ -656,7 +663,7 @@ confirm = false
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-beta.1"
 
@@ -739,28 +746,30 @@ version = "0.1.0"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,3 +1,3 @@
+     [package]
+     name = "multi"
     -version = "0.1.0"
     +version = "0.2.0"
 
     diff --git a/package.json b/package.json
     --- a/package.json
     +++ b/package.json
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -{"version": "0.1.0"}
     +{"version": "0.2.0"}
 
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "0.1.0"
     +version = "0.2.0"
 
     diff --git a/version.py b/version.py
     --- a/version.py
     +++ b/version.py
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -__version__ = "0.1.0"
     +__version__ = "0.2.0"
 
@@ -949,7 +958,7 @@ confirm = false
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
 

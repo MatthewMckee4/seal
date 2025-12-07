@@ -57,16 +57,20 @@ search = "APP_VERSION = '{version}'"
     diff --git a/version.sh b/version.sh
     --- a/version.sh
     +++ b/version.sh
-    @@ -2,1 +2,1 @@
+    @@ -1,3 +1,3 @@
+     #!/bin/bash
     -export VERSION="2.5.0"
     +export VERSION="2.6.0"
+     export APP_NAME="MyApp"
 
     diff --git a/config.py b/config.py
     --- a/config.py
     +++ b/config.py
-    @@ -2,1 +2,1 @@
+    @@ -1,3 +1,3 @@
+     # Configuration
     -APP_VERSION = '2.5.0'
     +APP_VERSION = '2.6.0'
+     DEBUG = False
 
     Commands to be executed:
       git checkout -b release/2.6.0
@@ -225,7 +229,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version=2.0.0-beta.1
     +version=2.0.0beta.2
 
@@ -389,7 +393,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -ver=1.0.0
     +ver=1.1.0
 
@@ -446,7 +450,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
     diff --git a/VERSION b/VERSION
     --- a/VERSION
     +++ b/VERSION
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -version=2.0.0-rc.3
     +version=2.0.0
 
@@ -503,7 +507,7 @@ version-template = "{major}.{minor}.{patch}-{extra}"
     diff --git a/version.txt b/version.txt
     --- a/version.txt
     +++ b/version.txt
-    @@ -1,1 +1,1 @@
+    @@ -1 +1 @@
     -APP_VERSION=1.0.0-alpha.1
     +APP_VERSION=1.0.0-alpha.2
 
@@ -565,10 +569,12 @@ search = "version `{version}`"
     diff --git a/README.md b/README.md
     --- a/README.md
     +++ b/README.md
-    @@ -3,1 +3,1 @@
+    @@ -1,5 +1,5 @@
+     # My Project
+     
     -Current version `0.5.0` is stable.
     +Current version `0.6.0` is stable.
-    @@ -5,1 +5,1 @@
+     
     -Install version `0.5.0` with npm.
     +Install version `0.6.0` with npm.
 

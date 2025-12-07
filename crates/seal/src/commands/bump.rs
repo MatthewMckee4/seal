@@ -241,19 +241,29 @@ fn display_diff(
     old_content: &str,
     new_content: &str,
 ) -> Result<()> {
+    use similar::{ChangeTag, TextDiff};
+
     writeln!(stdout)?;
     writeln!(stdout, "diff --git a/{path} b/{path}")?;
     writeln!(stdout, "--- a/{path}")?;
     writeln!(stdout, "+++ b/{path}")?;
 
-    let old_lines: Vec<&str> = old_content.lines().collect();
-    let new_lines: Vec<&str> = new_content.lines().collect();
+    let diff = TextDiff::from_lines(old_content, new_content);
 
-    for (i, (old_line, new_line)) in old_lines.iter().zip(new_lines.iter()).enumerate() {
-        if old_line != new_line {
-            writeln!(stdout, "@@ -{},{} +{},{} @@", i + 1, 1, i + 1, 1)?;
-            writeln!(stdout, "-{old_line}")?;
-            writeln!(stdout, "+{new_line}")?;
+    for hunk in diff.unified_diff().iter_hunks() {
+        writeln!(stdout, "{}", hunk.header())?;
+        for change in hunk.iter_changes() {
+            let sign = match change.tag() {
+                ChangeTag::Delete => "-",
+                ChangeTag::Insert => "+",
+                ChangeTag::Equal => " ",
+            };
+            let value = change.value();
+            if value.ends_with('\n') {
+                write!(stdout, "{sign}{value}")?;
+            } else {
+                writeln!(stdout, "{sign}{value}")?;
+            }
         }
     }
 

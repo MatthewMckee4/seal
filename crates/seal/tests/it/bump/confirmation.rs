@@ -43,7 +43,9 @@ version = "1.0.0"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,3 +1,3 @@
+     [package]
+     name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
@@ -128,7 +130,9 @@ version = "1.0.0"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,3 +1,3 @@
+     [package]
+     name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
@@ -207,7 +211,9 @@ version = "1.0.0"
     diff --git a/Cargo.toml b/Cargo.toml
     --- a/Cargo.toml
     +++ b/Cargo.toml
-    @@ -3,1 +3,1 @@
+    @@ -1,3 +1,3 @@
+     [package]
+     name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 

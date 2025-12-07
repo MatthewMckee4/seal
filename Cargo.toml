@@ -27,6 +27,7 @@ seal_version = { path = "crates/seal_version" }
 semver = { version = "1.0" }
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
+similar = { version = "2.7" }
 tempfile = { version = "3.14" }
 thiserror = { version = "2.0" }
 toml = { version = "0.8" }
