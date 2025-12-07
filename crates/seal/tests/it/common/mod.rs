@@ -67,33 +67,6 @@ current-version = "{version}"
         ))
     }
 
-    /// Create a full seal.toml with all common fields.
-    pub fn full_seal_toml(
-        &self,
-        version: &str,
-        version_files: &[&str],
-        commit_msg: &str,
-        branch: &str,
-        tag: &str,
-    ) -> &Self {
-        let files = version_files
-            .iter()
-            .map(|f| format!("\"{f}\""))
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        self.seal_toml(&format!(
-            r#"
-[release]
-current-version = "{version}"
-version-files = [{files}]
-commit-message = "{commit_msg}"
-branch-name = "{branch}"
-tag-format = "{tag}"
-"#
-        ))
-    }
-
     /// Generate various escaped regex patterns for the given path.
     pub fn path_patterns(path: impl AsRef<Path>) -> Vec<String> {
         let mut patterns = Vec::new();
@@ -168,6 +141,86 @@ tag-format = "{tag}"
         let mut command = Self::new_command();
         command.current_dir(self.root.path());
         command
+    }
+
+    /// Initialize a git repository in the test context.
+    pub fn init_git(&self) -> &Self {
+        std::process::Command::new("git")
+            .args(["init", "-b", "main"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to init git");
+
+        std::process::Command::new("git")
+            .args(["config", "user.email", "test@example.com"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to set git user.email");
+
+        std::process::Command::new("git")
+            .args(["config", "user.name", "Test User"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to set git user.name");
+
+        std::process::Command::new("git")
+            .args(["add", "-A"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to git add");
+
+        std::process::Command::new("git")
+            .args(["commit", "-m", "Initial commit"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to git commit");
+
+        self
+    }
+
+    /// Get the current git branch name.
+    pub fn git_current_branch(&self) -> String {
+        let output = std::process::Command::new("git")
+            .args(["rev-parse", "--abbrev-ref", "HEAD"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to get current branch");
+
+        String::from_utf8(output.stdout)
+            .expect("Invalid UTF-8")
+            .trim()
+            .to_string()
+    }
+
+    /// Get the latest git commit message.
+    pub fn git_last_commit_message(&self) -> String {
+        let output = std::process::Command::new("git")
+            .args(["log", "-1", "--pretty=%B"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to get commit message");
+
+        String::from_utf8(output.stdout)
+            .expect("Invalid UTF-8")
+            .trim()
+            .to_string()
+    }
+
+    /// Check if a git branch exists.
+    pub fn git_branch_exists(&self, branch: &str) -> bool {
+        let output = std::process::Command::new("git")
+            .args(["rev-parse", "--verify", branch])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to check branch");
+
+        output.status.success()
+    }
+
+    /// Read a file and return its contents as a string.
+    pub fn read_file(&self, path: &str) -> String {
+        std::fs::read_to_string(self.root.join(path))
+            .unwrap_or_else(|_| panic!("Failed to read file: {path}"))
     }
 
     /// Creates a new `Command` that is intended to be suitable for use in

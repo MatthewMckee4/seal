@@ -152,9 +152,12 @@ version-files = ["test.txt"]
             "version-files": [
               "test.txt"
             ],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
+            "confirm": true
           }
         }
         "#);
@@ -186,9 +189,12 @@ version-files = ["Cargo.toml"]
             "version-files": [
               "Cargo.toml"
             ],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
+            "confirm": true
           }
         }
         "#);
@@ -217,10 +223,12 @@ current-version = "3.0.0"
           "members": null,
           "release": {
             "current-version": "3.0.0",
-            "version-files": [],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
+            "confirm": true
           }
         }
         "#);

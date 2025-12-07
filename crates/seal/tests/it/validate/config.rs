@@ -5,12 +5,18 @@ use crate::{common::TestContext, seal_snapshot};
 #[test]
 fn validate_config_valid() {
     let context = TestContext::new();
-    context.full_seal_toml(
-        "1.0.0",
-        &["Cargo.toml", "README.md"],
-        "Release v{version}",
-        "release/v{version}",
-        "v{version}",
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+version-files = ["Cargo.toml", "README.md"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
     );
 
     seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
@@ -355,7 +361,7 @@ unknown-field = "value"
       |
     4 | unknown-field = "value"
       | ^^^^^^^^^^^^^
-    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`
+    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`
     "#);
 }
 
@@ -408,12 +414,18 @@ version-files = ["Cargo.toml", "pyproject.toml", "package.json", "VERSION"]
 #[test]
 fn validate_config_custom_patterns() {
     let context = TestContext::new();
-    context.full_seal_toml(
-        "1.0.0",
-        &["Cargo.toml"],
-        "chore: bump version to {version}",
-        "releases/{version}",
-        "{version}",
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+version-files = ["Cargo.toml"]
+commit-message = "chore: bump version to {version}"
+branch-name = "releases/{version}"
+tag-format = "{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
     );
 
     seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
