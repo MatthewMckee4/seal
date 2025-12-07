@@ -9,6 +9,7 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+seal_bump = { workspace = true }
 seal_version = { workspace = true }
 seal_project = { workspace = true }
 
@@ -22,6 +23,7 @@ itertools = { workspace = true }
 which = { workspace = true }
 regex = { workspace = true }
 dunce = { workspace = true }
+semver = { workspace = true }
 
 [dev-dependencies]
 assert_cmd = { workspace = true }

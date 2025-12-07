@@ -3,6 +3,7 @@
 
 pub(crate) mod common;
 
+mod bump;
 mod help;
 mod self_version;
 mod validate;

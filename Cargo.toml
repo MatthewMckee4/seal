@@ -21,8 +21,10 @@ insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
 owo-colors = { version = "4.1.0" }
 regex = { version = "1.12.2" }
+seal_bump = { path = "crates/seal_bump" }
 seal_project = { path = "crates/seal_project" }
 seal_version = { path = "crates/seal_version" }
+semver = { version = "1.0" }
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
 tempfile = { version = "3.14" }

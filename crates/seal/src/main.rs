@@ -102,6 +102,7 @@ fn run(cli: Cli) -> Result<ExitStatus> {
             }
             ValidateCommand::Project { project } => commands::validate_project(project, printer),
         },
+        Commands::Bump(bump_args) => commands::bump(&bump_args, printer),
         Commands::Help(args) => commands::help(
             args.command.unwrap_or_default().as_slice(),
             printer,

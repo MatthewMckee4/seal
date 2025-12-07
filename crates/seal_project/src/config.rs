@@ -40,13 +40,53 @@ pub struct MembersConfig {
     pub members: BTreeMap<ProjectName, PathBuf>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum VersionFile {
+    /// Detailed configuration with search pattern
+    Detailed {
+        path: String,
+        search: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[serde(rename = "version-template")]
+        version_template: Option<String>,
+    },
+    /// Simple string path: "Cargo.toml"
+    Simple(String),
+}
+
+impl VersionFile {
+    pub fn path(&self) -> &str {
+        match self {
+            Self::Detailed { path, .. } => path,
+            Self::Simple(path) => path,
+        }
+    }
+
+    pub fn search_pattern(&self) -> Option<&str> {
+        match self {
+            Self::Detailed { search, .. } => Some(search),
+            Self::Simple(_) => None,
+        }
+    }
+
+    pub fn version_template(&self) -> Option<&str> {
+        match self {
+            Self::Detailed {
+                version_template, ..
+            } => version_template.as_deref(),
+            Self::Simple(_) => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
     pub current_version: String,
 
     #[serde(default = "default_version_files")]
-    pub version_files: Vec<String>,
+    pub version_files: Vec<VersionFile>,
 
     #[serde(default = "default_commit_message_value")]
     pub commit_message: CommitMessage,
@@ -58,7 +98,7 @@ pub struct ReleaseConfig {
     pub tag_format: TagFormat,
 }
 
-fn default_version_files() -> Vec<String> {
+fn default_version_files() -> Vec<VersionFile> {
     vec![]
 }
 
@@ -581,7 +621,7 @@ tag-format = ""
             members: None,
             release: ReleaseConfig {
                 current_version: "1.2.3".to_string(),
-                version_files: vec!["Cargo.toml".to_string()],
+                version_files: vec![VersionFile::Simple("Cargo.toml".to_string())],
                 commit_message: CommitMessage::new("Release v{version}".to_string()).unwrap(),
                 branch_name: BranchName::new("release/v{version}".to_string()).unwrap(),
                 tag_format: TagFormat::new("v{version}".to_string()).unwrap(),
@@ -681,9 +721,15 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
             release: ReleaseConfig {
                 current_version: "1.0.0",
                 version_files: [
-                    "Cargo.toml",
-                    "package.json",
-                    "VERSION",
+                    Simple(
+                        "Cargo.toml",
+                    ),
+                    Simple(
+                        "package.json",
+                    ),
+                    Simple(
+                        "VERSION",
+                    ),
                 ],
                 commit_message: CommitMessage(
                     "Release v{version}",
@@ -726,5 +772,58 @@ version-files = []
             },
         }
         "#);
+    }
+
+    #[test]
+    fn test_version_file_with_custom_search_pattern() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+
+[[release.version-files]]
+path = "version.sh"
+search = "export PUBLIC_VERSION=\"{version}\""
+
+[[release.version-files]]
+path = "Cargo.toml"
+search = "version = \"{version}\""
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        assert_eq!(config.release.version_files.len(), 2);
+        assert_eq!(config.release.version_files[0].path(), "version.sh");
+        assert_eq!(
+            config.release.version_files[0].search_pattern(),
+            Some("export PUBLIC_VERSION=\"{version}\"")
+        );
+        assert_eq!(config.release.version_files[1].path(), "Cargo.toml");
+        assert_eq!(
+            config.release.version_files[1].search_pattern(),
+            Some("version = \"{version}\"")
+        );
+    }
+
+    #[test]
+    fn test_version_file_mixed_simple_and_detailed() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+version-files = [
+    "package.json",
+    { path = "version.sh", search = "VERSION=\"{version}\"" }
+]
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        assert_eq!(config.release.version_files.len(), 2);
+
+        assert_eq!(config.release.version_files[0].path(), "package.json");
+        assert_eq!(config.release.version_files[0].search_pattern(), None);
+
+        assert_eq!(config.release.version_files[1].path(), "version.sh");
+        assert_eq!(
+            config.release.version_files[1].search_pattern(),
+            Some("VERSION=\"{version}\"")
+        );
     }
 }
