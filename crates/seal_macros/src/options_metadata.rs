@@ -340,7 +340,7 @@ fn parse_deprecated_attribute(attribute: &Attribute) -> syn::Result<DeprecatedAt
             return Err(syn::Error::new(
                 meta.path.span(),
                 format!(
-                    "Deprecated meta {:?} is not supported by uv's option macro.",
+                    "Deprecated meta {:?} is not supported by seal's option macro.",
                     meta.path.get_ident()
                 ),
             ));
