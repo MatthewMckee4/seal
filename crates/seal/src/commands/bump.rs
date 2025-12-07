@@ -35,21 +35,32 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let branch_name = config
         .release
         .branch_name
-        .as_str()
-        .replace("{version}", &new_version);
+        .as_ref()
+        .map(|bn| bn.as_str().replace("{version}", &new_version));
     let commit_message = config
         .release
         .commit_message
-        .as_str()
-        .replace("{version}", &new_version);
+        .as_ref()
+        .map(|cm| cm.as_str().replace("{version}", &new_version));
 
     writeln!(stdout)?;
+
+    let version_files = config.release.version_files.as_deref().unwrap_or(&[]);
+
+    if version_files.is_empty() {
+        writeln!(
+            stdout,
+            "Warning: No version files configured - only seal.toml will be updated"
+        )?;
+        writeln!(stdout)?;
+    }
+
     writeln!(stdout, "Preview of changes:")?;
     writeln!(stdout, "-------------------")?;
 
     let changes = calculate_version_file_changes(
         workspace.root(),
-        &config.release.version_files,
+        version_files,
         current_version,
         &new_version,
     )?;
@@ -64,20 +75,40 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     }
 
     writeln!(stdout)?;
-    writeln!(stdout, "Commands to be executed:")?;
-    writeln!(stdout, "  git checkout -b {branch_name}")?;
-    writeln!(stdout, "  # Update version files")?;
-    writeln!(stdout, "  # Update seal.toml")?;
-    writeln!(stdout, "  git add -A")?;
-    writeln!(stdout, "  git commit -m \"{commit_message}\"")?;
-    if config.release.push {
-        writeln!(stdout, "  git push -u origin {branch_name}")?;
-        if config.release.create_pr {
-            writeln!(
-                stdout,
-                "  gh pr create --title \"Release v{new_version}\" --body \"Automated release for version {new_version}\""
-            )?;
+
+    let has_git_operations = branch_name.is_some() || commit_message.is_some();
+
+    if has_git_operations {
+        writeln!(stdout, "Commands to be executed:")?;
+        if let Some(branch) = &branch_name {
+            writeln!(stdout, "  git checkout -b {branch}")?;
         }
+        writeln!(stdout, "  # Update version files")?;
+        writeln!(stdout, "  # Update seal.toml")?;
+        if let Some(message) = &commit_message {
+            writeln!(stdout, "  git add -A")?;
+            writeln!(stdout, "  git commit -m \"{message}\"")?;
+        }
+        if config.release.push {
+            if let Some(branch) = &branch_name {
+                writeln!(stdout, "  git push -u origin {branch}")?;
+            }
+            if config.release.create_pr {
+                writeln!(
+                    stdout,
+                    "  gh pr create --title \"Release v{new_version}\" --body \"Automated release for version {new_version}\""
+                )?;
+            }
+        }
+    } else {
+        writeln!(stdout, "Changes to be made:")?;
+        writeln!(stdout, "  # Update version files")?;
+        writeln!(stdout, "  # Update seal.toml")?;
+        writeln!(stdout)?;
+        writeln!(
+            stdout,
+            "Note: No branch or commit will be created (branch-name and commit-message not configured)"
+        )?;
     }
 
     if args.dry_run {
@@ -95,8 +126,11 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     }
 
     writeln!(stdout)?;
-    writeln!(stdout, "Creating branch: {branch_name}")?;
-    create_git_branch(&branch_name)?;
+
+    if let Some(branch) = &branch_name {
+        writeln!(stdout, "Creating branch: {branch}")?;
+        create_git_branch(branch)?;
+    }
 
     writeln!(stdout, "Updating version files...")?;
     apply_version_file_changes(workspace.root(), &changes)?;
@@ -104,20 +138,32 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Updating seal.toml...")?;
     update_seal_toml(workspace.root(), current_version, &new_version)?;
 
-    writeln!(stdout, "Committing changes...")?;
-    commit_changes(&commit_message)?;
+    if let Some(message) = &commit_message {
+        writeln!(stdout, "Committing changes...")?;
+        commit_changes(message)?;
+    }
 
     if config.release.push {
-        writeln!(stdout, "Pushing branch to remote...")?;
-        push_branch(&branch_name)?;
+        if let Some(branch) = &branch_name {
+            writeln!(stdout, "Pushing branch to remote...")?;
+            push_branch(branch)?;
 
-        if config.release.create_pr {
-            writeln!(stdout, "Creating pull request...")?;
-            create_pull_request(&new_version)?;
+            if config.release.create_pr {
+                writeln!(stdout, "Creating pull request...")?;
+                create_pull_request(&new_version)?;
+            }
         }
     }
 
     writeln!(stdout, "Successfully bumped to {new_version}")?;
+
+    if branch_name.is_none() && commit_message.is_none() {
+        writeln!(stdout, "Note: No git branch or commit was created")?;
+    } else if branch_name.is_none() {
+        writeln!(stdout, "Note: No git branch was created")?;
+    } else if commit_message.is_none() {
+        writeln!(stdout, "Note: No git commit was created")?;
+    }
 
     Ok(ExitStatus::Success)
 }

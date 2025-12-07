@@ -95,11 +95,11 @@ mod tests {
             "version-files": [
               "test.txt"
             ],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}",
-            "push": true,
-            "create-pr": true,
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
             "confirm": true
           }
         }
@@ -132,11 +132,11 @@ mod tests {
             "version-files": [
               "parent.txt"
             ],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}",
-            "push": true,
-            "create-pr": true,
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
             "confirm": true
           }
         }
@@ -191,11 +191,11 @@ mod tests {
             "version-files": [
               "root.txt"
             ],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}",
-            "push": true,
-            "create-pr": true,
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
             "confirm": true
           }
         }

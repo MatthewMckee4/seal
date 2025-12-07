@@ -966,3 +966,62 @@ confirm = false
     error: Failed to create git branch
     "#);
 }
+
+#[test]
+fn bump_no_version_files() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
+        )
+        .init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.0.0 to 1.0.1
+
+    Warning: No version files configured - only seal.toml will be updated
+
+    Preview of changes:
+    -------------------
+
+    Commands to be executed:
+      git checkout -b release/1.0.1
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.0.1"
+
+    Creating branch: release/1.0.1
+    Updating version files...
+    Updating seal.toml...
+    Committing changes...
+    Successfully bumped to 1.0.1
+
+    ----- stderr -----
+    "#);
+
+    assert_eq!(context.git_current_branch(), "release/1.0.1");
+    assert_eq!(context.git_last_commit_message(), "Release 1.0.1");
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r###"
+
+    [release]
+    current-version = "1.0.1"
+    commit-message = "Release {version}"
+    branch-name = "release/{version}"
+    push = false
+    create-pr = false
+    confirm = false
+    "###);
+}

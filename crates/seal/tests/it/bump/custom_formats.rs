@@ -74,8 +74,6 @@ search = "APP_VERSION = '{version}'"
       # Update seal.toml
       git add -A
       git commit -m "Release 2.6.0"
-      git push -u origin release/2.6.0
-      gh pr create --title "Release v2.6.0" --body "Automated release for version 2.6.0"
 
     Proceed with these changes? (y/n): Aborted.
 
@@ -237,8 +235,6 @@ version-template = "{major}.{minor}.{patch}{extra}"
       # Update seal.toml
       git add -A
       git commit -m "Release 2.0.0-beta.2"
-      git push -u origin release/2.0.0-beta.2
-      gh pr create --title "Release v2.0.0-beta.2" --body "Automated release for version 2.0.0-beta.2"
 
     Proceed with these changes? (y/n): Aborted.
 
@@ -403,8 +399,6 @@ version-template = "{major}.{minor}.{patch}{extra}"
       # Update seal.toml
       git add -A
       git commit -m "Release 1.1.0"
-      git push -u origin release/1.1.0
-      gh pr create --title "Release v1.1.0" --body "Automated release for version 1.1.0"
 
     Proceed with these changes? (y/n): Aborted.
 
@@ -462,8 +456,6 @@ version-template = "{major}.{minor}.{patch}{extra}"
       # Update seal.toml
       git add -A
       git commit -m "Release 2.0.0"
-      git push -u origin release/2.0.0
-      gh pr create --title "Release v2.0.0" --body "Automated release for version 2.0.0"
 
     Proceed with these changes? (y/n): Aborted.
 
@@ -521,8 +513,6 @@ version-template = "{major}.{minor}.{patch}-{extra}"
       # Update seal.toml
       git add -A
       git commit -m "Release 1.0.0-alpha.2"
-      git push -u origin release/1.0.0-alpha.2
-      gh pr create --title "Release v1.0.0-alpha.2" --body "Automated release for version 1.0.0-alpha.2"
 
     Proceed with these changes? (y/n): Aborted.
 
@@ -588,8 +578,6 @@ search = "version `{version}`"
       # Update seal.toml
       git add -A
       git commit -m "Release 0.6.0"
-      git push -u origin release/0.6.0
-      gh pr create --title "Release v0.6.0" --body "Automated release for version 0.6.0"
 
     Proceed with these changes? (y/n): Aborted.
 

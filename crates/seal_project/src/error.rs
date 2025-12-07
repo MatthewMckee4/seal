@@ -59,6 +59,12 @@ pub enum ConfigValidationError {
         "project name '{name}' contains invalid characters (only alphanumeric, dash, and underscore allowed)"
     )]
     InvalidProjectName { name: String },
+
+    #[error("release.push = true requires branch-name to be set")]
+    PushRequiresBranchName,
+
+    #[error("release.create-pr = true requires both branch-name and push = true")]
+    CreatePrRequiresBranchAndPush,
 }
 
 #[cfg(test)]

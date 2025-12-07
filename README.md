@@ -44,17 +44,28 @@ version-files = [
 ]
 ```
 
-For detailed documentation, see [docs/version-files.md](docs/version-files.md).
+For detailed documentation, see [docs/configuration.md](docs/configuration.md).
 
-## Configuration
+## Quick Start
 
-Create a `seal.toml` in your project root:
+Minimal `seal.toml`:
+
+```toml
+[release]
+current-version = "1.0.0"
+version-files = ["Cargo.toml"]
+```
+
+Full configuration:
 
 ```toml
 [release]
 current-version = "1.0.0"
 version-files = ["Cargo.toml", "package.json"]
-commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
+commit-message = "Release {version}"
+push = true
+create-pr = true
 ```
+
+See [docs/configuration.md](docs/configuration.md) for all options.
