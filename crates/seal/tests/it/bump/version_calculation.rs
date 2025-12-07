@@ -879,15 +879,83 @@ confirm = false
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r"
-    success: false
-    exit_code: 2
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r#"
+    success: true
+    exit_code: 0
     ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.3-alpha.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1 +1 @@
+    -version = "1.2.3"
+    +version = "1.2.3-alpha.0"
+
+    Commands to be executed:
+      git checkout -b release/1.2.3-alpha.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.2.3-alpha.0"
+
+    Creating branch: release/1.2.3-alpha.0
+    Updating version files...
+    Updating seal.toml...
+    Committing changes...
+    Successfully bumped to 1.2.3-alpha.0
 
     ----- stderr -----
-    error: Failed to calculate new version from '1.2.3' with bump 'alpha'
-      Caused by: invalid version bump: 'Cannot bump prerelease on a stable version'. Expected 'major', 'minor', 'patch', 'alpha', 'beta', 'rc', combinations like 'major-alpha', or a semantic version like '1.2.3'
-    ");
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @r"release/1.2.3-alpha.0");
+
+    insta::assert_snapshot!(context.git_last_commit_message(), @r"Release 1.2.3-alpha.0");
+
+    insta::assert_snapshot!(context.read_file("VERSION"), @r###"version = "1.2.3-alpha.0""###);
+
+    context.merge_current_branch_and_checkout_main();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3-alpha.0 to 1.2.3-alpha.1
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1 +1 @@
+    -version = "1.2.3-alpha.0"
+    +version = "1.2.3-alpha.1"
+
+    Commands to be executed:
+      git checkout -b release/1.2.3-alpha.1
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.2.3-alpha.1"
+
+    Creating branch: release/1.2.3-alpha.1
+    Updating version files...
+    Updating seal.toml...
+    Committing changes...
+    Successfully bumped to 1.2.3-alpha.1
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @r"release/1.2.3-alpha.1");
+
+    insta::assert_snapshot!(context.git_last_commit_message(), @r"Release 1.2.3-alpha.1");
+
+    insta::assert_snapshot!(context.read_file("VERSION"), @r#"version = "1.2.3-alpha.1""#);
 }
 
 #[test]

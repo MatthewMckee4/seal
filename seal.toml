@@ -8,3 +8,9 @@ commit-message = "Release v{version}"
 branch-name = "release/v{version}"
 
 tag-format = "v{version}"
+
+push = true
+
+create_pr = true
+
+confirm = true
