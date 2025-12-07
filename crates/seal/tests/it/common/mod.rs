@@ -146,7 +146,7 @@ current-version = "{version}"
     /// Initialize a git repository in the test context.
     pub fn init_git(&self) -> &Self {
         std::process::Command::new("git")
-            .args(["init"])
+            .args(["init", "-b", "main"])
             .current_dir(self.root.path())
             .output()
             .expect("Failed to init git");
