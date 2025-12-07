@@ -79,7 +79,7 @@ search = "APP_VERSION = '{version}'"
       git add -A
       git commit -m "Release 2.6.0"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);
@@ -240,7 +240,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
       git add -A
       git commit -m "Release 2.0.0-beta.2"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);
@@ -404,7 +404,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
       git add -A
       git commit -m "Release 1.1.0"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);
@@ -461,7 +461,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
       git add -A
       git commit -m "Release 2.0.0"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);
@@ -518,7 +518,7 @@ version-template = "{major}.{minor}.{patch}-{extra}"
       git add -A
       git commit -m "Release 1.0.0-alpha.2"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);
@@ -585,7 +585,7 @@ search = "version `{version}`"
       git add -A
       git commit -m "Release 0.6.0"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);

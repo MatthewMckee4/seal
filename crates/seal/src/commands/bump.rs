@@ -6,6 +6,7 @@ use std::sync::LazyLock;
 use anyhow::{Context, Result};
 use seal_bump::VersionBump;
 use seal_project::ProjectWorkspace;
+use semver::Version;
 
 use crate::ExitStatus;
 use crate::cli::BumpArgs;
@@ -33,11 +34,13 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let config = workspace.config();
     let current_version_string = &config.release.current_version;
 
-    let new_version_string = seal_bump::calculate_version(current_version_string, &version_bump)
+    let new_version = seal_bump::calculate_version(current_version_string, &version_bump)
         .context(format!(
             "Failed to calculate new version from '{current_version_string}' with bump '{version_bump}'"
         ))?
-        .to_string();
+       ;
+
+    let new_version_string = new_version.to_string();
 
     writeln!(
         stdout,
@@ -74,7 +77,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         workspace.root(),
         version_files,
         current_version_string,
-        &new_version_string,
+        &new_version,
     )?;
 
     for change in &changes {
@@ -194,7 +197,7 @@ fn calculate_version_file_changes(
     root: &std::path::Path,
     version_files: &[seal_project::VersionFile],
     current_version: &str,
-    new_version: &str,
+    new_version: &Version,
 ) -> Result<Vec<FileChange>> {
     let mut changes = Vec::new();
 
@@ -271,7 +274,7 @@ fn display_diff(
 }
 
 fn confirm_changes(stdout: &mut impl std::fmt::Write) -> Result<bool> {
-    write!(stdout, "Proceed with these changes? (y/n): ")?;
+    write!(stdout, "Proceed with these changes? (y/n):")?;
 
     // Flush stdout to ensure the prompt is displayed before reading input
     io::Write::flush(&mut io::stdout())?;
@@ -321,12 +324,12 @@ fn create_git_branch(branch_name: &str) -> Result<()> {
 fn update_version_in_content(
     content: &str,
     current_version: &str,
-    new_version: &str,
+    new_version: &Version,
     search_pattern: Option<&str>,
     version_template: Option<&str>,
 ) -> Result<String> {
     let version_str = if let Some(template) = version_template {
-        format_version_with_template(new_version, template)?
+        format_version_with_template(new_version, template)
     } else {
         new_version.to_string()
     };
@@ -357,23 +360,12 @@ fn update_version_in_content(
     anyhow::bail!("No version field found in file");
 }
 
-fn format_version_with_template(version: &str, template: &str) -> Result<String> {
-    let parsed_version = semver::Version::parse(version)
-        .context(format!("Failed to parse version '{version}' for template"))?;
-
-    let extra = if parsed_version.pre.is_empty() {
-        String::new()
-    } else {
-        parsed_version.pre.to_string()
-    };
-
-    let result = template
-        .replace("{major}", &parsed_version.major.to_string())
-        .replace("{minor}", &parsed_version.minor.to_string())
-        .replace("{patch}", &parsed_version.patch.to_string())
-        .replace("{extra}", &extra);
-
-    Ok(result)
+fn format_version_with_template(version: &Version, template: &str) -> String {
+    template
+        .replace("{major}", &version.major.to_string())
+        .replace("{minor}", &version.minor.to_string())
+        .replace("{patch}", &version.patch.to_string())
+        .replace("{extra}", &version.pre.to_string())
 }
 
 fn commit_changes(message: &str) -> Result<()> {

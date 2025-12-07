@@ -31,7 +31,7 @@ version = "1.0.0"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -56,7 +56,7 @@ version = "1.0.0"
       git add -A
       git commit -m "Release v1.0.1"
 
-    Proceed with these changes? (y/n): 
+    Proceed with these changes? (y/n):
     Creating branch: release/v1.0.1
     Updating version files...
     Updating seal.toml...
@@ -118,7 +118,7 @@ version = "1.0.0"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("n\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -143,12 +143,14 @@ version = "1.0.0"
       git add -A
       git commit -m "Release v1.0.1"
 
-    Proceed with these changes? (y/n): Aborted.
+    Proceed with these changes? (y/n):Aborted.
 
     ----- stderr -----
     "#);
 
-    assert_eq!(context.git_current_branch(), "main");
+    insta::assert_snapshot!(context.git_current_branch(), @r"main");
+
+    insta::assert_snapshot!(context.git_last_commit_message(), @r"Initial commit");
 
     insta::assert_snapshot!(context.read_file("Cargo.toml"), @r###"
     [package]
@@ -233,8 +235,9 @@ version = "1.0.0"
     ----- stderr -----
     "#);
 
-    assert_eq!(context.git_current_branch(), "release/v1.0.1");
-    assert_eq!(context.git_last_commit_message(), "Release v1.0.1");
+    insta::assert_snapshot!(context.git_current_branch(), @r"release/v1.0.1");
+
+    insta::assert_snapshot!(context.git_last_commit_message(), @r"Release v1.0.1");
 
     insta::assert_snapshot!(context.read_file("Cargo.toml"), @r###"
     [package]
