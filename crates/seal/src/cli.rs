@@ -81,6 +81,8 @@ pub enum Commands {
     Self_(SelfNamespace),
     /// Validate project configuration and structure.
     Validate(ValidateNamespace),
+    /// Bump version and create release branch.
+    Bump(BumpArgs),
     /// Display documentation for a command.
     // To avoid showing the global options when displaying help for the help command, we are
     // responsible for maintaining the options using the `after_help`.
@@ -97,6 +99,16 @@ pub enum Commands {
         ),
     )]
     Help(HelpArgs),
+}
+
+#[derive(Args, Debug)]
+pub struct BumpArgs {
+    /// Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')
+    pub version: String,
+
+    /// Show what would be done without making any changes
+    #[arg(long)]
+    pub dry_run: bool,
 }
 
 #[derive(Args, Debug)]

@@ -7,10 +7,6 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use crate::ProjectName;
 use crate::error::{ConfigValidationError, ProjectError};
 
-const DEFAULT_COMMIT_MESSAGE: &str = "Release v{version}";
-const DEFAULT_BRANCH_NAME: &str = "release/v{version}";
-const DEFAULT_TAG_FORMAT: &str = "v{version}";
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Config {
@@ -21,7 +17,9 @@ pub struct Config {
 
 impl Config {
     pub fn from_toml_str(content: &str) -> Result<Self, ProjectError> {
-        toml::from_str(content).map_err(ProjectError::ConfigParseError)
+        let config: Self = toml::from_str(content).map_err(ProjectError::ConfigParseError)?;
+        config.validate()?;
+        Ok(config)
     }
 
     pub fn from_file(path: &Path) -> Result<Self, ProjectError> {
@@ -32,6 +30,11 @@ impl Config {
             })?;
         Self::from_toml_str(&content)
     }
+
+    fn validate(&self) -> Result<(), ProjectError> {
+        self.release.validate()?;
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -40,38 +43,94 @@ pub struct MembersConfig {
     pub members: BTreeMap<ProjectName, PathBuf>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum VersionFile {
+    /// Detailed configuration with search pattern
+    Detailed {
+        path: String,
+        search: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[serde(rename = "version-template")]
+        version_template: Option<String>,
+    },
+    /// Simple string path: "Cargo.toml"
+    Simple(String),
+}
+
+impl VersionFile {
+    pub fn path(&self) -> &str {
+        match self {
+            Self::Detailed { path, .. } => path,
+            Self::Simple(path) => path,
+        }
+    }
+
+    pub fn search_pattern(&self) -> Option<&str> {
+        match self {
+            Self::Detailed { search, .. } => Some(search),
+            Self::Simple(_) => None,
+        }
+    }
+
+    pub fn version_template(&self) -> Option<&str> {
+        match self {
+            Self::Detailed {
+                version_template, ..
+            } => version_template.as_deref(),
+            Self::Simple(_) => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
     pub current_version: String,
 
-    #[serde(default = "default_version_files")]
-    pub version_files: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version_files: Option<Vec<VersionFile>>,
 
-    #[serde(default = "default_commit_message_value")]
-    pub commit_message: CommitMessage,
+    pub commit_message: Option<CommitMessage>,
 
-    #[serde(default = "default_branch_name_value")]
-    pub branch_name: BranchName,
+    pub branch_name: Option<BranchName>,
 
-    #[serde(default = "default_tag_format_value")]
-    pub tag_format: TagFormat,
+    pub tag_format: Option<TagFormat>,
+
+    #[serde(default = "default_push")]
+    pub push: bool,
+
+    #[serde(default = "default_create_pr")]
+    pub create_pr: bool,
+
+    #[serde(default = "default_confirm")]
+    pub confirm: bool,
 }
 
-fn default_version_files() -> Vec<String> {
-    vec![]
+fn default_push() -> bool {
+    false
 }
 
-fn default_commit_message_value() -> CommitMessage {
-    CommitMessage::new(DEFAULT_COMMIT_MESSAGE.to_string()).expect("default is valid")
+fn default_create_pr() -> bool {
+    false
 }
 
-fn default_branch_name_value() -> BranchName {
-    BranchName::new(DEFAULT_BRANCH_NAME.to_string()).expect("default is valid")
+fn default_confirm() -> bool {
+    true
 }
 
-fn default_tag_format_value() -> TagFormat {
-    TagFormat::new(DEFAULT_TAG_FORMAT.to_string()).expect("default is valid")
+impl ReleaseConfig {
+    fn validate(&self) -> Result<(), ConfigValidationError> {
+        if self.push && self.branch_name.is_none() {
+            return Err(ConfigValidationError::PushRequiresBranchName);
+        }
+
+        if self.create_pr && (self.branch_name.is_none() || !self.push) {
+            return Err(ConfigValidationError::CreatePrRequiresBranchAndPush);
+        }
+
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -247,7 +306,10 @@ tag-format = "{version}"
             ],
             "commit-message": "chore: release v{version}",
             "branch-name": "release-{version}",
-            "tag-format": "{version}"
+            "tag-format": "{version}",
+            "push": false,
+            "create-pr": false,
+            "confirm": true
           }
         }
         "#);
@@ -270,9 +332,12 @@ version-files = ["VERSION"]
             "version-files": [
               "VERSION"
             ],
-            "commit-message": "Release v{version}",
-            "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "commit-message": null,
+            "branch-name": null,
+            "tag-format": null,
+            "push": false,
+            "create-pr": false,
+            "confirm": true
           }
         }
         "#);
@@ -298,7 +363,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             TomlError {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`",
                 raw: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -581,10 +646,13 @@ tag-format = ""
             members: None,
             release: ReleaseConfig {
                 current_version: "1.2.3".to_string(),
-                version_files: vec!["Cargo.toml".to_string()],
-                commit_message: CommitMessage::new("Release v{version}".to_string()).unwrap(),
-                branch_name: BranchName::new("release/v{version}".to_string()).unwrap(),
-                tag_format: TagFormat::new("v{version}".to_string()).unwrap(),
+                version_files: Some(vec![VersionFile::Simple("Cargo.toml".to_string())]),
+                commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
+                branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
+                tag_format: Some(TagFormat::new("v{version}".to_string()).unwrap()),
+                push: true,
+                create_pr: true,
+                confirm: true,
             },
         };
 
@@ -601,7 +669,10 @@ tag-format = ""
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -622,16 +693,17 @@ commit-message = "Release {version} with {version} tag"
             members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
-                version_files: [],
-                commit_message: CommitMessage(
-                    "Release {version} with {version} tag",
+                version_files: None,
+                commit_message: Some(
+                    CommitMessage(
+                        "Release {version} with {version} tag",
+                    ),
                 ),
-                branch_name: BranchName(
-                    "release/v{version}",
-                ),
-                tag_format: TagFormat(
-                    "v{version}",
-                ),
+                branch_name: None,
+                tag_format: None,
+                push: false,
+                create_pr: false,
+                confirm: true,
             },
         }
         "#);
@@ -680,20 +752,25 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
             members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
-                version_files: [
-                    "Cargo.toml",
-                    "package.json",
-                    "VERSION",
-                ],
-                commit_message: CommitMessage(
-                    "Release v{version}",
+                version_files: Some(
+                    [
+                        Simple(
+                            "Cargo.toml",
+                        ),
+                        Simple(
+                            "package.json",
+                        ),
+                        Simple(
+                            "VERSION",
+                        ),
+                    ],
                 ),
-                branch_name: BranchName(
-                    "release/v{version}",
-                ),
-                tag_format: TagFormat(
-                    "v{version}",
-                ),
+                commit_message: None,
+                branch_name: None,
+                tag_format: None,
+                push: false,
+                create_pr: false,
+                confirm: true,
             },
         }
         "#);
@@ -713,18 +790,140 @@ version-files = []
             members: None,
             release: ReleaseConfig {
                 current_version: "1.0.0",
-                version_files: [],
-                commit_message: CommitMessage(
-                    "Release v{version}",
+                version_files: Some(
+                    [],
                 ),
-                branch_name: BranchName(
-                    "release/v{version}",
-                ),
-                tag_format: TagFormat(
-                    "v{version}",
-                ),
+                commit_message: None,
+                branch_name: None,
+                tag_format: None,
+                push: false,
+                create_pr: false,
+                confirm: true,
             },
         }
         "#);
+    }
+
+    #[test]
+    fn test_version_file_with_custom_search_pattern() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+
+[[release.version-files]]
+path = "version.sh"
+search = "export PUBLIC_VERSION=\"{version}\""
+
+[[release.version-files]]
+path = "Cargo.toml"
+search = "version = \"{version}\""
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        let version_files = config.release.version_files.as_ref().unwrap();
+        assert_eq!(version_files.len(), 2);
+        assert_eq!(version_files[0].path(), "version.sh");
+        assert_eq!(
+            version_files[0].search_pattern(),
+            Some("export PUBLIC_VERSION=\"{version}\"")
+        );
+        assert_eq!(version_files[1].path(), "Cargo.toml");
+        assert_eq!(
+            version_files[1].search_pattern(),
+            Some("version = \"{version}\"")
+        );
+    }
+
+    #[test]
+    fn test_version_file_mixed_simple_and_detailed() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+version-files = [
+    "package.json",
+    { path = "version.sh", search = "VERSION=\"{version}\"" }
+]
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        let version_files = config.release.version_files.as_ref().unwrap();
+        assert_eq!(version_files.len(), 2);
+
+        assert_eq!(version_files[0].path(), "package.json");
+        assert_eq!(version_files[0].search_pattern(), None);
+
+        assert_eq!(version_files[1].path(), "version.sh");
+        assert_eq!(
+            version_files[1].search_pattern(),
+            Some("VERSION=\"{version}\"")
+        );
+    }
+
+    #[test]
+    fn test_validation_push_requires_branch_name() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+push = true
+"#;
+
+        let result = Config::from_toml_str(toml);
+        assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        InvalidConfigurationFile(
+            PushRequiresBranchName,
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_validation_create_pr_requires_branch_and_push() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+create-pr = true
+"#;
+
+        let result = Config::from_toml_str(toml);
+        assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        InvalidConfigurationFile(
+            CreatePrRequiresBranchAndPush,
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_validation_create_pr_requires_push() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+branch-name = "release/{version}"
+create-pr = true
+push = false
+"#;
+
+        let result = Config::from_toml_str(toml);
+        assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        InvalidConfigurationFile(
+            CreatePrRequiresBranchAndPush,
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_validation_valid_with_branch_and_push() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+branch-name = "release/{version}"
+push = true
+create-pr = true
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        assert!(config.release.push);
+        assert!(config.release.create_pr);
     }
 }

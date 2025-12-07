@@ -16,6 +16,7 @@ fn help_command() {
     Commands:
       self      Manage the seal executable
       validate  Validate project configuration and structure
+      bump      Bump version and create release branch
       help      Display documentation for a command
 
     Global options:
@@ -47,6 +48,7 @@ fn help_flag() {
     Commands:
       self      Manage the seal executable
       validate  Validate project configuration and structure
+      bump      Bump version and create release branch
       help      Display documentation for a command
 
     Global options:
@@ -77,6 +79,7 @@ fn help_short_flag() {
     Commands:
       self      Manage the seal executable
       validate  Validate project configuration and structure
+      bump      Bump version and create release branch
       help      Display documentation for a command
 
     Global options:

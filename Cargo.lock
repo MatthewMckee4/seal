@@ -534,12 +534,23 @@ dependencies = [
  "itertools",
  "owo-colors",
  "regex",
+ "seal_bump",
  "seal_project",
  "seal_version",
+ "semver",
  "serde",
  "serde_json",
+ "similar",
  "tempfile",
  "which",
+]
+
+[[package]]
+name = "seal_bump"
+version = "0.0.0"
+dependencies = [
+ "semver",
+ "thiserror",
 ]
 
 [[package]]
@@ -561,6 +572,12 @@ dependencies = [
 [[package]]
 name = "seal_version"
 version = "0.0.0"
+
+[[package]]
+name = "semver"
+version = "1.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d767eb0aabc880b29956c35734170f26ed551a859dbd361d140cdbeca61ab1e2"
 
 [[package]]
 name = "serde"
