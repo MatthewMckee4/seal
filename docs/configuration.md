@@ -117,8 +117,9 @@ search = "VERSION := {version}"
 ```
 
 Seal will:
+
 1. Replace `{version}` with the current version to find the line
-2. Replace `{version}` with the new version to update it
+1. Replace `{version}` with the new version to update it
 
 **Important**: The search pattern must match exactly. If not found, the bump will fail.
 
@@ -225,6 +226,7 @@ seal validate
 ```
 
 This checks:
+
 - `seal.toml` exists and is valid TOML
 - Required fields are present
 - `{version}` placeholder exists in templates
@@ -235,15 +237,15 @@ This checks:
 
 1. **Always validate first**: Run `seal validate` after editing `seal.toml`
 
-2. **Keep it simple**: Use auto-detection for standard files when possible
+1. **Keep it simple**: Use auto-detection for standard files when possible
 
-3. **Be explicit with custom patterns**: Include enough context in search patterns to avoid false matches
+1. **Be explicit with custom patterns**: Include enough context in search patterns to avoid false matches
 
-4. **Version control your config**: Commit `seal.toml` to your repository
+1. **Version control your config**: Commit `seal.toml` to your repository
 
-5. **Test in a branch**: Try `seal bump patch --no-push --no-pr` first to test locally
+1. **Test in a branch**: Try `seal bump patch --no-push --no-pr` first to test locally
 
-6. **Document custom templates**: Add comments in your TOML for complex configurations
+1. **Document custom templates**: Add comments in your TOML for complex configurations
 
 ```toml
 [release]
@@ -265,6 +267,7 @@ The version bump argument (major/minor/patch/alpha/etc.) is invalid or the expli
 ### "Search pattern not found in file"
 
 The custom search pattern doesn't match any line in the file. Check:
+
 - The pattern exactly matches what's in the file (quotes, spaces, etc.)
 - The file contains the current version from `current-version`
 - No typos in the search pattern
@@ -276,6 +279,7 @@ For files without a custom search pattern, none of the auto-detected patterns ma
 ### "Version file not found"
 
 The file path in `version-files` doesn't exist. Check:
+
 - Path is relative to project root
 - File exists
 - No typos in the path
@@ -317,6 +321,7 @@ seal bump 2.0.0
 ### From bump2version/bumpversion
 
 **bump2version `.bumpversion.cfg`**:
+
 ```ini
 [bumpversion]
 current_version = 1.2.3
@@ -329,6 +334,7 @@ replace = version='{new_version}'
 ```
 
 **Equivalent `seal.toml`**:
+
 ```toml
 [release]
 current-version = "1.2.3"
@@ -339,6 +345,7 @@ search = "version='{version}'"
 ```
 
 **Key differences**:
+
 - Seal uses `{version}` instead of `{current_version}` and `{new_version}`
 - No separate `replace` field needed - Seal uses the same search pattern
 - Seal always commits and creates branches (use `--no-push` to work locally)
