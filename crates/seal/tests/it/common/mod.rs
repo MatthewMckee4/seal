@@ -217,6 +217,33 @@ current-version = "{version}"
         output.status.success()
     }
 
+    pub fn merge_current_branch_and_checkout_main(&self) {
+        let current_branch = self.git_current_branch();
+
+        assert!(self.git_branch_exists("main"), "Main branch does not exist");
+
+        assert!(
+            current_branch != "main",
+            "Cannot merge current branch with itself"
+        );
+
+        let output = std::process::Command::new("git")
+            .args(["checkout", "main"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to checkout main");
+
+        assert!(output.status.success(), "Failed to checkout main");
+
+        let output = std::process::Command::new("git")
+            .args(["merge", &current_branch])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to merge current branch");
+
+        assert!(output.status.success(), "Failed to merge current branch");
+    }
+
     /// Read a file and return its contents as a string.
     pub fn read_file(&self, path: &str) -> String {
         std::fs::read_to_string(self.root.join(path))

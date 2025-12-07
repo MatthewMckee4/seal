@@ -204,9 +204,7 @@ fn extract_prerelease_number(
     expected_type: PreReleaseType,
 ) -> Result<u64, VersionBumpError> {
     if pre.is_empty() {
-        return Err(VersionBumpError::InvalidBump(
-            "Cannot bump prerelease on a stable version".to_string(),
-        ));
+        return Ok(0);
     }
 
     let parts: Vec<&str> = pre.as_str().split('.').collect();
@@ -218,6 +216,7 @@ fn extract_prerelease_number(
     }
 
     let current_type = parts[0];
+
     if current_type != expected_type.to_string() {
         return Err(VersionBumpError::InvalidBump(format!(
             "Cannot bump {expected_type} prerelease on a {current_type} version"
@@ -546,18 +545,6 @@ mod tests {
                 .unwrap_err()
                 .to_string()
                 .contains("Cannot bump beta prerelease on a alpha version")
-        );
-    }
-
-    #[test]
-    fn test_calculate_version_prerelease_on_stable() {
-        let result = calculate_version("1.2.3", &VersionBump::PreRelease(PreReleaseType::Alpha));
-        assert!(result.is_err());
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("Cannot bump prerelease on a stable version")
         );
     }
 
