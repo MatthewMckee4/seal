@@ -726,20 +726,22 @@ commit-message = "Release {version} with {version} tag"
         assert_debug_snapshot!(result.unwrap(), @r#"
         Config {
             members: None,
-            release: ReleaseConfig {
-                current_version: "1.0.0",
-                version_files: None,
-                commit_message: Some(
-                    CommitMessage(
-                        "Release {version} with {version} tag",
+            release: Some(
+                ReleaseConfig {
+                    current_version: "1.0.0",
+                    version_files: None,
+                    commit_message: Some(
+                        CommitMessage(
+                            "Release {version} with {version} tag",
+                        ),
                     ),
-                ),
-                branch_name: None,
-                tag_format: None,
-                push: false,
-                create_pr: false,
-                confirm: true,
-            },
+                    branch_name: None,
+                    tag_format: None,
+                    push: false,
+                    create_pr: false,
+                    confirm: true,
+                },
+            ),
         }
         "#);
     }
@@ -785,28 +787,30 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
         assert_debug_snapshot!(config, @r#"
         Config {
             members: None,
-            release: ReleaseConfig {
-                current_version: "1.0.0",
-                version_files: Some(
-                    [
-                        Simple(
-                            "Cargo.toml",
-                        ),
-                        Simple(
-                            "package.json",
-                        ),
-                        Simple(
-                            "VERSION",
-                        ),
-                    ],
-                ),
-                commit_message: None,
-                branch_name: None,
-                tag_format: None,
-                push: false,
-                create_pr: false,
-                confirm: true,
-            },
+            release: Some(
+                ReleaseConfig {
+                    current_version: "1.0.0",
+                    version_files: Some(
+                        [
+                            Simple(
+                                "Cargo.toml",
+                            ),
+                            Simple(
+                                "package.json",
+                            ),
+                            Simple(
+                                "VERSION",
+                            ),
+                        ],
+                    ),
+                    commit_message: None,
+                    branch_name: None,
+                    tag_format: None,
+                    push: false,
+                    create_pr: false,
+                    confirm: true,
+                },
+            ),
         }
         "#);
     }
@@ -823,18 +827,20 @@ version-files = []
         assert_debug_snapshot!(config.unwrap(), @r#"
         Config {
             members: None,
-            release: ReleaseConfig {
-                current_version: "1.0.0",
-                version_files: Some(
-                    [],
-                ),
-                commit_message: None,
-                branch_name: None,
-                tag_format: None,
-                push: false,
-                create_pr: false,
-                confirm: true,
-            },
+            release: Some(
+                ReleaseConfig {
+                    current_version: "1.0.0",
+                    version_files: Some(
+                        [],
+                    ),
+                    commit_message: None,
+                    branch_name: None,
+                    tag_format: None,
+                    push: false,
+                    create_pr: false,
+                    confirm: true,
+                },
+            ),
         }
         "#);
     }
