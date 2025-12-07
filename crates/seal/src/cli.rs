@@ -106,13 +106,9 @@ pub struct BumpArgs {
     /// Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')
     pub version: String,
 
-    /// Skip creating a PR
+    /// Show what would be done without making any changes
     #[arg(long)]
-    pub no_pr: bool,
-
-    /// Skip pushing to remote
-    #[arg(long)]
-    pub no_push: bool,
+    pub dry_run: bool,
 }
 
 #[derive(Args, Debug)]

@@ -1,6 +1,6 @@
 # Version File Customization
 
-Seal provides powerful customization options for managing version strings across different files in your project. This allows you to handle various file formats and version string patterns.
+Seal provides customization options for managing version strings across different files in your project.
 
 ## Basic Configuration
 
@@ -189,11 +189,11 @@ If none match, the bump will fail.
 
 ## Best Practices
 
-1. **Use auto-detection when possible** - It's simpler and covers common cases
-2. **Be specific with search patterns** - Include enough context to avoid false matches
-3. **Test custom patterns** - Run `seal validate` to ensure your configuration works
-4. **Document custom templates** - Add comments in your seal.toml for complex configurations
-5. **Keep templates consistent** - Use the same template format across similar files
+1. Use auto-detection when possible - it's simpler and covers common cases
+2. Be specific with search patterns - include enough context to avoid false matches
+3. Test custom patterns - run `seal validate` to ensure your configuration works
+4. Document custom templates - add comments in your seal.toml for complex configurations
+5. Keep templates consistent - use the same template format across similar files
 
 ## Troubleshooting
 

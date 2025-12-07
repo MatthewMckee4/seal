@@ -67,33 +67,6 @@ current-version = "{version}"
         ))
     }
 
-    /// Create a full seal.toml with all common fields.
-    pub fn full_seal_toml(
-        &self,
-        version: &str,
-        version_files: &[&str],
-        commit_msg: &str,
-        branch: &str,
-        tag: &str,
-    ) -> &Self {
-        let files = version_files
-            .iter()
-            .map(|f| format!("\"{f}\""))
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        self.seal_toml(&format!(
-            r#"
-[release]
-current-version = "{version}"
-version-files = [{files}]
-commit-message = "{commit_msg}"
-branch-name = "{branch}"
-tag-format = "{tag}"
-"#
-        ))
-    }
-
     /// Generate various escaped regex patterns for the given path.
     pub fn path_patterns(path: impl AsRef<Path>) -> Vec<String> {
         let mut patterns = Vec::new();

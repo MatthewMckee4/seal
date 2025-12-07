@@ -45,28 +45,52 @@ search = "APP_VERSION = '{version}'"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.5.0 to 2.6.0
-    Creating branch: release/2.6.0
-    Updating version files...
-    Committing changes...
-    Successfully bumped to 2.6.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/version.sh b/version.sh
+    --- a/version.sh
+    +++ b/version.sh
+    @@ -2,1 +2,1 @@
+    -export VERSION="2.5.0"
+    +export VERSION="2.6.0"
+
+    diff --git a/config.py b/config.py
+    --- a/config.py
+    +++ b/config.py
+    @@ -2,1 +2,1 @@
+    -APP_VERSION = '2.5.0'
+    +APP_VERSION = '2.6.0'
+
+    Commands to be executed:
+      git checkout -b release/2.6.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 2.6.0"
+      git push -u origin release/2.6.0
+      gh pr create --title "Release v2.6.0" --body "Automated release for version 2.6.0"
+
+    Proceed with these changes? (y/n): Aborted.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("version.sh"), @r#"
     #!/bin/bash
-    export VERSION="2.6.0"
+    export VERSION="2.5.0"
     export APP_NAME="MyApp"
     "#);
 
     insta::assert_snapshot!(context.read_file("config.py"), @r"
     # Configuration
-    APP_VERSION = '2.6.0'
+    APP_VERSION = '2.5.0'
     DEBUG = False
     ");
 }
@@ -97,13 +121,14 @@ version-template = "{major}.{minor}"
         .write_str("Version: 1.2\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
     Bumping version from 1.2.3 to 1.3.0
-    Creating branch: release/1.3.0
-    Updating version files...
+
+    Preview of changes:
+    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: Version: 1.2.3
@@ -143,13 +168,14 @@ version-template = "v{major}.{minor}.{patch}"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--no-push").arg("--no-pr"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
     Bumping version from 3.0.5 to 3.0.6
-    Creating branch: bump/3.0.6
-    Updating version files...
+
+    Preview of changes:
+    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: #define VERSION "3.0.5"
@@ -189,20 +215,37 @@ version-template = "{major}.{minor}.{patch}{extra}"
         .write_str("version=2.0.0-beta.1\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-beta.1 to 2.0.0-beta.2
-    Creating branch: release/2.0.0-beta.2
-    Updating version files...
-    Committing changes...
-    Successfully bumped to 2.0.0-beta.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version=2.0.0-beta.1
+    +version=2.0.0beta.2
+
+    Commands to be executed:
+      git checkout -b release/2.0.0-beta.2
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 2.0.0-beta.2"
+      git push -u origin release/2.0.0-beta.2
+      gh pr create --title "Release v2.0.0-beta.2" --body "Automated release for version 2.0.0-beta.2"
+
+    Proceed with these changes? (y/n): Aborted.
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0beta.2");
+    insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-beta.1");
 }
 
 #[test]
@@ -249,23 +292,24 @@ tag-format = "v{version}"
         .write_str("Full: 1.5.2\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
     Bumping version from 1.5.2 to 1.6.0
-    Creating branch: release/1.6.0
-    Updating version files...
+
+    Preview of changes:
+    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: Version: 1.5.2
     ");
 
-    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r###"
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
     [package]
     name = "myapp"
-    version = "1.6.0"
-    "###);
+    version = "1.5.2"
+    "#);
 
     insta::assert_snapshot!(context.read_file("version.txt"), @"Version: 1.5");
 
@@ -297,13 +341,14 @@ search = "VERSION={version}"
         .write_str("version=1.0.0\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
     Bumping version from 1.0.0 to 2.0.0
-    Creating branch: release/2.0.0
-    Updating version files...
+
+    Preview of changes:
+    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: VERSION=1.0.0
@@ -336,20 +381,37 @@ version-template = "{major}.{minor}.{patch}{extra}"
         .write_str("ver=1.0.0\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.1.0
-    Creating branch: release/1.1.0
-    Updating version files...
-    Committing changes...
-    Successfully bumped to 1.1.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -ver=1.0.0
+    +ver=1.1.0
+
+    Commands to be executed:
+      git checkout -b release/1.1.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.1.0"
+      git push -u origin release/1.1.0
+      gh pr create --title "Release v1.1.0" --body "Automated release for version 1.1.0"
+
+    Proceed with these changes? (y/n): Aborted.
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("VERSION"), @"ver=1.1.0");
+    insta::assert_snapshot!(context.read_file("VERSION"), @"ver=1.0.0");
 }
 
 #[test]
@@ -378,20 +440,37 @@ version-template = "{major}.{minor}.{patch}{extra}"
         .write_str("version=2.0.0-rc.3\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-rc.3 to 2.0.0
-    Creating branch: release/2.0.0
-    Updating version files...
-    Committing changes...
-    Successfully bumped to 2.0.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version=2.0.0-rc.3
+    +version=2.0.0
+
+    Commands to be executed:
+      git checkout -b release/2.0.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 2.0.0"
+      git push -u origin release/2.0.0
+      gh pr create --title "Release v2.0.0" --body "Automated release for version 2.0.0"
+
+    Proceed with these changes? (y/n): Aborted.
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0");
+    insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-rc.3");
 }
 
 #[test]
@@ -420,20 +499,37 @@ version-template = "{major}.{minor}.{patch}-{extra}"
         .write_str("APP_VERSION=1.0.0-alpha.1\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0-alpha.1 to 1.0.0-alpha.2
-    Creating branch: release/1.0.0-alpha.2
-    Updating version files...
-    Committing changes...
-    Successfully bumped to 1.0.0-alpha.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/version.txt b/version.txt
+    --- a/version.txt
+    +++ b/version.txt
+    @@ -1,1 +1,1 @@
+    -APP_VERSION=1.0.0-alpha.1
+    +APP_VERSION=1.0.0-alpha.2
+
+    Commands to be executed:
+      git checkout -b release/1.0.0-alpha.2
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.0.0-alpha.2"
+      git push -u origin release/1.0.0-alpha.2
+      gh pr create --title "Release v1.0.0-alpha.2" --body "Automated release for version 1.0.0-alpha.2"
+
+    Proceed with these changes? (y/n): Aborted.
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("version.txt"), @"APP_VERSION=1.0.0-alpha.2");
+    insta::assert_snapshot!(context.read_file("version.txt"), @"APP_VERSION=1.0.0-alpha.1");
 }
 
 #[test]
@@ -467,24 +563,44 @@ search = "version `{version}`"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.5.0 to 0.6.0
-    Creating branch: release/0.6.0
-    Updating version files...
-    Committing changes...
-    Successfully bumped to 0.6.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/README.md b/README.md
+    --- a/README.md
+    +++ b/README.md
+    @@ -3,1 +3,1 @@
+    -Current version `0.5.0` is stable.
+    +Current version `0.6.0` is stable.
+    @@ -5,1 +5,1 @@
+    -Install version `0.5.0` with npm.
+    +Install version `0.6.0` with npm.
+
+    Commands to be executed:
+      git checkout -b release/0.6.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 0.6.0"
+      git push -u origin release/0.6.0
+      gh pr create --title "Release v0.6.0" --body "Automated release for version 0.6.0"
+
+    Proceed with these changes? (y/n): Aborted.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @r"
     # My Project
 
-    Current version `0.6.0` is stable.
+    Current version `0.5.0` is stable.
 
-    Install version `0.6.0` with npm.
+    Install version `0.5.0` with npm.
     ");
 }

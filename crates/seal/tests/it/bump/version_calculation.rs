@@ -6,12 +6,18 @@ use crate::{common::TestContext, seal_snapshot};
 fn bump_major() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["Cargo.toml", "package.json", "VERSION"],
-            "Release v{version}",
-            "release/v{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["Cargo.toml", "package.json", "VERSION"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -38,18 +44,51 @@ version = "1.2.3"
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 2.0.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
+    @@ -3,1 +3,1 @@
+    -version = "1.2.3"
+    +version = "2.0.0"
+
+    diff --git a/package.json b/package.json
+    --- a/package.json
+    +++ b/package.json
+    @@ -1,1 +1,1 @@
+    -{"name": "test", "version": "1.2.3"}
+    +{"name": "test", "version": "2.0.0"}
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version = "1.2.3"
+    +version = "2.0.0"
+
+    Commands to be executed:
+      git checkout -b release/v2.0.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release v2.0.0"
+
     Creating branch: release/v2.0.0
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 2.0.0
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "release/v2.0.0");
     assert_eq!(context.git_last_commit_message(), "Release v2.0.0");
@@ -69,12 +108,18 @@ version = "1.2.3"
 fn bump_minor() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["Cargo.toml"],
-            "chore: bump to {version}",
-            "releases/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["Cargo.toml"]
+commit-message = "chore: bump to {version}"
+branch-name = "releases/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -89,18 +134,37 @@ version = "1.2.3"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.3.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
+    @@ -3,1 +3,1 @@
+    -version = "1.2.3"
+    +version = "1.3.0"
+
+    Commands to be executed:
+      git checkout -b releases/1.3.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "chore: bump to 1.3.0"
+
     Creating branch: releases/1.3.0
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.3.0
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "releases/1.3.0");
     assert_eq!(context.git_last_commit_message(), "chore: bump to 1.3.0");
@@ -116,12 +180,18 @@ version = "1.2.3"
 fn bump_patch() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "2.1.5",
-            &["VERSION.txt"],
-            "Version {version}",
-            "bump/{version}",
-            "{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "2.1.5"
+version-files = ["VERSION.txt"]
+commit-message = "Version {version}"
+branch-name = "bump/{version}"
+tag-format = "{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -131,18 +201,37 @@ fn bump_patch() {
         .write_str(r#"version = "2.1.5""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.1.5 to 2.1.6
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION.txt b/VERSION.txt
+    --- a/VERSION.txt
+    +++ b/VERSION.txt
+    @@ -1,1 +1,1 @@
+    -version = "2.1.5"
+    +version = "2.1.6"
+
+    Commands to be executed:
+      git checkout -b bump/2.1.6
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Version 2.1.6"
+
     Creating branch: bump/2.1.6
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 2.1.6
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "bump/2.1.6");
     assert_eq!(context.git_last_commit_message(), "Version 2.1.6");
@@ -154,12 +243,18 @@ fn bump_patch() {
 fn bump_major_alpha() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["version.txt"],
-            "Bump {version}",
-            "rel/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["version.txt"]
+commit-message = "Bump {version}"
+branch-name = "rel/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -169,18 +264,37 @@ fn bump_major_alpha() {
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major-alpha").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major-alpha"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 2.0.0-alpha.1
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/version.txt b/version.txt
+    --- a/version.txt
+    +++ b/version.txt
+    @@ -1,1 +1,1 @@
+    -version = "1.2.3"
+    +version = "2.0.0-alpha.1"
+
+    Commands to be executed:
+      git checkout -b rel/2.0.0-alpha.1
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Bump 2.0.0-alpha.1"
+
     Creating branch: rel/2.0.0-alpha.1
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 2.0.0-alpha.1
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "rel/2.0.0-alpha.1");
     assert_eq!(context.git_last_commit_message(), "Bump 2.0.0-alpha.1");
@@ -192,12 +306,18 @@ fn bump_major_alpha() {
 fn bump_minor_beta() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["Cargo.toml"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["Cargo.toml"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -213,18 +333,37 @@ edition = "2021"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor-beta").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor-beta"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.3.0-beta.1
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
+    @@ -3,1 +3,1 @@
+    -version = "1.2.3"
+    +version = "1.3.0-beta.1"
+
+    Commands to be executed:
+      git checkout -b release/1.3.0-beta.1
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.3.0-beta.1"
+
     Creating branch: release/1.3.0-beta.1
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.3.0-beta.1
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "release/1.3.0-beta.1");
 
@@ -240,12 +379,18 @@ edition = "2021"
 fn bump_patch_rc() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.0.0",
-            &["version"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+version-files = ["version"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -255,32 +400,57 @@ fn bump_patch_rc() {
         .write_str(r#"version = "1.0.0""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch-rc").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch-rc"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1-rc.1
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/version b/version
+    --- a/version
+    +++ b/version
+    @@ -1,1 +1,1 @@
+    -version = "1.0.0"
+    +version = "1.0.1-rc.1"
+
+    Commands to be executed:
+      git checkout -b release/1.0.1-rc.1
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 1.0.1-rc.1"
+
     Creating branch: release/1.0.1-rc.1
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.0.1-rc.1
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("version"), @r###"version = "1.0.1-rc.1""###);
+    insta::assert_snapshot!(context.read_file("version"), @r#"version = "1.0.1-rc.1""#);
 }
 
 #[test]
 fn bump_alpha_prerelease() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3-alpha.1",
-            &["VERSION"],
-            "Bump {version}",
-            "rel/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3-alpha.1"
+version-files = ["VERSION"]
+commit-message = "Bump {version}"
+branch-name = "rel/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -290,18 +460,37 @@ fn bump_alpha_prerelease() {
         .write_str(r#"version = "1.2.3-alpha.1""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3-alpha.1 to 1.2.3-alpha.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version = "1.2.3-alpha.1"
+    +version = "1.2.3-alpha.2"
+
+    Commands to be executed:
+      git checkout -b rel/1.2.3-alpha.2
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Bump 1.2.3-alpha.2"
+
     Creating branch: rel/1.2.3-alpha.2
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.2.3-alpha.2
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "rel/1.2.3-alpha.2");
 
@@ -312,12 +501,18 @@ fn bump_alpha_prerelease() {
 fn bump_beta_prerelease() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "2.0.0-beta.5",
-            &["ver.txt"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "2.0.0-beta.5"
+version-files = ["ver.txt"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -327,32 +522,57 @@ fn bump_beta_prerelease() {
         .write_str(r#"version = "2.0.0-beta.5""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-beta.5 to 2.0.0-beta.6
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/ver.txt b/ver.txt
+    --- a/ver.txt
+    +++ b/ver.txt
+    @@ -1,1 +1,1 @@
+    -version = "2.0.0-beta.5"
+    +version = "2.0.0-beta.6"
+
+    Commands to be executed:
+      git checkout -b release/2.0.0-beta.6
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 2.0.0-beta.6"
+
     Creating branch: release/2.0.0-beta.6
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 2.0.0-beta.6
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("ver.txt"), @r###"version = "2.0.0-beta.6""###);
+    insta::assert_snapshot!(context.read_file("ver.txt"), @r#"version = "2.0.0-beta.6""#);
 }
 
 #[test]
 fn bump_explicit_version() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["VERSION"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["VERSION"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -362,18 +582,37 @@ fn bump_explicit_version() {
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("3.0.0").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("3.0.0"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 3.0.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version = "1.2.3"
+    +version = "3.0.0"
+
+    Commands to be executed:
+      git checkout -b release/3.0.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 3.0.0"
+
     Creating branch: release/3.0.0
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 3.0.0
 
     ----- stderr -----
-    ");
+    "#);
 
     assert_eq!(context.git_current_branch(), "release/3.0.0");
 
@@ -384,12 +623,18 @@ fn bump_explicit_version() {
 fn bump_explicit_prerelease_version() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["VERSION"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["VERSION"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -399,32 +644,57 @@ fn bump_explicit_prerelease_version() {
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0-beta.1").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0-beta.1"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 2.0.0-beta.1
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version = "1.2.3"
+    +version = "2.0.0-beta.1"
+
+    Commands to be executed:
+      git checkout -b release/2.0.0-beta.1
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 2.0.0-beta.1"
+
     Creating branch: release/2.0.0-beta.1
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 2.0.0-beta.1
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("VERSION"), @r###"version = "2.0.0-beta.1""###);
+    insta::assert_snapshot!(context.read_file("VERSION"), @r#"version = "2.0.0-beta.1""#);
 }
 
 #[test]
 fn bump_multiple_files() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "0.1.0",
-            &["Cargo.toml", "package.json", "VERSION", "version.py"],
-            "Bump to {version}",
-            "bump/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.1.0"
+version-files = ["Cargo.toml", "package.json", "VERSION", "version.py"]
+commit-message = "Bump to {version}"
+branch-name = "bump/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -457,30 +727,70 @@ version = "0.1.0"
         .write_str(r#"__version__ = "0.1.0""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.1.0 to 0.2.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
+    @@ -3,1 +3,1 @@
+    -version = "0.1.0"
+    +version = "0.2.0"
+
+    diff --git a/package.json b/package.json
+    --- a/package.json
+    +++ b/package.json
+    @@ -1,1 +1,1 @@
+    -{"version": "0.1.0"}
+    +{"version": "0.2.0"}
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version = "0.1.0"
+    +version = "0.2.0"
+
+    diff --git a/version.py b/version.py
+    --- a/version.py
+    +++ b/version.py
+    @@ -1,1 +1,1 @@
+    -__version__ = "0.1.0"
+    +__version__ = "0.2.0"
+
+    Commands to be executed:
+      git checkout -b bump/0.2.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Bump to 0.2.0"
+
     Creating branch: bump/0.2.0
     Updating version files...
+    Updating seal.toml...
     Committing changes...
     Successfully bumped to 0.2.0
 
     ----- stderr -----
-    ");
+    "#);
 
-    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r###"
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
     [package]
     name = "multi"
     version = "0.2.0"
-    "###);
+    "#);
 
-    insta::assert_snapshot!(context.read_file("package.json"), @r###"{"version": "0.2.0"}"###);
+    insta::assert_snapshot!(context.read_file("package.json"), @r#"{"version": "0.2.0"}"#);
 
-    insta::assert_snapshot!(context.read_file("VERSION"), @r###"version = "0.2.0""###);
+    insta::assert_snapshot!(context.read_file("VERSION"), @r#"version = "0.2.0""#);
 
-    insta::assert_snapshot!(context.read_file("version.py"), @r###"__version__ = "0.2.0""###);
+    insta::assert_snapshot!(context.read_file("version.py"), @r#"__version__ = "0.2.0""#);
 }
 
 #[test]
@@ -488,7 +798,7 @@ fn bump_invalid_version_argument() {
     let context = TestContext::new();
     context.minimal_seal_toml("1.2.3").init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("invalid").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("invalid"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -503,12 +813,18 @@ fn bump_invalid_version_argument() {
 fn bump_prerelease_mismatch() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3-alpha.1",
-            &["VERSION"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3-alpha.1"
+version-files = ["VERSION"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -518,7 +834,7 @@ fn bump_prerelease_mismatch() {
         .write_str(r#"version = "1.2.3-alpha.1""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -533,12 +849,18 @@ fn bump_prerelease_mismatch() {
 fn bump_prerelease_on_stable() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["VERSION"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["VERSION"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
@@ -548,7 +870,7 @@ fn bump_prerelease_on_stable() {
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -563,22 +885,29 @@ fn bump_prerelease_on_stable() {
 fn bump_missing_version_file() {
     let context = TestContext::new();
     context
-        .full_seal_toml(
-            "1.2.3",
-            &["missing.txt"],
-            "Release {version}",
-            "release/{version}",
-            "v{version}",
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.2.3"
+version-files = ["missing.txt"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
         )
         .init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
     success: false
     exit_code: 2
     ----- stdout -----
     Bumping version from 1.2.3 to 2.0.0
-    Creating branch: release/2.0.0
-    Updating version files...
+
+    Preview of changes:
+    -------------------
 
     ----- stderr -----
     error: Version file not found: [TEMP]/missing.txt
@@ -588,12 +917,18 @@ fn bump_missing_version_file() {
 #[test]
 fn bump_no_git_repo() {
     let context = TestContext::new();
-    context.full_seal_toml(
-        "1.2.3",
-        &["VERSION"],
-        "Release {version}",
-        "release/{version}",
-        "v{version}",
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["VERSION"]
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+tag-format = "v{version}"
+push = false
+create-pr = false
+confirm = false
+"#,
     );
 
     context
@@ -602,15 +937,33 @@ fn bump_no_git_repo() {
         .write_str(r#"version = "1.2.3""#)
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major").arg("--no-push").arg("--no-pr"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
     Bumping version from 1.2.3 to 2.0.0
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
+    @@ -1,1 +1,1 @@
+    -version = "1.2.3"
+    +version = "2.0.0"
+
+    Commands to be executed:
+      git checkout -b release/2.0.0
+      # Update version files
+      # Update seal.toml
+      git add -A
+      git commit -m "Release 2.0.0"
+
     Creating branch: release/2.0.0
 
     ----- stderr -----
     error: Failed to create git branch: fatal: not a git repository (or any parent up to mount point /)
     Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
-    ");
+    "#);
 }

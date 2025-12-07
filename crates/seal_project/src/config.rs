@@ -96,6 +96,15 @@ pub struct ReleaseConfig {
 
     #[serde(default = "default_tag_format_value")]
     pub tag_format: TagFormat,
+
+    #[serde(default = "default_push")]
+    pub push: bool,
+
+    #[serde(default = "default_create_pr")]
+    pub create_pr: bool,
+
+    #[serde(default = "default_confirm")]
+    pub confirm: bool,
 }
 
 fn default_version_files() -> Vec<VersionFile> {
@@ -112,6 +121,18 @@ fn default_branch_name_value() -> BranchName {
 
 fn default_tag_format_value() -> TagFormat {
     TagFormat::new(DEFAULT_TAG_FORMAT.to_string()).expect("default is valid")
+}
+
+fn default_push() -> bool {
+    true
+}
+
+fn default_create_pr() -> bool {
+    true
+}
+
+fn default_confirm() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -287,7 +308,10 @@ tag-format = "{version}"
             ],
             "commit-message": "chore: release v{version}",
             "branch-name": "release-{version}",
-            "tag-format": "{version}"
+            "tag-format": "{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -312,7 +336,10 @@ version-files = ["VERSION"]
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -338,7 +365,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             TomlError {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`",
                 raw: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -625,6 +652,9 @@ tag-format = ""
                 commit_message: CommitMessage::new("Release v{version}".to_string()).unwrap(),
                 branch_name: BranchName::new("release/v{version}".to_string()).unwrap(),
                 tag_format: TagFormat::new("v{version}".to_string()).unwrap(),
+                push: true,
+                create_pr: true,
+                confirm: true,
             },
         };
 
@@ -641,7 +671,10 @@ tag-format = ""
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -672,6 +705,9 @@ commit-message = "Release {version} with {version} tag"
                 tag_format: TagFormat(
                     "v{version}",
                 ),
+                push: true,
+                create_pr: true,
+                confirm: true,
             },
         }
         "#);
@@ -740,6 +776,9 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                 tag_format: TagFormat(
                     "v{version}",
                 ),
+                push: true,
+                create_pr: true,
+                confirm: true,
             },
         }
         "#);
@@ -769,6 +808,9 @@ version-files = []
                 tag_format: TagFormat(
                     "v{version}",
                 ),
+                push: true,
+                create_pr: true,
+                confirm: true,
             },
         }
         "#);

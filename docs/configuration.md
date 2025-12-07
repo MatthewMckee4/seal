@@ -29,7 +29,7 @@ The current version of your project. Must follow semantic versioning (e.g., `1.2
 current-version = "0.5.0"
 ```
 
-**Note**: After bumping, you must manually update this value in `seal.toml` for the next release, or let your CI/CD do it.
+Note: After bumping, you must manually update this value in `seal.toml` for the next release, or let your CI/CD do it.
 
 #### `version-files` (optional, default: `[]`)
 

@@ -154,7 +154,10 @@ version-files = ["test.txt"]
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -188,7 +191,10 @@ version-files = ["Cargo.toml"]
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -220,7 +226,10 @@ current-version = "3.0.0"
             "version-files": [],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);

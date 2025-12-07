@@ -97,7 +97,10 @@ mod tests {
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -131,7 +134,10 @@ mod tests {
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
@@ -187,7 +193,10 @@ mod tests {
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}"
+            "tag-format": "v{version}",
+            "push": true,
+            "create-pr": true,
+            "confirm": true
           }
         }
         "#);
