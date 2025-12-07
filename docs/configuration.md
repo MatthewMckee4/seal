@@ -36,6 +36,7 @@ version-files = ["Cargo.toml", "package.json"]
 ```
 
 Auto-detected patterns:
+
 - `version = "1.2.3"` (TOML files)
 - `"version": "1.2.3"` (JSON files)
 - `__version__ = "1.2.3"` (Python files)
@@ -67,6 +68,7 @@ version-template = "v{major}.{minor}.{patch}"  # With prefix
 ```
 
 Template placeholders:
+
 - `{major}` - Major version (1 in 1.2.3)
 - `{minor}` - Minor version (2 in 1.2.3)
 - `{patch}` - Patch version (3 in 1.2.3)
@@ -221,6 +223,7 @@ seal validate project         # Validate full project
 ## Validation Rules
 
 Configuration validation ensures:
+
 - `push = true` requires `branch-name` to be set
 - `create-pr = true` requires both `branch-name` and `push = true`
 - All templates contain `{version}` placeholder
@@ -231,6 +234,7 @@ Configuration validation ensures:
 ### "Search pattern not found in file"
 
 The custom search pattern doesn't match the file content. Check:
+
 - Pattern exactly matches what's in the file
 - File contains the current version from `current-version`
 - No typos in the search pattern
@@ -246,11 +250,13 @@ The file path in `version-files` doesn't exist. Paths are relative to project ro
 ### "release.push = true requires branch-name to be set"
 
 You cannot push without creating a branch. Either:
+
 - Set `branch-name = "release/{version}"`
 - Set `push = false`
 
 ### "release.create-pr = true requires both branch-name and push = true"
 
 Creating PRs requires pushing a branch. Set both:
+
 - `branch-name = "release/{version}"`
 - `push = true`
