@@ -18,6 +18,13 @@ assert_fs = "1.1"
 clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
 dunce = { version = "1.0.5" }
 insta = { version = "1.41", features = ["filters", "json"] }
+schemars = { version = "1.0.0", features = ["url2"] }
+textwrap = { version = "0.16.1" }
+syn = { version = "2.0.77" }
+quote = { version = "1.0.37" }
+proc-macro2 = { version = "1.0.86" }
+pretty_assertions = { version = "1.4.1" }
+fs-err = { version = "3.0.0", features = ["tokio"] }
 itertools = { version = "0.14.0" }
 markdown = { version = "1.0.0-alpha.23" }
 owo-colors = { version = "4.1.0" }
@@ -27,6 +34,8 @@ seal_bump = { path = "crates/seal_bump" }
 seal_cli = { path = "crates/seal_cli" }
 seal_project = { path = "crates/seal_project" }
 seal_version = { path = "crates/seal_version" }
+seal_macros = { path = "crates/seal_macros" }
+seal_options_metadata = { path = "crates/seal_options_metadata" }
 semver = { version = "1.0" }
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }

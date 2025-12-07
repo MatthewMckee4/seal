@@ -1,5 +1,3 @@
-<!-- WARNING: This file is auto-generated (cargo run -p seal_dev generate-all). Edit the doc comments in 'crates/seal_cli/src/lib.rs' if you want to change anything here. -->
-
 # CLI Reference
 
 ## seal
@@ -130,7 +128,7 @@ seal bump [OPTIONS] <VERSION>
 
 <h3 class="cli-reference">Arguments</h3>
 
-<dl class="cli-reference"><dt id="seal-bump--version"><a href="#seal-bump--version"><code>VERSION</code></a></dt><dd><p>Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')</p>
+<dl class="cli-reference"><dt id="seal-bump--version"><a href="#seal-bump--version"<code>VERSION</code></a></dt><dd><p>Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')</p>
 </dd></dl>
 
 <h3 class="cli-reference">Options</h3>
@@ -153,4 +151,19 @@ Display documentation for a command
 ```
 seal help [OPTIONS] [COMMAND]...
 ```
+
+<h3 class="cli-reference">Arguments</h3>
+
+<dl class="cli-reference"><dt id="seal-help--command"><a href="#seal-help--command"<code>COMMAND</code></a></dt></dl>
+
+<h3 class="cli-reference">Options</h3>
+
+<dl class="cli-reference"><dt id="seal-help--help"><a href="#seal-help--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+</dd><dt id="seal-help--no-pager"><a href="#seal-help--no-pager"><code>--no-pager</code></a></dt><dd><p>Disable pager when printing help</p>
+</dd><dt id="seal-help--no-progress"><a href="#seal-help--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
+<p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-help--quiet"><a href="#seal-help--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
+<p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
+</dd><dt id="seal-help--verbose"><a href="#seal-help--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd></dl>
 

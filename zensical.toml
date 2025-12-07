@@ -12,8 +12,10 @@ dev_addr = "localhost:3000"
 
 nav = [
     { "Home" = "index.md"},
-    { "Configuration" = "configuration.md"},
-    { "CLI" = "cli.md"},
+    { "Reference" = [
+        { "Configuration" = "reference/configuration.md"},
+        { "CLI" = "reference/cli.md"},
+    ]},
 ]
 
 [project.theme]

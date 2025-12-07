@@ -10,7 +10,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 
 mod generate_cli_reference;
-mod generate_options;
+mod generate_options_reference;
 
 const ROOT_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../");
 
@@ -43,7 +43,7 @@ enum Command {
     /// Generate CLI reference.
     GenerateCliReference(generate_cli_reference::Args),
     /// Generate options reference.
-    GenerateOptions(generate_options::Args),
+    GenerateOptions(generate_options_reference::Args),
     /// Generate all developer documentation and references.
     GenerateAll,
 }
@@ -54,9 +54,11 @@ fn main() -> Result<ExitCode> {
         Command::GenerateCliReference(args) => generate_cli_reference::main(&args)?,
         Command::GenerateAll => {
             generate_cli_reference::main(&generate_cli_reference::Args { mode: Mode::Write })?;
-            generate_options::main(&generate_options::Args { mode: Mode::Write })?;
+            generate_options_reference::main(&generate_options_reference::Args {
+                mode: Mode::Write,
+            })?;
         }
-        Command::GenerateOptions(args) => generate_options::main(&args)?,
+        Command::GenerateOptions(args) => generate_options_reference::main(&args)?,
     }
     Ok(ExitCode::SUCCESS)
 }

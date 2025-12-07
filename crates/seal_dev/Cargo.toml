@@ -19,3 +19,10 @@ itertools = { workspace = true }
 serde = { workspace = true }
 toml = { workspace = true }
 markdown = { workspace = true }
+fs-err = { workspace = true, features = ["tokio"] }
+pretty_assertions = { workspace = true }
+anstream = { workspace = true }
+schemars = { workspace = true, features = ["url2"] }
+seal_macros = { workspace = true }
+seal_options_metadata = { workspace = true }
+textwrap = { workspace = true }

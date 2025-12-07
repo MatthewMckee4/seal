@@ -2,17 +2,28 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::path::{Path, PathBuf};
 
+use seal_macros::OptionsMetadata;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::ProjectName;
 use crate::error::{ConfigValidationError, ProjectError};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
 #[serde(rename_all = "kebab-case")]
 pub struct Config {
-    #[serde(default)]
-    pub members: Option<MembersConfig>,
-    pub release: ReleaseConfig,
+    /// The members of the project.
+    #[field(
+        default = r"{}",
+        value_type = "dict",
+        example = r#"
+            [members]
+            pkg1 = "packages/pkg1"
+            pkg2 = "packages/pkg2"
+        "#
+    )]
+    pub members: Option<BTreeMap<ProjectName, PathBuf>>,
+    #[option_group]
+    pub release: Option<ReleaseConfig>,
 }
 
 impl Config {
@@ -32,15 +43,11 @@ impl Config {
     }
 
     fn validate(&self) -> Result<(), ProjectError> {
-        self.release.validate()?;
+        if let Some(release) = &self.release {
+            release.validate()?;
+        }
         Ok(())
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct MembersConfig {
-    pub members: BTreeMap<ProjectName, PathBuf>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -83,27 +90,55 @@ impl VersionFile {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
+    /// The current version of the project.
+    #[field(value_type = "string", example = "0.1.0")]
     pub current_version: String,
 
+    /// The version files that need to be updated.
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "[]",
+        value_type = "list",
+        example = r#"
+            [[release.version-files]]
+            path = "version.sh"
+            search = "export PUBLIC_VERSION=\"{version}\""
+
+            [[release.version-files]]
+            path = "Cargo.toml"
+            search = "version = \"{version}\""
+        "#
+    )]
     pub version_files: Option<Vec<VersionFile>>,
 
+    /// The commit message to use when committing the release changes.
+    #[field(default = "null", value_type = "string", example = "Release {version}")]
     pub commit_message: Option<CommitMessage>,
 
+    /// The branch name to use when creating a new release branch.
+    #[field(default = "null", value_type = "string", example = "release-{version}")]
     pub branch_name: Option<BranchName>,
 
+    /// The tag format to use when creating a new tag.
+    #[field(default = "null", value_type = "string", example = "v{version}")]
     pub tag_format: Option<TagFormat>,
 
+    /// Whether to push the release changes to the remote repository.
     #[serde(default = "default_push")]
+    #[field(default = "false", value_type = "boolean", example = "false")]
     pub push: bool,
 
+    /// Whether to create a pull request for the release changes.
     #[serde(default = "default_create_pr")]
+    #[field(default = "false", value_type = "boolean", example = "true")]
     pub create_pr: bool,
 
+    /// Whether to confirm the release changes with the user before proceeding.
     #[serde(default = "default_confirm")]
+    #[field(default = "true", value_type = "boolean", example = "true")]
     pub confirm: bool,
 }
 
@@ -289,7 +324,7 @@ mod tests {
 [release]
 current-version = "1.2.3"
 version-files = ["Cargo.toml", "package.json"]
-commit-message = "chore: release v{version}"
+commit-message = "release v{version}"
 branch-name = "release-{version}"
 tag-format = "{version}"
 "#;
@@ -304,7 +339,7 @@ tag-format = "{version}"
               "Cargo.toml",
               "package.json"
             ],
-            "commit-message": "chore: release v{version}",
+            "commit-message": "release v{version}",
             "branch-name": "release-{version}",
             "tag-format": "{version}",
             "push": false,
@@ -644,7 +679,7 @@ tag-format = ""
     fn test_serialization_round_trip() {
         let config = Config {
             members: None,
-            release: ReleaseConfig {
+            release: Some(ReleaseConfig {
                 current_version: "1.2.3".to_string(),
                 version_files: Some(vec![VersionFile::Simple("Cargo.toml".to_string())]),
                 commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
@@ -653,7 +688,7 @@ tag-format = ""
                 push: true,
                 create_pr: true,
                 confirm: true,
-            },
+            }),
         };
 
         let toml_str = toml::to_string(&config).unwrap();
@@ -820,7 +855,13 @@ search = "version = \"{version}\""
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
-        let version_files = config.release.version_files.as_ref().unwrap();
+        let version_files = config
+            .release
+            .as_ref()
+            .unwrap()
+            .version_files
+            .as_ref()
+            .unwrap();
         assert_eq!(version_files.len(), 2);
         assert_eq!(version_files[0].path(), "version.sh");
         assert_eq!(
@@ -846,7 +887,13 @@ version-files = [
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
-        let version_files = config.release.version_files.as_ref().unwrap();
+        let version_files = config
+            .release
+            .as_ref()
+            .unwrap()
+            .version_files
+            .as_ref()
+            .unwrap();
         assert_eq!(version_files.len(), 2);
 
         assert_eq!(version_files[0].path(), "package.json");
@@ -923,7 +970,7 @@ create-pr = true
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
-        assert!(config.release.push);
-        assert!(config.release.create_pr);
+        assert!(config.release.as_ref().unwrap().push);
+        assert!(config.release.as_ref().unwrap().create_pr);
     }
 }

@@ -115,7 +115,7 @@ fn bump_minor() {
 [release]
 current-version = "1.2.3"
 version-files = ["Cargo.toml"]
-commit-message = "chore: bump to {version}"
+commit-message = "bump to {version}"
 branch-name = "releases/{version}"
 tag-format = "v{version}"
 push = false
@@ -159,7 +159,7 @@ version = "1.2.3"
       # Update version files
       # Update seal.toml
       git add -A
-      git commit -m "chore: bump to 1.3.0"
+      git commit -m "bump to 1.3.0"
 
     Creating branch: releases/1.3.0
     Updating version files...
@@ -171,7 +171,7 @@ version = "1.2.3"
     "#);
 
     assert_eq!(context.git_current_branch(), "releases/1.3.0");
-    assert_eq!(context.git_last_commit_message(), "chore: bump to 1.3.0");
+    assert_eq!(context.git_last_commit_message(), "bump to 1.3.0");
 
     insta::assert_snapshot!(context.read_file("Cargo.toml"), @r###"
     [package]

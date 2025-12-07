@@ -419,7 +419,7 @@ fn validate_config_custom_patterns() {
 [release]
 current-version = "1.0.0"
 version-files = ["Cargo.toml"]
-commit-message = "chore: bump version to {version}"
+commit-message = "bump version to {version}"
 branch-name = "releases/{version}"
 tag-format = "{version}"
 push = false

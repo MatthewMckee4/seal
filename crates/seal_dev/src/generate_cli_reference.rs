@@ -5,9 +5,10 @@ use std::path::PathBuf;
 use anyhow::{Result, bail};
 use clap::{Command, CommandFactory};
 use itertools::Itertools;
+use pretty_assertions::StrComparison;
 use seal_cli::Cli;
 
-use crate::{Mode, REGENERATE_ALL_COMMAND, ROOT_DIR};
+use crate::{Mode, ROOT_DIR};
 
 const SHOW_HIDDEN_COMMANDS: &[&str] = &["generate-shell-completion"];
 
@@ -19,45 +20,53 @@ pub(crate) struct Args {
 
 pub(crate) fn main(args: &Args) -> Result<()> {
     let reference_string = generate();
-    let filename = "docs/cli.md";
-    let reference_path = PathBuf::from(ROOT_DIR).join(filename);
+    let filename = "cli.md";
+    let reference_path = PathBuf::from(ROOT_DIR)
+        .join("docs")
+        .join("reference")
+        .join(filename);
+
+    if !reference_path.exists() {
+        fs_err::write(&reference_path, "")?;
+    }
 
     match args.mode {
         Mode::DryRun => {
             println!("{reference_string}");
         }
-        Mode::Check => match std::fs::read_to_string(reference_path) {
+        Mode::Check => match fs_err::read_to_string(reference_path) {
             Ok(current) => {
                 if current == reference_string {
                     println!("Up-to-date: {filename}");
                 } else {
-                    bail!("{filename} changed, please run `{REGENERATE_ALL_COMMAND}`");
+                    let comparison = StrComparison::new(&current, &reference_string);
+                    bail!(
+                        "{filename} changed, please run `cargo run -p seal_dev generate-all`:\n{comparison}"
+                    );
                 }
             }
             Err(err) if err.kind() == std::io::ErrorKind::NotFound => {
-                bail!("{filename} not found, please run `{REGENERATE_ALL_COMMAND}`");
+                bail!("{filename} not found, please run `cargo dev generate-cli-reference`");
             }
             Err(err) => {
-                bail!("{filename} changed, please run `{REGENERATE_ALL_COMMAND}`:\n{err}");
+                bail!("{filename} changed, please run `cargo dev generate-cli-reference`:\n{err}");
             }
         },
-        Mode::Write => match std::fs::read_to_string(&reference_path) {
+        Mode::Write => match fs_err::read_to_string(&reference_path) {
             Ok(current) => {
                 if current == reference_string {
                     println!("Up-to-date: {filename}");
                 } else {
                     println!("Updating: {filename}");
-                    std::fs::write(reference_path, reference_string.as_bytes())?;
+                    fs_err::write(reference_path, reference_string.as_bytes())?;
                 }
             }
             Err(err) if err.kind() == std::io::ErrorKind::NotFound => {
                 println!("Updating: {filename}");
-                std::fs::write(reference_path, reference_string.as_bytes())?;
+                fs_err::write(reference_path, reference_string.as_bytes())?;
             }
             Err(err) => {
-                bail!(
-                    "{filename} changed, please run `cargo run -p seal_dev generate-cli-reference`:\n{err}"
-                );
+                bail!("{filename} changed, please run `cargo dev generate-cli-reference`:\n{err}");
             }
         },
     }
@@ -76,7 +85,6 @@ fn generate() -> String {
 
     let mut parents = Vec::new();
 
-    output.push_str("<!-- WARNING: This file is auto-generated (cargo run -p seal_dev generate-all). Edit the doc comments in 'crates/seal_cli/src/lib.rs' if you want to change anything here. -->\n\n");
     output.push_str("# CLI Reference\n\n");
     generate_command(&mut output, &seal, &mut parents);
 
@@ -100,7 +108,7 @@ fn generate_command<'a>(output: &mut String, command: &'a Command, parents: &mut
         )
     };
 
-    // Display the top-level `karva` command at the same level as its children
+    // Display the top-level `seal` command at the same level as its children
     let level = max(2, parents.len() + 1);
     output.push_str(&format!("{} {name}\n\n", "#".repeat(level)));
 
@@ -125,10 +133,6 @@ fn generate_command<'a>(output: &mut String, command: &'a Command, parents: &mut
                 .trim_start_matches("Usage: "),
         ));
         output.push_str("\n\n");
-    }
-
-    if command.get_name() == "help" {
-        return;
     }
 
     // Display a list of child commands
@@ -176,7 +180,7 @@ fn generate_command<'a>(output: &mut String, command: &'a Command, parents: &mut
                 let id = format!("{name_key}--{}", arg.get_id());
                 output.push_str(&format!("<dt id=\"{id}\">"));
                 output.push_str(&format!(
-                    "<a href=\"#{id}\"><code>{}</code></a>",
+                    "<a href=\"#{id}\"<code>{}</code></a>",
                     arg.get_id().to_string().to_uppercase(),
                 ));
                 output.push_str("</dt>");
