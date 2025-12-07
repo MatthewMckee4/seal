@@ -1,6 +1,7 @@
 use std::fmt::Write as _;
 use std::io;
 use std::process::Command;
+use std::sync::LazyLock;
 
 use anyhow::{Context, Result};
 use seal_bump::VersionBump;
@@ -9,6 +10,16 @@ use seal_project::ProjectWorkspace;
 use crate::ExitStatus;
 use crate::cli::BumpArgs;
 use crate::printer::Printer;
+
+// Compile regex patterns once for auto-detecting version fields
+// Using expect() is safe here because these are hardcoded, valid regex patterns
+static VERSION_PATTERNS: LazyLock<[regex::Regex; 3]> = LazyLock::new(|| {
+    [
+        regex::Regex::new(r#"version\s*=\s*"[^"]+""#).expect("Invalid regex pattern"),
+        regex::Regex::new(r#""version"\s*:\s*"[^"]+""#).expect("Invalid regex pattern"),
+        regex::Regex::new(r#"__version__\s*=\s*"[^"]+""#).expect("Invalid regex pattern"),
+    ]
+});
 
 pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
@@ -321,22 +332,13 @@ fn update_version_in_content(
         return Ok(content.replace(&search_with_current, &search_with_new));
     }
 
-    let patterns = [
-        (
-            regex::Regex::new(r#"version\s*=\s*"[^"]+""#)?,
-            format!(r#"version = "{version_str}""#),
-        ),
-        (
-            regex::Regex::new(r#""version"\s*:\s*"[^"]+""#)?,
-            format!(r#""version": "{version_str}""#),
-        ),
-        (
-            regex::Regex::new(r#"__version__\s*=\s*"[^"]+""#)?,
-            format!(r#"__version__ = "{version_str}""#),
-        ),
+    let replacements = [
+        format!(r#"version = "{version_str}""#),
+        format!(r#""version": "{version_str}""#),
+        format!(r#"__version__ = "{version_str}""#),
     ];
 
-    for (pattern, replacement) in &patterns {
+    for (pattern, replacement) in VERSION_PATTERNS.iter().zip(replacements.iter()) {
         if pattern.is_match(content) {
             return Ok(pattern.replace(content, replacement).to_string());
         }
