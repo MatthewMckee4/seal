@@ -16,6 +16,7 @@ confirm = true
 [changelog.section-labels]
 "Bug Fixes" = ["bug"]
 "Changelog " = ["changelog"]
+"Bumping" = ["bumping"]
 "Configuration" = ["configuration"]
 "New Features" = ["enhancement"]
 "CLI" = ["cli"]
