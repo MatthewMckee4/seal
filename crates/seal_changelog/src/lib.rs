@@ -6,6 +6,7 @@ use std::process::Command;
 use anyhow::{Context, Result};
 use octocrab::Octocrab;
 use octocrab::models::pulls::PullRequest;
+use seal_file_change::{FileChange, FileChanges};
 use seal_project::ChangelogConfig;
 
 pub struct ChangelogGenerator {
@@ -16,13 +17,17 @@ pub struct ChangelogGenerator {
 
 impl ChangelogGenerator {
     pub fn new(owner: String, repo: String) -> Result<Self> {
-        let octocrab = Octocrab::builder()
-            .personal_token(
-                std::env::var("GITHUB_TOKEN")
-                    .or_else(|_| std::env::var("GH_TOKEN"))
-                    .context("GITHUB_TOKEN or GH_TOKEN environment variable must be set")?,
-            )
-            .build()?;
+        let github_token = std::env::var("GITHUB_TOKEN")
+            .or_else(|_| std::env::var("GH_TOKEN"))
+            .ok();
+
+        let mut octocrab = Octocrab::builder();
+
+        if let Some(token) = github_token {
+            octocrab = octocrab.personal_token(token);
+        }
+
+        let octocrab = octocrab.build()?;
 
         Ok(Self {
             octocrab,
@@ -228,27 +233,43 @@ pub fn format_changelog_content(
     Ok(output)
 }
 
-pub fn update_changelog_file(changelog_path: &Path, new_content: &str) -> Result<()> {
+pub fn prepare_changelog_file_change(
+    changelog_path: &Path,
+    new_content: &str,
+) -> Result<FileChange> {
     let existing_content = if changelog_path.exists() {
         fs_err::read_to_string(changelog_path)?
     } else {
-        String::from("# Changelog\n\n")
+        String::new()
     };
 
-    let updated_content = if existing_content.starts_with("# Changelog") {
-        let after_header = existing_content
-            .strip_prefix("# Changelog\n\n")
-            .or_else(|| existing_content.strip_prefix("# Changelog\n"))
-            .unwrap_or(&existing_content);
+    let updated_content = {
+        let first_line_is_heading = existing_content
+            .lines()
+            .next()
+            .is_some_and(|line| line.starts_with('#'));
 
-        format!("# Changelog\n\n{new_content}{after_header}")
-    } else {
-        format!("# Changelog\n\n{new_content}{existing_content}")
+        if first_line_is_heading {
+            let newline_pos = existing_content.find('\n');
+            if let Some(pos) = newline_pos {
+                let heading = &existing_content[..pos];
+                let after_heading = &existing_content[pos + 1..];
+                let rest = after_heading.trim_start_matches('\n');
+
+                format!("{heading}\n\n{new_content}{rest}")
+            } else {
+                format!("{existing_content}\n\n{new_content}")
+            }
+        } else {
+            format!("# Changelog\n\n{new_content}{existing_content}")
+        }
     };
 
-    fs_err::write(changelog_path, updated_content)?;
-
-    Ok(())
+    Ok(FileChange::new(
+        changelog_path.to_path_buf(),
+        existing_content,
+        updated_content,
+    ))
 }
 
 pub fn parse_github_repo(repo_url: &str) -> Result<(String, String)> {
@@ -294,11 +315,11 @@ fn get_git_remote_url() -> Result<String> {
     Ok(url)
 }
 
-pub fn generate_and_update_changelog(
+pub fn prepare_changelog_changes(
     root: &Path,
     version: &str,
     config: &ChangelogConfig,
-) -> Result<()> {
+) -> Result<FileChanges> {
     let repo_url = get_git_remote_url()?;
     let (owner, repo) = parse_github_repo(&repo_url)?;
 
@@ -311,16 +332,16 @@ pub fn generate_and_update_changelog(
     })?;
 
     let changelog_path = root.join("CHANGELOG.md");
-    update_changelog_file(&changelog_path, &changelog_content)?;
+    let change = prepare_changelog_file_change(&changelog_path, &changelog_content)?;
 
-    Ok(())
+    Ok(FileChanges::new(vec![change]))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::BTreeMap;
     use seal_project::ChangelogHeading;
+    use std::collections::BTreeMap;
 
     #[test]
     fn test_parse_github_repo_https() {
@@ -615,7 +636,8 @@ mod tests {
         let changelog_path = temp_dir.path().join("CHANGELOG.md");
 
         let content = "## 1.0.0\n\n- Feature A\n\n";
-        update_changelog_file(&changelog_path, content).unwrap();
+        let change = prepare_changelog_file_change(&changelog_path, content).unwrap();
+        change.apply().unwrap();
 
         let result = fs_err::read_to_string(&changelog_path).unwrap();
         insta::assert_snapshot!(result, @r###"
@@ -640,7 +662,8 @@ mod tests {
         .unwrap();
 
         let new_content = "## 1.0.0\n\n- New feature\n\n";
-        update_changelog_file(&changelog_path, new_content).unwrap();
+        let change = prepare_changelog_file_change(&changelog_path, new_content).unwrap();
+        change.apply().unwrap();
 
         let result = fs_err::read_to_string(&changelog_path).unwrap();
         insta::assert_snapshot!(result, @r###"

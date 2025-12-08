@@ -16,7 +16,7 @@ push = false
 create-pr = false
 confirm = false
 
-[release.changelog]
+[changelog]
 ignore-labels = ["internal", "ci"]
 "#,
     );
@@ -73,7 +73,6 @@ version = "1.0.0"
 
     Creating branch: release/v1.0.1
     Updating version files...
-    Skipping changelog generation as `--no-changelog` was provided.
     Committing changes...
     Successfully bumped to 1.0.1
 
@@ -140,7 +139,6 @@ version = "1.0.0"
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Successfully bumped to 1.0.1
     Note: No git branch or commit was created
 

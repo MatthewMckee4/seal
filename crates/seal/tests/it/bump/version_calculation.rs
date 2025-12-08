@@ -99,7 +99,6 @@ version = "1.2.3"
 
     Creating branch: release/v2.0.0
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0
 
@@ -189,7 +188,6 @@ version = "1.2.3"
 
     Creating branch: releases/1.3.0
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.3.0
 
@@ -268,7 +266,6 @@ confirm = false
 
     Creating branch: bump/2.1.6
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.1.6
 
@@ -343,7 +340,6 @@ confirm = false
 
     Creating branch: rel/2.0.0-alpha.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0-alpha.1
 
@@ -427,7 +423,6 @@ edition = "2021"
 
     Creating branch: release/1.3.0-beta.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.3.0-beta.1
 
@@ -506,7 +501,6 @@ confirm = false
 
     Creating branch: release/1.0.1-rc.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1-rc.1
 
@@ -578,7 +572,6 @@ confirm = false
 
     Creating branch: rel/1.2.3-alpha.2
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.2.3-alpha.2
 
@@ -652,7 +645,6 @@ confirm = false
 
     Creating branch: release/2.0.0-beta.6
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0-beta.6
 
@@ -724,7 +716,6 @@ confirm = false
 
     Creating branch: release/3.0.0
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 3.0.0
 
@@ -798,7 +789,6 @@ confirm = false
 
     Creating branch: release/2.0.0-beta.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0-beta.1
 
@@ -919,7 +909,6 @@ version = "0.1.0"
 
     Creating branch: bump/0.2.0
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 0.2.0
 
@@ -1052,7 +1041,6 @@ confirm = false
 
     Creating branch: release/1.2.3-alpha.0
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.2.3-alpha.0
 
@@ -1105,7 +1093,6 @@ confirm = false
 
     Creating branch: release/1.2.3-alpha.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.2.3-alpha.1
 
@@ -1265,7 +1252,6 @@ confirm = false
 
     Creating branch: release/1.0.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1
 

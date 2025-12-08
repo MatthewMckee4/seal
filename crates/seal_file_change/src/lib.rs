@@ -11,8 +11,7 @@ impl FileChanges {
 
     pub fn apply(self) -> Result<()> {
         for change in self {
-            fs_err::write(change.path(), &change.new_content)
-                .context(format!("Failed to write {}", change.path().display()))?;
+            change.apply()?;
         }
         Ok(())
     }
@@ -55,30 +54,26 @@ impl FileChange {
         }
     }
 
+    pub fn apply(self) -> Result<()> {
+        fs_err::write(&self.path, &self.new_content)
+            .context(format!("Failed to write {}", self.path.display()))?;
+        Ok(())
+    }
+
     pub fn display_diff(&self, stdout: &mut impl std::fmt::Write) -> Result<()> {
         use similar::{ChangeTag, TextDiff};
+
+        let path_string = self.path.display().to_string();
+        let path_stripped = path_string.strip_suffix("/").unwrap_or(&path_string);
 
         writeln!(stdout)?;
         writeln!(
             stdout,
             "{}",
-            format!(
-                "diff --git a/{} b/{}",
-                self.path.display(),
-                self.path.display()
-            )
-            .bold()
+            format!("diff --git a{path_stripped} b{path_stripped}").bold()
         )?;
-        writeln!(
-            stdout,
-            "{}",
-            format!("--- a/{}", self.path.display()).blue()
-        )?;
-        writeln!(
-            stdout,
-            "{}",
-            format!("+++ b/{}", self.path.display()).blue()
-        )?;
+        writeln!(stdout, "{}", format!("--- a{path_stripped}").blue())?;
+        writeln!(stdout, "{}", format!("+++ b{path_stripped}").blue())?;
 
         let diff = TextDiff::from_lines(&self.old_content, &self.new_content);
 

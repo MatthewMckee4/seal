@@ -22,8 +22,14 @@ pub struct Config {
         "#
     )]
     pub members: Option<BTreeMap<ProjectName, PathBuf>>,
+
     #[option_group]
+    /// Release configuration for versioning and publishing.
     pub release: Option<ReleaseConfig>,
+
+    /// Changelog configuration for release notes generation.
+    #[option_group]
+    pub changelog: Option<ChangelogConfig>,
 }
 
 impl Config {
@@ -184,10 +190,6 @@ pub struct ReleaseConfig {
     confirm = true"#
     )]
     pub confirm: bool,
-
-    /// Changelog configuration for release notes generation.
-    #[option_group]
-    pub changelog: Option<ChangelogConfig>,
 }
 
 fn default_push() -> bool {
@@ -465,9 +467,9 @@ branch-name = "release-{version}"
             "branch-name": "release-{version}",
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
     }
@@ -493,9 +495,9 @@ version-files = ["VERSION"]
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
     }
@@ -520,7 +522,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`, `changelog`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -722,8 +724,8 @@ branch-name = ""
                 push: true,
                 create_pr: true,
                 confirm: true,
-                changelog: None,
             }),
+            changelog: None,
         };
 
         let toml_str = toml::to_string(&config).unwrap();
@@ -741,9 +743,9 @@ branch-name = ""
             "branch-name": "release/v{version}",
             "push": true,
             "create-pr": true,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
     }
@@ -774,9 +776,9 @@ commit-message = "Release {version} with {version} tag"
                     push: false,
                     create_pr: false,
                     confirm: true,
-                    changelog: None,
                 },
             ),
+            changelog: None,
         }
         "#);
     }
@@ -843,9 +845,9 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     push: false,
                     create_pr: false,
                     confirm: true,
-                    changelog: None,
                 },
             ),
+            changelog: None,
         }
         "#);
     }
@@ -873,9 +875,9 @@ version-files = []
                     push: false,
                     create_pr: false,
                     confirm: true,
-                    changelog: None,
                 },
             ),
+            changelog: None,
         }
         "#);
     }

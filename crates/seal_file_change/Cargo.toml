@@ -10,9 +10,9 @@ license.workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
-similar = { workspace = true }
 fs-err = { workspace = true }
 owo-colors = { workspace = true }
+similar = { workspace = true }
 
 [lints]
 workspace = true

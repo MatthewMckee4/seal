@@ -9,19 +9,19 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-seal_project = { workspace = true }
 seal_file_change = { workspace = true }
+seal_project = { workspace = true }
 
 anyhow = { workspace = true }
-fs-err = { workspace = true}
+fs-err = { workspace = true }
 octocrab = { workspace = true }
-tokio = { workspace = true, features = ["rt", "macros"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
+tokio = { workspace = true, features = ["rt", "macros"] }
 
 [dev-dependencies]
-tempfile = { workspace = true }
 insta = { workspace = true }
+tempfile = { workspace = true }
 
 [lints]
 workspace = true

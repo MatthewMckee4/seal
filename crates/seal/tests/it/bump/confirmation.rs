@@ -71,7 +71,6 @@ version = "1.0.0"
     Proceed with these changes? (y/n):
     Creating branch: release/v1.0.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1
 
@@ -263,7 +262,6 @@ version = "1.0.0"
 
     Creating branch: release/v1.0.1
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1
 

@@ -156,9 +156,9 @@ version-files = ["test.txt"]
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
         assert!(workspace.members.is_empty());
@@ -193,9 +193,9 @@ version-files = ["Cargo.toml"]
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
         assert!(workspace.members.is_empty());
@@ -227,9 +227,9 @@ current-version = "3.0.0"
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
         assert!(workspace.members.is_empty());

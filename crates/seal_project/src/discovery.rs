@@ -99,9 +99,9 @@ mod tests {
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
     }
@@ -136,9 +136,9 @@ mod tests {
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
     }
@@ -195,9 +195,9 @@ mod tests {
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true,
-            "changelog": null
-          }
+            "confirm": true
+          },
+          "changelog": null
         }
         "#);
     }

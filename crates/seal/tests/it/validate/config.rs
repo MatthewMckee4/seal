@@ -349,7 +349,7 @@ unknown-field = "value"
       |
     3 | unknown-field = "value"
       | ^^^^^^^^^^^^^
-    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`, `changelog`
+    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`
     "#);
 }
 

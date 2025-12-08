@@ -832,7 +832,6 @@ version = \"0.0.1\"
 
     Proceed with these changes? (y/n):
     Updating version files...
-    Skipping changelog generation as no configuration was found.
     Successfully bumped to 0.0.2
     Note: No git branch or commit was created
 

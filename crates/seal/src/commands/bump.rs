@@ -79,6 +79,31 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         change.display_diff(&mut stdout)?;
     }
 
+    let changelog_changes = if !args.no_changelog {
+        if let Some(changelog_config) = config.changelog.as_ref() {
+            match seal_changelog::prepare_changelog_changes(
+                workspace.root(),
+                &new_version_string,
+                changelog_config,
+            ) {
+                Ok(changes) => {
+                    for change in &changes {
+                        change.display_diff(&mut stdout)?;
+                    }
+                    Some(changes)
+                }
+                Err(e) => {
+                    writeln!(stdout, "Warning: Failed to prepare changelog: {e}")?;
+                    None
+                }
+            }
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
     writeln!(stdout)?;
 
     let has_git_operations = branch_name.is_some() || commit_message.is_some();
@@ -86,6 +111,11 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Changes to be made:")?;
     for change in &changes {
         writeln!(stdout, "  - Update `{}`", change.path().display())?;
+    }
+    if let Some(ref changelog) = changelog_changes {
+        for change in changelog {
+            writeln!(stdout, "  - Update `{}`", change.path().display())?;
+        }
     }
     writeln!(stdout)?;
 
@@ -142,27 +172,9 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Updating version files...")?;
     changes.apply()?;
 
-    if !args.no_changelog {
-        if let Some(changelog_config) = release_config.changelog.as_ref() {
-            writeln!(stdout, "Generating changelog...")?;
-            if let Err(e) = seal_changelog::generate_and_update_changelog(
-                workspace.root(),
-                &new_version_string,
-                changelog_config,
-            ) {
-                writeln!(stdout, "Warning: Failed to generate changelog: {e}")?;
-            }
-        } else {
-            writeln!(
-                stdout,
-                "Skipping changelog generation as no configuration was found."
-            )?;
-        }
-    } else {
-        writeln!(
-            stdout,
-            "Skipping changelog generation as `--no-changelog` was provided."
-        )?;
+    if let Some(changelog) = changelog_changes {
+        writeln!(stdout, "Updating changelog...")?;
+        changelog.apply()?;
     }
 
     if let Some(message) = &commit_message {
