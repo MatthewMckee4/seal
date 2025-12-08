@@ -52,25 +52,25 @@ version = "1.2.3"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a/package.json b/package.json
-    --- a/package.json
-    +++ b/package.json
+    diff --git a/[TEMP]/package.json b/[TEMP]/package.json
+    --- a/[TEMP]/package.json
+    +++ b/[TEMP]/package.json
     @@ -1 +1 @@
     -{"name": "test", "version": "1.2.3"}
     +{"name": "test", "version": "2.0.0"}
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
@@ -87,9 +87,9 @@ version = "1.2.3"
      branch-name = "release/v{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
-      - Update `package.json`
-      - Update `VERSION`
+      - Update `[TEMP]/Cargo.toml`
+      - Update `[TEMP]/package.json`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -99,6 +99,7 @@ version = "1.2.3"
 
     Creating branch: release/v2.0.0
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0
 
@@ -157,9 +158,9 @@ version = "1.2.3"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
@@ -178,7 +179,7 @@ version = "1.2.3"
      branch-name = "releases/{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -188,6 +189,7 @@ version = "1.2.3"
 
     Creating branch: releases/1.3.0
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.3.0
 
@@ -237,9 +239,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION.txt b/VERSION.txt
-    --- a/VERSION.txt
-    +++ b/VERSION.txt
+    diff --git a/[TEMP]/VERSION.txt b/[TEMP]/VERSION.txt
+    --- a/[TEMP]/VERSION.txt
+    +++ b/[TEMP]/VERSION.txt
     @@ -1 +1 @@
     -version = "2.1.5"
     +version = "2.1.6"
@@ -256,7 +258,7 @@ confirm = false
      branch-name = "bump/{version}"
 
     Changes to be made:
-      - Update `VERSION.txt`
+      - Update `[TEMP]/VERSION.txt`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -266,6 +268,7 @@ confirm = false
 
     Creating branch: bump/2.1.6
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.1.6
 
@@ -311,9 +314,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/version.txt b/version.txt
-    --- a/version.txt
-    +++ b/version.txt
+    diff --git a/[TEMP]/version.txt b/[TEMP]/version.txt
+    --- a/[TEMP]/version.txt
+    +++ b/[TEMP]/version.txt
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-alpha.1"
@@ -330,7 +333,7 @@ confirm = false
      branch-name = "rel/{version}"
 
     Changes to be made:
-      - Update `version.txt`
+      - Update `[TEMP]/version.txt`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -340,6 +343,7 @@ confirm = false
 
     Creating branch: rel/2.0.0-alpha.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0-alpha.1
 
@@ -391,9 +395,9 @@ edition = "2021"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "my-app"
@@ -413,7 +417,7 @@ edition = "2021"
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -423,6 +427,7 @@ edition = "2021"
 
     Creating branch: release/1.3.0-beta.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.3.0-beta.1
 
@@ -472,9 +477,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/version b/version
-    --- a/version
-    +++ b/version
+    diff --git a/[TEMP]/version b/[TEMP]/version
+    --- a/[TEMP]/version
+    +++ b/[TEMP]/version
     @@ -1 +1 @@
     -version = "1.0.0"
     +version = "1.0.1-rc.1"
@@ -491,7 +496,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `version`
+      - Update `[TEMP]/version`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -501,6 +506,7 @@ confirm = false
 
     Creating branch: release/1.0.1-rc.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1-rc.1
 
@@ -543,9 +549,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3-alpha.1"
     +version = "1.2.3-alpha.2"
@@ -562,7 +568,7 @@ confirm = false
      branch-name = "rel/{version}"
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -572,6 +578,7 @@ confirm = false
 
     Creating branch: rel/1.2.3-alpha.2
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.2.3-alpha.2
 
@@ -616,9 +623,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/ver.txt b/ver.txt
-    --- a/ver.txt
-    +++ b/ver.txt
+    diff --git a/[TEMP]/ver.txt b/[TEMP]/ver.txt
+    --- a/[TEMP]/ver.txt
+    +++ b/[TEMP]/ver.txt
     @@ -1 +1 @@
     -version = "2.0.0-beta.5"
     +version = "2.0.0-beta.6"
@@ -635,7 +642,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `ver.txt`
+      - Update `[TEMP]/ver.txt`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -645,6 +652,7 @@ confirm = false
 
     Creating branch: release/2.0.0-beta.6
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0-beta.6
 
@@ -687,9 +695,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "3.0.0"
@@ -706,7 +714,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -716,6 +724,7 @@ confirm = false
 
     Creating branch: release/3.0.0
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 3.0.0
 
@@ -760,9 +769,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-beta.1"
@@ -779,7 +788,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -789,6 +798,7 @@ confirm = false
 
     Creating branch: release/2.0.0-beta.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 2.0.0-beta.1
 
@@ -854,32 +864,32 @@ version = "0.1.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "multi"
     -version = "0.1.0"
     +version = "0.2.0"
 
-    diff --git a/package.json b/package.json
-    --- a/package.json
-    +++ b/package.json
+    diff --git a/[TEMP]/package.json b/[TEMP]/package.json
+    --- a/[TEMP]/package.json
+    +++ b/[TEMP]/package.json
     @@ -1 +1 @@
     -{"version": "0.1.0"}
     +{"version": "0.2.0"}
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "0.1.0"
     +version = "0.2.0"
 
-    diff --git a/version.py b/version.py
-    --- a/version.py
-    +++ b/version.py
+    diff --git a/[TEMP]/version.py b/[TEMP]/version.py
+    --- a/[TEMP]/version.py
+    +++ b/[TEMP]/version.py
     @@ -1 +1 @@
     -__version__ = "0.1.0"
     +__version__ = "0.2.0"
@@ -896,10 +906,10 @@ version = "0.1.0"
      branch-name = "bump/{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
-      - Update `package.json`
-      - Update `VERSION`
-      - Update `version.py`
+      - Update `[TEMP]/Cargo.toml`
+      - Update `[TEMP]/package.json`
+      - Update `[TEMP]/VERSION`
+      - Update `[TEMP]/version.py`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -909,6 +919,7 @@ version = "0.1.0"
 
     Creating branch: bump/0.2.0
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 0.2.0
 
@@ -1012,9 +1023,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "1.2.3-alpha.0"
@@ -1031,7 +1042,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -1041,6 +1052,7 @@ confirm = false
 
     Creating branch: release/1.2.3-alpha.0
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.2.3-alpha.0
 
@@ -1064,9 +1076,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3-alpha.0"
     +version = "1.2.3-alpha.1"
@@ -1083,7 +1095,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -1093,6 +1105,7 @@ confirm = false
 
     Creating branch: release/1.2.3-alpha.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.2.3-alpha.1
 
@@ -1169,9 +1182,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
+    --- a/[TEMP]/VERSION
+    +++ b/[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
@@ -1188,7 +1201,7 @@ confirm = false
      branch-name = "release/{version}"
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -1252,6 +1265,7 @@ confirm = false
 
     Creating branch: release/1.0.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1
 

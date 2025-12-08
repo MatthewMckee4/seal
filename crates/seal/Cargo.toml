@@ -11,6 +11,7 @@ default-run = "seal"
 
 [dependencies]
 seal_bump = { workspace = true }
+seal_changelog = { workspace = true }
 seal_cli = { workspace = true }
 seal_project = { workspace = true }
 seal_version = { workspace = true }
@@ -25,6 +26,7 @@ owo-colors = { workspace = true }
 regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+tokio = { version = "1", features = ["rt", "macros"] }
 which = { workspace = true }
 
 [dev-dependencies]

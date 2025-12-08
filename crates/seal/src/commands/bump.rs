@@ -140,7 +140,30 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     }
 
     writeln!(stdout, "Updating version files...")?;
-    changes.apply(workspace.root())?;
+    changes.apply()?;
+
+    if !args.no_changelog {
+        if let Some(changelog_config) = release_config.changelog.as_ref() {
+            writeln!(stdout, "Generating changelog...")?;
+            if let Err(e) = seal_changelog::generate_and_update_changelog(
+                workspace.root(),
+                &new_version_string,
+                changelog_config,
+            ) {
+                writeln!(stdout, "Warning: Failed to generate changelog: {e}")?;
+            }
+        } else {
+            writeln!(
+                stdout,
+                "Skipping changelog generation as no configuration was found."
+            )?;
+        }
+    } else {
+        writeln!(
+            stdout,
+            "Skipping changelog generation as `--no-changelog` was provided."
+        )?;
+    }
 
     if let Some(message) = &commit_message {
         writeln!(stdout, "Committing changes...")?;

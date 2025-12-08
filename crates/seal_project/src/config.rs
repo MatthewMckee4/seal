@@ -184,6 +184,10 @@ pub struct ReleaseConfig {
     confirm = true"#
     )]
     pub confirm: bool,
+
+    /// Changelog configuration for release notes generation.
+    #[option_group]
+    pub changelog: Option<ChangelogConfig>,
 }
 
 fn default_push() -> bool {
@@ -308,6 +312,129 @@ impl<'de> Deserialize<'de> for BranchName {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
+pub struct ChangelogConfig {
+    /// Labels to ignore when generating changelog.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "[]",
+        value_type = "list",
+        example = r#"
+        ignore-labels = ["internal", "ci", "testing"]
+        "#
+    )]
+    pub ignore_labels: Option<Vec<String>>,
+
+    /// Mapping of section names to labels.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "{}",
+        value_type = "dict",
+        example = r#"
+        [changelog.section-labels]
+        "Breaking changes" = ["breaking"]
+        "Enhancements" = ["enhancement", "compatibility"]
+        "#
+    )]
+    pub section_labels: Option<BTreeMap<String, Vec<String>>>,
+
+    /// Template for the changelog heading. Must contain {version} placeholder.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = r#""{version}""#,
+        value_type = "string",
+        example = r#"
+        changelog-heading = "{version}"
+        "#
+    )]
+    pub changelog_heading: Option<ChangelogHeading>,
+
+    /// Whether to include contributors in the changelog. Defaults to true.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "true",
+        value_type = "boolean",
+        example = r#"
+        include-contributors = true
+        "#
+    )]
+    pub include_contributors: Option<bool>,
+}
+
+impl ChangelogConfig {
+    pub fn ignore_labels(&self) -> &[String] {
+        self.ignore_labels.as_deref().unwrap_or(&[])
+    }
+
+    pub fn section_labels(&self) -> &BTreeMap<String, Vec<String>> {
+        static EMPTY: BTreeMap<String, Vec<String>> = BTreeMap::new();
+        self.section_labels.as_ref().unwrap_or(&EMPTY)
+    }
+
+    pub fn changelog_heading(&self) -> &str {
+        self.changelog_heading
+            .as_ref()
+            .map(ChangelogHeading::as_str)
+            .unwrap_or("{version}")
+    }
+
+    pub fn include_contributors(&self) -> bool {
+        self.include_contributors.unwrap_or(true)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct ChangelogHeading(String);
+
+impl ChangelogHeading {
+    pub fn new(value: String) -> Result<Self, ConfigValidationError> {
+        if value.trim().is_empty() {
+            return Err(ConfigValidationError::EmptyChangelogHeading);
+        }
+        if !value.contains("{version}") {
+            return Err(ConfigValidationError::MissingVersionPlaceholder {
+                field: "changelog-heading".to_string(),
+                value,
+            });
+        }
+        if value.trim_start().starts_with('#') {
+            return Err(ConfigValidationError::ChangelogHeadingStartsWithHash { value });
+        }
+        Ok(Self(value))
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl fmt::Display for ChangelogHeading {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl Serialize for ChangelogHeading {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.0)
+    }
+}
+
+impl<'de> Deserialize<'de> for ChangelogHeading {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+        Self::new(value).map_err(serde::de::Error::custom)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use insta::{assert_debug_snapshot, assert_json_snapshot};
@@ -338,7 +465,8 @@ branch-name = "release-{version}"
             "branch-name": "release-{version}",
             "push": false,
             "create-pr": false,
-            "confirm": true
+            "confirm": true,
+            "changelog": null
           }
         }
         "#);
@@ -365,7 +493,8 @@ version-files = ["VERSION"]
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true
+            "confirm": true,
+            "changelog": null
           }
         }
         "#);
@@ -391,7 +520,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`, `changelog`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -593,6 +722,7 @@ branch-name = ""
                 push: true,
                 create_pr: true,
                 confirm: true,
+                changelog: None,
             }),
         };
 
@@ -611,7 +741,8 @@ branch-name = ""
             "branch-name": "release/v{version}",
             "push": true,
             "create-pr": true,
-            "confirm": true
+            "confirm": true,
+            "changelog": null
           }
         }
         "#);
@@ -643,6 +774,7 @@ commit-message = "Release {version} with {version} tag"
                     push: false,
                     create_pr: false,
                     confirm: true,
+                    changelog: None,
                 },
             ),
         }
@@ -711,6 +843,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     push: false,
                     create_pr: false,
                     confirm: true,
+                    changelog: None,
                 },
             ),
         }
@@ -740,6 +873,7 @@ version-files = []
                     push: false,
                     create_pr: false,
                     confirm: true,
+                    changelog: None,
                 },
             ),
         }

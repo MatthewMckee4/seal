@@ -39,9 +39,9 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
@@ -60,7 +60,7 @@ version = "1.0.0"
      branch-name = "release/v{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -71,6 +71,7 @@ version = "1.0.0"
     Proceed with these changes? (y/n):
     Creating branch: release/v1.0.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1
 
@@ -136,9 +137,9 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
@@ -157,7 +158,7 @@ version = "1.0.0"
      branch-name = "release/v{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -231,9 +232,9 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
+    --- a/[TEMP]/Cargo.toml
+    +++ b/[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
@@ -252,7 +253,7 @@ version = "1.0.0"
      branch-name = "release/v{version}"
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -262,6 +263,7 @@ version = "1.0.0"
 
     Creating branch: release/v1.0.1
     Updating version files...
+    Skipping changelog generation as no configuration was found.
     Committing changes...
     Successfully bumped to 1.0.1
 

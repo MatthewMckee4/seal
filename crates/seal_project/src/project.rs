@@ -156,7 +156,8 @@ version-files = ["test.txt"]
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true
+            "confirm": true,
+            "changelog": null
           }
         }
         "#);
@@ -192,7 +193,8 @@ version-files = ["Cargo.toml"]
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true
+            "confirm": true,
+            "changelog": null
           }
         }
         "#);
@@ -225,7 +227,8 @@ current-version = "3.0.0"
             "branch-name": null,
             "push": false,
             "create-pr": false,
-            "confirm": true
+            "confirm": true,
+            "changelog": null
           }
         }
         "#);
