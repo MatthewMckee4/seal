@@ -7,8 +7,7 @@ fn bump_with_custom_search_pattern() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "2.5.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -75,8 +74,7 @@ search = "APP_VERSION = '{version}'"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.5.0"
     +current-version = "2.6.0"
@@ -118,8 +116,7 @@ fn bump_with_version_template_major_minor_only() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "1.2.3"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -159,8 +156,7 @@ fn bump_with_version_template_with_v_prefix() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r##"
-[release]
+            r##"[release]
 current-version = "3.0.5"
 commit-message = "Bump to {version}"
 branch-name = "bump/{version}"
@@ -210,8 +206,7 @@ fn bump_with_version_template_prerelease() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "2.0.0-beta.1"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -249,8 +244,7 @@ search = "version={version}"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-beta.1"
     +current-version = "2.0.0-beta.2"
@@ -281,8 +275,7 @@ fn bump_with_mixed_version_formats() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "1.5.2"
 
 version-files = [
@@ -349,8 +342,7 @@ fn bump_with_custom_search_pattern_not_found() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "1.0.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -388,8 +380,7 @@ fn bump_with_version_template_extra_on_stable() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "1.0.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -427,8 +418,7 @@ search = "ver={version}"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.1.0"
@@ -459,8 +449,7 @@ fn bump_prerelease_to_stable_with_template() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "2.0.0-rc.3"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -498,8 +487,7 @@ search = "version={version}"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-rc.3"
     +current-version = "2.0.0"
@@ -530,8 +518,7 @@ fn bump_with_template_prerelease_with_hyphen() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "1.0.0-alpha.1"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -569,8 +556,7 @@ search = "APP_VERSION={version}"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0-alpha.1"
     +current-version = "1.0.0-alpha.2"
@@ -601,8 +587,7 @@ fn bump_with_multiple_occurrences_same_file() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "0.5.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -647,8 +632,7 @@ search = "version `{version}`"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.5.0"
     +current-version = "0.6.0"
@@ -683,8 +667,7 @@ fn bump_version_in_nested_string() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"
-[release]
+            r#"[release]
 current-version = "0.0.1"
 
 [[release.version-files]]
@@ -718,8 +701,7 @@ path = "README.md"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.0.1"
     +current-version = "0.0.2"
@@ -740,4 +722,144 @@ path = "README.md"
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
+}
+
+#[test]
+fn bump_version_with_glob_path() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "**/Cargo.toml"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("crates/foo/Cargo.toml")
+        .write_str(
+            "[package]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    context
+        .root
+        .child("crates/bar/Cargo.toml")
+        .write_str(
+            "[package]
+name = \"bar\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    context
+        .root
+        .child("crates/baz/Cargo.toml")
+        .write_str(
+            "[package]
+name = \"baz\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/crates/bar/Cargo.toml b/crates/bar/Cargo.toml
+    --- a/crates/bar/Cargo.toml
+    +++ b/crates/bar/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "bar"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/crates/baz/Cargo.toml b/crates/baz/Cargo.toml
+    --- a/crates/baz/Cargo.toml
+    +++ b/crates/baz/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "baz"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/crates/foo/Cargo.toml b/crates/foo/Cargo.toml
+    --- a/crates/foo/Cargo.toml
+    +++ b/crates/foo/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "foo"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+     path = "**/Cargo.toml"
+
+    Changes to be made:
+      - Update `crates/bar/Cargo.toml`
+      - Update `crates/baz/Cargo.toml`
+      - Update `crates/foo/Cargo.toml`
+      - Update `[TEMP]/seal.toml`
+
+    Note: No branch or commit will be created (branch-name and commit-message not configured)
+
+    Proceed with these changes? (y/n):
+    Updating version files...
+    Successfully bumped to 0.0.2
+    Note: No git branch or commit was created
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.read_file("crates/foo/Cargo.toml"), @r#"
+    [package]
+    name = "foo"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("crates/bar/Cargo.toml"), @r#"
+    [package]
+    name = "bar"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("crates/baz/Cargo.toml"), @r#"
+    [package]
+    name = "baz"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.2"
+
+    [[release.version-files]]
+    path = "**/Cargo.toml"
+    "#);
 }
