@@ -4,7 +4,7 @@ resolver = "2"
 
 [workspace.package]
 edition = "2024"
-rust-version = "1.89"
+rust-version = "1.90"
 homepage = "https://github.com/MatthewMckee4/seal"
 repository = "https://github.com/MatthewMckee4/seal"
 authors = ["Matthew McKee <matthewmckee4@yahoo.co.uk>"]
