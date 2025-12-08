@@ -606,7 +606,6 @@ dependencies = [
  "fs-err",
  "glob",
  "owo-colors",
- "regex",
  "seal_project",
  "semver",
  "similar",

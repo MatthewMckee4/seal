@@ -14,7 +14,6 @@ seal_project = { workspace = true }
 anyhow = { workspace = true }
 fs-err = { workspace = true }
 owo-colors = { workspace = true }
-regex = { workspace = true }
 semver = { workspace = true }
 similar = { workspace = true }
 thiserror = { workspace = true }
