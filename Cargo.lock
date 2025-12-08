@@ -1305,7 +1305,7 @@ dependencies = [
 
 [[package]]
 name = "seal"
-version = "0.0.1-alpha.2"
+version = "0.0.1-alpha.3"
 dependencies = [
  "anstream",
  "anyhow",
@@ -1431,7 +1431,7 @@ dependencies = [
 
 [[package]]
 name = "seal_version"
-version = "0.0.1-alpha.2"
+version = "0.0.1-alpha.3"
 
 [[package]]
 name = "secrecy"

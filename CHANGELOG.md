@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.1-alpha.3
+
+### Changelog
+
+- Support ignoring contributors in changelog ([#34](https://github.com/MatthewMckee4/seal/pull/34))
+- Changelog support ([#32](https://github.com/MatthewMckee4/seal/pull/32))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+
 ## 0.0.1-alpha.2
 
 ### Bug Fixes
