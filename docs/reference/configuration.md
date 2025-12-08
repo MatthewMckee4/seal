@@ -41,6 +41,26 @@ Template for the changelog heading. Must contain {version} placeholder.
 
 ---
 
+#### [`ignore-contributors`](#changelog_ignore-contributors)
+<span id="ignore-contributors"></span>
+
+Contributors to ignore when generating changelog.
+
+**Default value**: `[]`
+
+**Type**: `list`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [changelog]
+    ignore-contributors = ["dependabot[bot]"]
+    ```
+
+---
+
 #### [`ignore-labels`](#changelog_ignore-labels)
 <span id="ignore-labels"></span>
 

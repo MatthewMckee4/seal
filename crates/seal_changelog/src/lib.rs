@@ -149,6 +149,11 @@ pub fn categorize_prs(prs: Vec<PREntry>, config: &ChangelogConfig) -> Categorize
         }
 
         if let Some(author) = &pr.author {
+            if let Some(ignore_contributors) = &config.ignore_contributors {
+                if ignore_contributors.contains(author) {
+                    continue;
+                }
+            }
             contributors.insert(author.clone());
         }
 
@@ -413,6 +418,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: None,
+            ignore_contributors: None,
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
@@ -474,6 +480,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: Some(vec!["internal".to_string(), "ci".to_string()]),
+            ignore_contributors: None,
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
@@ -510,6 +517,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: None,
+            ignore_contributors: None,
             section_labels: Some(section_labels),
             changelog_heading: Some(
                 ChangelogHeading::new("Version {version} - Released".to_string()).unwrap(),
@@ -544,6 +552,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: None,
+            ignore_contributors: None,
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(false),
@@ -585,6 +594,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: None,
+            ignore_contributors: None,
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
@@ -617,6 +627,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: None,
+            ignore_contributors: None,
             section_labels: None,
             changelog_heading: None,
             include_contributors: Some(true),
@@ -695,6 +706,7 @@ mod tests {
 
         let config = ChangelogConfig {
             ignore_labels: None,
+            ignore_contributors: None,
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(false),
@@ -709,5 +721,31 @@ mod tests {
 
         - Add feature (#1)
         "###);
+    }
+
+    #[test]
+    fn test_format_changelog_with_ignored_contributors() {
+        let prs = vec![PREntry {
+            title: "Add feature".to_string(),
+            number: 1,
+            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            labels: vec!["enhancement".to_string()],
+            author: Some("alice".to_string()),
+        }];
+
+        let mut section_labels = BTreeMap::new();
+        section_labels.insert("Enhancements".to_string(), vec!["enhancement".to_string()]);
+
+        let config = ChangelogConfig {
+            ignore_labels: Some(vec!["internal".to_string(), "ci".to_string()]),
+            ignore_contributors: Some(vec!["alice".to_string()]),
+            section_labels: Some(section_labels),
+            changelog_heading: None,
+            include_contributors: Some(true),
+        };
+
+        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+
+        insta::assert_snapshot!(result, @"## 1.0.0");
     }
 }

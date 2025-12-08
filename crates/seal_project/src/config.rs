@@ -328,6 +328,17 @@ pub struct ChangelogConfig {
     )]
     pub ignore_labels: Option<Vec<String>>,
 
+    /// Contributors to ignore when generating changelog.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "[]",
+        value_type = "list",
+        example = r#"
+        ignore-contributors = ["dependabot[bot]"]
+        "#
+    )]
+    pub ignore_contributors: Option<Vec<String>>,
+
     /// Mapping of section names to labels.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[field(
