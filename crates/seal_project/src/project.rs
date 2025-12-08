@@ -257,14 +257,14 @@ current-version = "3.0.0"
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
-                message: "expected `.`, `=`",
-                raw: Some(
+            Error {
+                message: "key with no value, expected `=`",
+                input: Some(
                     "invalid toml content [[[",
                 ),
                 keys: [],
                 span: Some(
-                    8..9,
+                    8..8,
                 ),
             },
         )
