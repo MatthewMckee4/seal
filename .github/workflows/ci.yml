@@ -111,9 +111,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Update Rust toolchain
-        run: rustup update
+      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
 
-      - name: Run tests
+      - name: "Install Rust toolchain"
+        run: rustup show
+
+      - name: "Install cargo nextest"
+        uses: taiki-e/install-action@a416ddeedbd372e614cc1386e8b642692f66865e # v2.57.1
+        with:
+          tool: cargo-nextest
+
+      - name: "Cargo test"
         run: |
-          cargo test
+          cargo nextest run --no-fail-fast
