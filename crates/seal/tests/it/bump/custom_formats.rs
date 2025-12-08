@@ -874,3 +874,117 @@ version = \"0.0.1\"
     path = "**/Cargo.toml"
     "#);
 }
+
+#[test]
+fn bump_version_cargo_toml_invalid_field_name() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "Cargo.toml"
+format = "toml"
+field = "package.vversion"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("Cargo.toml")
+        .write_str(
+            "[package]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    ----- stderr -----
+    error: Expected `package` to refer to a TOML table
+    ");
+
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
+    [package]
+    name = "foo"
+    version = "0.0.1"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.1"
+
+    [[release.version-files]]
+    path = "Cargo.toml"
+    format = "toml"
+    field = "package.vversion"
+    "#);
+}
+
+#[test]
+fn bump_version_cargo_toml_invalid_version_format() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "Cargo.toml"
+format = "toml"
+field = "package.version.version"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("Cargo.toml")
+        .write_str(
+            "[package.version]
+vversion = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    ----- stderr -----
+    error: Expected `package` to refer to a TOML table
+    ");
+
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
+    [package.version]
+    vversion = "0.0.1"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.1"
+
+    [[release.version-files]]
+    path = "Cargo.toml"
+    format = "toml"
+    field = "package.version.version"
+    "#);
+}
