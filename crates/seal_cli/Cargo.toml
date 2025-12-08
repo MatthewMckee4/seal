@@ -9,8 +9,9 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-clap = { workspace = true }
 seal_version = { workspace = true }
+
+clap = { workspace = true }
 
 [lints]
 workspace = true

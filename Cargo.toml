@@ -11,6 +11,13 @@ authors = ["Matthew McKee <matthewmckee4@yahoo.co.uk>"]
 license = "MIT"
 
 [workspace.dependencies]
+seal_bump = { path = "crates/seal_bump" }
+seal_cli = { path = "crates/seal_cli" }
+seal_macros = { path = "crates/seal_macros" }
+seal_options_metadata = { path = "crates/seal_options_metadata" }
+seal_project = { path = "crates/seal_project" }
+seal_version = { path = "crates/seal_version" }
+
 anstream = { version = "0.6.21" }
 anyhow = { version = "1.0.100" }
 assert_cmd = "2.0"
@@ -26,14 +33,6 @@ pretty_assertions = { version = "1.4.1" }
 proc-macro2 = { version = "1.0.86" }
 quote = { version = "1.0.37" }
 regex = { version = "1.12.2" }
-schemars = { version = "1.0.0", features = ["url2"] }
-seal = { path = "crates/seal" }
-seal_bump = { path = "crates/seal_bump" }
-seal_cli = { path = "crates/seal_cli" }
-seal_macros = { path = "crates/seal_macros" }
-seal_options_metadata = { path = "crates/seal_options_metadata" }
-seal_project = { path = "crates/seal_project" }
-seal_version = { path = "crates/seal_version" }
 semver = { version = "1.0" }
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
