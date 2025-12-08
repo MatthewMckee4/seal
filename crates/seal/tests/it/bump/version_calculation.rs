@@ -249,9 +249,21 @@ confirm = false
     -version = "2.1.5"
     +version = "2.1.6"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "2.1.5"
+    +current-version = "2.1.6"
+     version-files = ["VERSION.txt"]
+     commit-message = "Version {version}"
+     branch-name = "bump/{version}"
+
     Changes to be made:
       - Update `VERSION.txt`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b bump/2.1.6`
@@ -260,7 +272,6 @@ confirm = false
 
     Creating branch: bump/2.1.6
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 2.1.6
 
@@ -479,9 +490,21 @@ confirm = false
     -version = "1.0.0"
     +version = "1.0.1-rc.1"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1-rc.1"
+     version-files = ["version"]
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+
     Changes to be made:
       - Update `version`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.1-rc.1`
@@ -490,7 +513,6 @@ confirm = false
 
     Creating branch: release/1.0.1-rc.1
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.0.1-rc.1
 
@@ -883,12 +905,24 @@ version = "0.1.0"
     -__version__ = "0.1.0"
     +__version__ = "0.2.0"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "0.1.0"
+    +current-version = "0.2.0"
+     version-files = ["Cargo.toml", "package.json", "VERSION", "version.py"]
+     commit-message = "Bump to {version}"
+     branch-name = "bump/{version}"
+
     Changes to be made:
       - Update `Cargo.toml`
       - Update `package.json`
       - Update `VERSION`
       - Update `version.py`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b bump/0.2.0`
@@ -897,7 +931,6 @@ version = "0.1.0"
 
     Creating branch: bump/0.2.0
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 0.2.0
 
@@ -1010,9 +1043,21 @@ confirm = false
     -version = "1.2.3"
     +version = "1.2.3-alpha.0"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.3-alpha.0"
+     version-files = ["VERSION"]
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.2.3-alpha.0`
@@ -1021,7 +1066,6 @@ confirm = false
 
     Creating branch: release/1.2.3-alpha.0
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.2.3-alpha.0
 
@@ -1052,9 +1096,21 @@ confirm = false
     -version = "1.2.3-alpha.0"
     +version = "1.2.3-alpha.1"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.2.3-alpha.0"
+    +current-version = "1.2.3-alpha.1"
+     version-files = ["VERSION"]
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.2.3-alpha.1`
@@ -1063,7 +1119,6 @@ confirm = false
 
     Creating branch: release/1.2.3-alpha.1
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.2.3-alpha.1
 
@@ -1106,7 +1161,7 @@ confirm = false
     -------------------
 
     ----- stderr -----
-    error: Version file not found: [TEMP]/missing.txt
+    error: No files found for path or glob `missing.txt`
     ");
 }
 
@@ -1149,9 +1204,21 @@ confirm = false
     -version = "1.2.3"
     +version = "2.0.0"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "2.0.0"
+     version-files = ["VERSION"]
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0`
@@ -1193,8 +1260,20 @@ confirm = false
     Preview of changes:
     -------------------
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     push = false
+
     Changes to be made:
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.1`
@@ -1203,7 +1282,6 @@ confirm = false
 
     Creating branch: release/1.0.1
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.0.1
 

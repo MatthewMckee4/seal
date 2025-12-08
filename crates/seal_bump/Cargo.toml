@@ -18,6 +18,8 @@ regex = { workspace = true }
 semver = { workspace = true }
 similar = { workspace = true }
 thiserror = { workspace = true }
+glob = { workspace = true }
+toml = { workspace = true }
 
 [lints]
 workspace = true

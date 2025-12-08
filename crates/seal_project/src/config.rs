@@ -55,19 +55,22 @@ impl Config {
 pub enum VersionFile {
     /// Text or TOML replacement (format determines behavior)
     Text {
-        path: String, // Glob pattern allowed
+        /// Glob pattern
+        path: String,
+        /// Format of the file
+        format: VersionFileTextFormat,
+        /// Field to update in the file
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        format: Option<TextFormat>, // "toml" or "text", default is "text"
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        field: Option<String>, // For TOML: key to update; for Text: unused
+        field: Option<String>,
     },
     /// Search and replace with optional template
     Search {
-        path: String,   // Glob pattern allowed
-        search: String, // Pattern to search for
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        #[serde(rename = "version-template")]
-        version_template: Option<String>, // Replacement template
+        /// Glob pattern
+        path: String,
+        /// Pattern to search for.
+        ///
+        /// Should contain `{version}` placeholder.
+        search: String,
     },
     /// Just path, does a straight string replacement
     JustPath {
@@ -79,7 +82,7 @@ pub enum VersionFile {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum TextFormat {
+pub enum VersionFileTextFormat {
     Toml,
     Text,
 }
@@ -108,31 +111,26 @@ pub struct ReleaseConfig {
         default = "[]",
         value_type = "list",
         example = r#"
-            # TOML file, update a specific field
-            # TOML file, update a specific field
             [[release.version-files]]
             path = "**/Cargo.toml"
             format = "toml"
-            field = "workspace.package.version"
+            field = "package.version"
 
-            # Text file, straight replacement
             [[release.version-files]]
             path = "version.sh"
             format = "text"
 
-            # Search and replace with template
             [[release.version-files]]
             path = "version.sh"
             search = "export FULL_VERSION = '{version}'"
-            version_template = "export FULL_VERSION = '{version}'"
 
-            # Just path, string replacement
             [[release.version-files]]
             path = "README.md"
 
-            # Simple path, string replacement
-            [[release.version-files]]
-            "docs/version.txt"
+            [release]
+            version-files = [
+                "docs/version.txt"
+            ]
         "#
     )]
     pub version_files: Option<Vec<VersionFile>>,
@@ -925,7 +923,18 @@ search = "version = \"{version}\""
             .as_ref()
             .unwrap();
 
-        assert_debug_snapshot!(version_files, @r"");
+        assert_debug_snapshot!(version_files, @r#"
+        [
+            Search {
+                path: "version.sh",
+                search: "export PUBLIC_VERSION=\"{version}\"",
+            },
+            Search {
+                path: "Cargo.toml",
+                search: "version = \"{version}\"",
+            },
+        ]
+        "#);
     }
 
     #[test]
@@ -948,7 +957,17 @@ version-files = [
             .as_ref()
             .unwrap();
 
-        assert_debug_snapshot!(version_files, @r"");
+        assert_debug_snapshot!(version_files, @r#"
+        [
+            Simple(
+                "package.json",
+            ),
+            Search {
+                path: "version.sh",
+                search: "VERSION=\"{version}\"",
+            },
+        ]
+        "#);
     }
 
     #[test]

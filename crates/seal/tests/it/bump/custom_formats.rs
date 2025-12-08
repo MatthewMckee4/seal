@@ -128,7 +128,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION.txt"
 search = "Version: {version}"
-version-template = "{major}.{minor}"
 "#,
         )
         .init_git();
@@ -170,7 +169,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "version.h"
 search = "#define VERSION \"{version}\""
-version-template = "v{major}.{minor}.{patch}"
 "##,
         )
         .init_git();
@@ -222,7 +220,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION"
 search = "version={version}"
-version-template = "{major}.{minor}.{patch}{extra}"
 "#,
         )
         .init_git();
@@ -247,7 +244,7 @@ version-template = "{major}.{minor}.{patch}{extra}"
     +++ b/VERSION
     @@ -1 +1 @@
     -version=2.0.0-beta.1
-    +version=2.0.0beta.2
+    +version=2.0.0-beta.2
 
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
@@ -290,7 +287,7 @@ current-version = "1.5.2"
 
 version-files = [
     "Cargo.toml",
-    { path = "version.txt", search = "Version: {version}", version-template = "{major}.{minor}" },
+    { path = "version.txt", search = "Version: {version}" },
     { path = "full_version.txt", search = "Full: {version}" }
 ]
 
@@ -401,7 +398,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION"
 search = "ver={version}"
-version-template = "{major}.{minor}.{patch}{extra}"
 "#,
         )
         .init_git();
@@ -473,7 +469,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION"
 search = "version={version}"
-version-template = "{major}.{minor}.{patch}{extra}"
 "#,
         )
         .init_git();
@@ -545,7 +540,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "version.txt"
 search = "APP_VERSION={version}"
-version-template = "{major}.{minor}.{patch}-{extra}"
 "#,
         )
         .init_git();

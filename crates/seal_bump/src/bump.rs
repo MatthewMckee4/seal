@@ -1,19 +1,10 @@
 use anyhow::{Context, Result};
+use glob::glob;
 use owo_colors::OwoColorize;
+use seal_project::{VersionFile, VersionFileTextFormat};
 use std::path::{Path, PathBuf};
-use std::sync::LazyLock;
 
 use crate::Version;
-
-// Compile regex patterns once for auto-detecting version fields
-// Using expect() is safe here because these are hardcoded, valid regex patterns
-static VERSION_PATTERNS: LazyLock<[regex::Regex; 3]> = LazyLock::new(|| {
-    [
-        regex::Regex::new(r#"version\s*=\s*"[^"]+""#).expect("Invalid regex pattern"),
-        regex::Regex::new(r#""version"\s*:\s*"[^"]+""#).expect("Invalid regex pattern"),
-        regex::Regex::new(r#"__version__\s*=\s*"[^"]+""#).expect("Invalid regex pattern"),
-    ]
-});
 
 pub struct FileChanges(Vec<FileChange>);
 
@@ -118,20 +109,102 @@ pub fn calculate_version_file_changes(
 ) -> Result<FileChanges> {
     let mut changes = Vec::new();
 
+    let new_version_str = new_version.to_string();
+
     for version_file in version_files {
         match version_file {
-            seal_project::VersionFile::Text {
+            VersionFile::Text {
                 path,
                 format,
                 field,
-            } => todo!(),
-            seal_project::VersionFile::Search {
-                path,
-                search,
-                version_template,
-            } => todo!(),
-            seal_project::VersionFile::JustPath { path } => todo!(),
-            seal_project::VersionFile::Simple(_) => todo!(),
+            } => {
+                for path in glob(path)?.filter_map(Result::ok) {
+                    let old_content = fs_err::read_to_string(&path)?;
+
+                    let new_content = match format {
+                        VersionFileTextFormat::Toml => {
+                            let toml = toml::Value::try_from(&old_content)?;
+
+                            let field = field.clone().unwrap_or("package.version".to_string());
+
+                            let found_old_version = nested_toml_key(&toml, &field)?;
+
+                            let Some(last_key) = field.split('.').next_back() else {
+                                anyhow::bail!("Failed to replace version in {}", path.display())
+                            };
+
+                            if found_old_version == current_version {
+                                anyhow::bail!("Version already up-to-date in {}", path.display())
+                            }
+
+                            old_content.replace(
+                                &format!("{last_key} = \"{found_old_version}\""),
+                                &format!("{last_key} = \"{new_version}\""),
+                            )
+                        }
+
+                        VersionFileTextFormat::Text => exact_version_replacement(
+                            &old_content,
+                            current_version,
+                            &new_version_str,
+                        )?,
+                    };
+
+                    changes.push(FileChange {
+                        path: path.clone(),
+                        old_content,
+                        new_content,
+                    });
+                }
+
+                if changes.is_empty() {
+                    anyhow::bail!("No files found for path or glob `{path}`");
+                }
+            }
+            VersionFile::Search { path, search } => {
+                for path in glob(path)?.filter_map(Result::ok) {
+                    let old_content = fs_err::read_to_string(&path)?;
+
+                    let search_with_current = search.replace("{version}", current_version);
+                    let search_with_new = search.replace("{version}", &new_version_str);
+
+                    if !old_content.contains(&search_with_current) {
+                        anyhow::bail!(
+                            "Search pattern not found in file. Expected: {search_with_current}"
+                        );
+                    }
+
+                    let new_content = old_content.replace(&search_with_current, &search_with_new);
+
+                    changes.push(FileChange {
+                        path: path.clone(),
+                        old_content,
+                        new_content,
+                    });
+                }
+
+                if changes.is_empty() {
+                    anyhow::bail!("No files found for path or glob `{path}`");
+                }
+            }
+            VersionFile::JustPath { path } | VersionFile::Simple(path) => {
+                for path in glob(path)?.filter_map(Result::ok) {
+                    let old_content = fs_err::read_to_string(&path)?;
+
+                    let new_content =
+                        exact_version_replacement(&old_content, current_version, &new_version_str)?;
+
+                    changes.push(FileChange {
+                        path: path.clone(),
+                        old_content,
+                        new_content,
+                    });
+                }
+
+                if changes.is_empty() {
+                    anyhow::bail!("No files found for path or glob `{path}`");
+                }
+            }
         }
     }
 
@@ -158,57 +231,37 @@ pub fn calculate_version_file_changes(
     Ok(FileChanges(changes))
 }
 
-fn update_version_in_content(
-    file_path: &Path,
+fn exact_version_replacement(
     content: &str,
     current_version: &str,
-    new_version: &Version,
-    search_pattern: Option<&str>,
-    version_template: Option<&str>,
+    version_str: &str,
 ) -> Result<String> {
-    let version_str = if let Some(template) = version_template {
-        format_version_with_template(new_version, template)
-    } else {
-        new_version.to_string()
-    };
-
-    if let Some(pattern_str) = search_pattern {
-        let search_with_current = pattern_str.replace("{version}", current_version);
-        let search_with_new = pattern_str.replace("{version}", &version_str);
-
-        if !content.contains(&search_with_current) {
-            anyhow::bail!("Search pattern not found in file. Expected: {search_with_current}");
-        }
-
-        return Ok(content.replace(&search_with_current, &search_with_new));
-    }
-
-    let replacements = [
-        format!(r#"version = "{version_str}""#),
-        format!(r#""version": "{version_str}""#),
-        format!(r#"__version__ = "{version_str}""#),
-    ];
-
-    for (pattern, replacement) in VERSION_PATTERNS.iter().zip(replacements.iter()) {
-        if pattern.is_match(content) {
-            return Ok(pattern.replace(content, replacement).to_string());
-        }
-    }
-
     if content.contains(current_version) {
-        return Ok(content.replace(current_version, &version_str));
+        Ok(content.replace(current_version, version_str))
+    } else {
+        anyhow::bail!(format!("Version `{current_version}` not found in file",));
     }
-
-    anyhow::bail!(format!(
-        "No version field found in file `{}`",
-        file_path.display()
-    ));
 }
 
-fn format_version_with_template(version: &Version, template: &str) -> String {
-    template
-        .replace("{major}", &version.major.to_string())
-        .replace("{minor}", &version.minor.to_string())
-        .replace("{patch}", &version.patch.to_string())
-        .replace("{extra}", &version.pre.to_string())
+fn nested_toml_key<'a>(source: &'a toml::Value, key: &str) -> Result<&'a str> {
+    let mut current = source;
+
+    for part in key.split('.') {
+        match current {
+            toml::Value::Table(table) => {
+                current = table
+                    .get(part)
+                    .ok_or_else(|| anyhow::anyhow!("Key `{part}` not found"))?;
+            }
+            _ => anyhow::bail!("Expected `{part}` to refer to a TOML table"),
+        }
+    }
+
+    match current {
+        toml::Value::String(s) => Ok(s.as_str()),
+        toml::Value::Integer(i) => Ok(Box::leak(i.to_string().into_boxed_str())),
+        toml::Value::Float(f) => Ok(Box::leak(f.to_string().into_boxed_str())),
+        toml::Value::Boolean(b) => Ok(Box::leak(b.to_string().into_boxed_str())),
+        other => anyhow::bail!("Expected final TOML value to be string-like, got {other:?}"),
+    }
 }
