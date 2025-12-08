@@ -9,16 +9,17 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+seal_macros = { workspace = true }
+seal_options_metadata = { workspace = true }
+
 serde = { workspace = true }
 thiserror = { workspace = true }
 toml = { workspace = true }
-seal_options_metadata = { workspace = true }
-seal_macros = { workspace = true }
 
 [dev-dependencies]
-tempfile = { workspace = true }
-insta = { workspace = true }
 dunce = { workspace = true }
+insta = { workspace = true }
+tempfile = { workspace = true }
 
 [lints]
 workspace = true

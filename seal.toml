@@ -1,7 +1,7 @@
 [release]
 current-version = "0.0.0"
 
-version-files = ["crates/seal/Cargo.toml"]
+version-files = ["crates/seal_version/Cargo.toml"]
 
 commit-message = "Release v{version}"
 
