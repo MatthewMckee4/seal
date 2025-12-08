@@ -1,105 +1,10 @@
 use anyhow::{Context, Result};
 use glob::glob;
-use owo_colors::OwoColorize;
+use seal_file_change::{FileChange, FileChanges, make_absolute};
 use seal_project::{VersionFile, VersionFileTextFormat};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::Version;
-
-pub struct FileChanges(Vec<FileChange>);
-
-impl FileChanges {
-    pub fn new(changes: Vec<FileChange>) -> Self {
-        Self(changes)
-    }
-
-    pub fn apply(self, root: &Path) -> Result<()> {
-        for change in self {
-            let full_path = root.join(change.path());
-            fs_err::write(&full_path, &change.new_content)
-                .context(format!("Failed to write {}", full_path.display()))?;
-        }
-        Ok(())
-    }
-}
-
-impl<'a> IntoIterator for &'a FileChanges {
-    type Item = &'a FileChange;
-    type IntoIter = std::slice::Iter<'a, FileChange>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.iter()
-    }
-}
-
-impl IntoIterator for FileChanges {
-    type Item = FileChange;
-    type IntoIter = std::vec::IntoIter<FileChange>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-pub struct FileChange {
-    path: PathBuf,
-    old_content: String,
-    new_content: String,
-}
-
-impl FileChange {
-    pub fn display_diff(&self, stdout: &mut impl std::fmt::Write) -> Result<()> {
-        use similar::{ChangeTag, TextDiff};
-
-        writeln!(stdout)?;
-        writeln!(
-            stdout,
-            "{}",
-            format!(
-                "diff --git a/{} b/{}",
-                self.path.display(),
-                self.path.display()
-            )
-            .bold()
-        )?;
-        writeln!(
-            stdout,
-            "{}",
-            format!("--- a/{}", self.path.display()).blue()
-        )?;
-        writeln!(
-            stdout,
-            "{}",
-            format!("+++ b/{}", self.path.display()).blue()
-        )?;
-
-        let diff = TextDiff::from_lines(&self.old_content, &self.new_content);
-
-        for hunk in diff.unified_diff().iter_hunks() {
-            writeln!(stdout, "{}", hunk.header().yellow().bold())?;
-
-            for change in hunk.iter_changes() {
-                let (sign, value): (&str, String) = match change.tag() {
-                    ChangeTag::Delete => ("-", change.value().red().to_string()),
-                    ChangeTag::Insert => ("+", change.value().green().to_string()),
-                    ChangeTag::Equal => (" ", change.value().dimmed().to_string()),
-                };
-
-                if change.value().ends_with('\n') {
-                    write!(stdout, "{sign}{value}")?;
-                } else {
-                    writeln!(stdout, "{sign}{value}")?;
-                }
-            }
-        }
-
-        Ok(())
-    }
-
-    pub fn path(&self) -> &PathBuf {
-        &self.path
-    }
-}
 
 pub fn calculate_version_file_changes(
     root: &Path,
@@ -150,11 +55,11 @@ pub fn calculate_version_file_changes(
                         )?,
                     };
 
-                    changes.push(FileChange {
-                        path: path.clone(),
+                    changes.push(FileChange::new(
+                        make_absolute(root, &path),
                         old_content,
                         new_content,
-                    });
+                    ));
                 }
 
                 if changes.is_empty() {
@@ -176,11 +81,11 @@ pub fn calculate_version_file_changes(
 
                     let new_content = old_content.replace(&search_with_current, &search_with_new);
 
-                    changes.push(FileChange {
-                        path: path.clone(),
+                    changes.push(FileChange::new(
+                        make_absolute(root, &path),
                         old_content,
                         new_content,
-                    });
+                    ));
                 }
 
                 if changes.is_empty() {
@@ -194,11 +99,11 @@ pub fn calculate_version_file_changes(
                     let new_content =
                         exact_version_replacement(&old_content, current_version, &new_version_str)?;
 
-                    changes.push(FileChange {
-                        path: path.clone(),
+                    changes.push(FileChange::new(
+                        make_absolute(root, &path),
                         old_content,
                         new_content,
-                    });
+                    ));
                 }
 
                 if changes.is_empty() {
@@ -222,13 +127,13 @@ pub fn calculate_version_file_changes(
 
     let updated_content = old_seal_toml_content.replace(&old_line, &new_line);
 
-    changes.push(FileChange {
-        path: seal_toml_path,
-        old_content: old_seal_toml_content,
-        new_content: updated_content,
-    });
+    changes.push(FileChange::new(
+        seal_toml_path,
+        old_seal_toml_content,
+        updated_content,
+    ));
 
-    Ok(FileChanges(changes))
+    Ok(FileChanges::new(changes))
 }
 
 fn exact_version_replacement(

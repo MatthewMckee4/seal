@@ -39,18 +39,18 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -58,9 +58,10 @@ version = "1.0.0"
      version-files = ["Cargo.toml"]
      commit-message = "Release v{version}"
      branch-name = "release/v{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -136,18 +137,18 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -155,9 +156,10 @@ version = "1.0.0"
      version-files = ["Cargo.toml"]
      commit-message = "Release v{version}"
      branch-name = "release/v{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -231,18 +233,18 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -250,9 +252,10 @@ version = "1.0.0"
      version-files = ["Cargo.toml"]
      commit-message = "Release v{version}"
      branch-name = "release/v{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `Cargo.toml`
+      - Update `[TEMP]/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:

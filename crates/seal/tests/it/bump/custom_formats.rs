@@ -53,27 +53,27 @@ search = "APP_VERSION = '{version}'"
     Preview of changes:
     -------------------
 
-    diff --git a/version.sh b/version.sh
-    --- a/version.sh
-    +++ b/version.sh
+    diff --git a[TEMP]/version.sh b[TEMP]/version.sh
+    --- a[TEMP]/version.sh
+    +++ b[TEMP]/version.sh
     @@ -1,3 +1,3 @@
      #!/bin/bash
     -export VERSION="2.5.0"
     +export VERSION="2.6.0"
      export APP_NAME="MyApp"
 
-    diff --git a/config.py b/config.py
-    --- a/config.py
-    +++ b/config.py
+    diff --git a[TEMP]/config.py b[TEMP]/config.py
+    --- a[TEMP]/config.py
+    +++ b[TEMP]/config.py
     @@ -1,3 +1,3 @@
      # Configuration
     -APP_VERSION = '2.5.0'
     +APP_VERSION = '2.6.0'
      DEBUG = False
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.5.0"
@@ -81,10 +81,11 @@ search = "APP_VERSION = '{version}'"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `version.sh`
-      - Update `config.py`
+      - Update `[TEMP]/version.sh`
+      - Update `[TEMP]/config.py`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -233,16 +234,16 @@ search = "version={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version=2.0.0-beta.1
     +version=2.0.0-beta.2
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-beta.1"
@@ -250,9 +251,10 @@ search = "version={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -407,16 +409,16 @@ search = "ver={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -ver=1.0.0
     +ver=1.1.0
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -424,9 +426,10 @@ search = "ver={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -476,16 +479,16 @@ search = "version={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version=2.0.0-rc.3
     +version=2.0.0
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-rc.3"
@@ -493,9 +496,10 @@ search = "version={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `VERSION`
+      - Update `[TEMP]/VERSION`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -545,16 +549,16 @@ search = "APP_VERSION={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/version.txt b/version.txt
-    --- a/version.txt
-    +++ b/version.txt
+    diff --git a[TEMP]/version.txt b[TEMP]/version.txt
+    --- a[TEMP]/version.txt
+    +++ b[TEMP]/version.txt
     @@ -1 +1 @@
     -APP_VERSION=1.0.0-alpha.1
     +APP_VERSION=1.0.0-alpha.2
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0-alpha.1"
@@ -562,9 +566,10 @@ search = "APP_VERSION={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `version.txt`
+      - Update `[TEMP]/version.txt`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -618,9 +623,9 @@ search = "version `{version}`"
     Preview of changes:
     -------------------
 
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
+    diff --git a[TEMP]/README.md b[TEMP]/README.md
+    --- a[TEMP]/README.md
+    +++ b[TEMP]/README.md
     @@ -1,3 +1,3 @@
      # My Project
     -Current version `0.5.0` is stable.
@@ -628,9 +633,9 @@ search = "version `{version}`"
     +Current version `0.6.0` is stable.
     +Install version `0.6.0` with npm.
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.5.0"
@@ -638,9 +643,10 @@ search = "version `{version}`"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `README.md`
+      - Update `[TEMP]/README.md`
       - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
@@ -691,16 +697,16 @@ path = "README.md"
     Preview of changes:
     -------------------
 
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
+    diff --git a[TEMP]/README.md b[TEMP]/README.md
+    --- a[TEMP]/README.md
+    +++ b[TEMP]/README.md
     @@ -1 +1 @@
     -# Tool(0.0.1)
     +# Tool(0.0.2)
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.0.1"
@@ -708,9 +714,10 @@ path = "README.md"
      
      [[release.version-files]]
      path = "README.md"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `README.md`
+      - Update `[TEMP]/README.md`
       - Update `[TEMP]/seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
@@ -781,9 +788,9 @@ version = \"0.0.1\"
     Preview of changes:
     -------------------
 
-    diff --git a/crates/bar/Cargo.toml b/crates/bar/Cargo.toml
-    --- a/crates/bar/Cargo.toml
-    +++ b/crates/bar/Cargo.toml
+    diff --git a[TEMP]/crates/bar/Cargo.toml b[TEMP]/crates/bar/Cargo.toml
+    --- a[TEMP]/crates/bar/Cargo.toml
+    +++ b[TEMP]/crates/bar/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "bar"
@@ -791,9 +798,9 @@ version = \"0.0.1\"
     +version = "0.0.2"
              
 
-    diff --git a/crates/baz/Cargo.toml b/crates/baz/Cargo.toml
-    --- a/crates/baz/Cargo.toml
-    +++ b/crates/baz/Cargo.toml
+    diff --git a[TEMP]/crates/baz/Cargo.toml b[TEMP]/crates/baz/Cargo.toml
+    --- a[TEMP]/crates/baz/Cargo.toml
+    +++ b[TEMP]/crates/baz/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "baz"
@@ -801,9 +808,9 @@ version = \"0.0.1\"
     +version = "0.0.2"
              
 
-    diff --git a/crates/foo/Cargo.toml b/crates/foo/Cargo.toml
-    --- a/crates/foo/Cargo.toml
-    +++ b/crates/foo/Cargo.toml
+    diff --git a[TEMP]/crates/foo/Cargo.toml b[TEMP]/crates/foo/Cargo.toml
+    --- a[TEMP]/crates/foo/Cargo.toml
+    +++ b[TEMP]/crates/foo/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "foo"
@@ -811,9 +818,9 @@ version = \"0.0.1\"
     +version = "0.0.2"
              
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.0.1"
@@ -821,11 +828,12 @@ version = \"0.0.1\"
      
      [[release.version-files]]
      path = "**/Cargo.toml"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `crates/bar/Cargo.toml`
-      - Update `crates/baz/Cargo.toml`
-      - Update `crates/foo/Cargo.toml`
+      - Update `[TEMP]/crates/bar/Cargo.toml`
+      - Update `[TEMP]/crates/baz/Cargo.toml`
+      - Update `[TEMP]/crates/foo/Cargo.toml`
       - Update `[TEMP]/seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)

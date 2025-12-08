@@ -19,6 +19,89 @@ The members of the project.
 
 ---
 
+### `changelog`
+
+#### [`changelog-heading`](#changelog_changelog-heading)
+<span id="changelog-heading"></span>
+
+Template for the changelog heading. Must contain {version} placeholder.
+
+**Default value**: `"{version}"`
+
+**Type**: `string`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [changelog]
+    changelog-heading = "{version}"
+    ```
+
+---
+
+#### [`ignore-labels`](#changelog_ignore-labels)
+<span id="ignore-labels"></span>
+
+Labels to ignore when generating changelog.
+
+**Default value**: `[]`
+
+**Type**: `list`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [changelog]
+    ignore-labels = ["internal", "ci", "testing"]
+    ```
+
+---
+
+#### [`include-contributors`](#changelog_include-contributors)
+<span id="include-contributors"></span>
+
+Whether to include contributors in the changelog. Defaults to true.
+
+**Default value**: `true`
+
+**Type**: `boolean`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [changelog]
+    include-contributors = true
+    ```
+
+---
+
+#### [`section-labels`](#changelog_section-labels)
+<span id="section-labels"></span>
+
+Mapping of section names to labels.
+
+**Default value**: `{}`
+
+**Type**: `dict`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [changelog.section-labels]
+    "Breaking changes" = ["breaking"]
+    "Enhancements" = ["enhancement", "compatibility"]
+    ```
+
+---
+
 ### `release`
 
 #### [`branch-name`](#release_branch-name)

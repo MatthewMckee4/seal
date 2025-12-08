@@ -157,7 +157,8 @@ version-files = ["test.txt"]
             "push": false,
             "create-pr": false,
             "confirm": true
-          }
+          },
+          "changelog": null
         }
         "#);
         assert!(workspace.members.is_empty());
@@ -193,7 +194,8 @@ version-files = ["Cargo.toml"]
             "push": false,
             "create-pr": false,
             "confirm": true
-          }
+          },
+          "changelog": null
         }
         "#);
         assert!(workspace.members.is_empty());
@@ -226,7 +228,8 @@ current-version = "3.0.0"
             "push": false,
             "create-pr": false,
             "confirm": true
-          }
+          },
+          "changelog": null
         }
         "#);
         assert!(workspace.members.is_empty());

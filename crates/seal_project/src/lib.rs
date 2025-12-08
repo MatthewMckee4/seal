@@ -7,7 +7,8 @@ mod project_name;
 mod workspace_member;
 
 pub use config::{
-    BranchName, CommitMessage, Config, ReleaseConfig, VersionFile, VersionFileTextFormat,
+    BranchName, ChangelogConfig, ChangelogHeading, CommitMessage, Config, ReleaseConfig,
+    VersionFile, VersionFileTextFormat,
 };
 pub use discovery::find_project_config;
 pub use error::{ConfigValidationError, ProjectError};

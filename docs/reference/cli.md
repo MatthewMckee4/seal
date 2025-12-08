@@ -135,6 +135,7 @@ seal bump [OPTIONS] <VERSION>
 
 <dl class="cli-reference"><dt id="seal-bump--dry-run"><a href="#seal-bump--dry-run"><code>--dry-run</code></a></dt><dd><p>Show what would be done without making any changes</p>
 </dd><dt id="seal-bump--help"><a href="#seal-bump--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+</dd><dt id="seal-bump--no-changelog"><a href="#seal-bump--no-changelog"><code>--no-changelog</code></a></dt><dd><p>Skip generating or updating the changelog</p>
 </dd><dt id="seal-bump--no-progress"><a href="#seal-bump--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
 </dd><dt id="seal-bump--quiet"><a href="#seal-bump--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>

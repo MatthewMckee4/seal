@@ -107,6 +107,10 @@ pub struct BumpArgs {
     /// Show what would be done without making any changes
     #[arg(long)]
     pub dry_run: bool,
+
+    /// Skip generating or updating the changelog
+    #[arg(long)]
+    pub no_changelog: bool,
 }
 
 #[derive(Args, Debug)]

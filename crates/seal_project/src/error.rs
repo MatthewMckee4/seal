@@ -62,6 +62,12 @@ pub enum ConfigValidationError {
 
     #[error("release.create-pr = true requires both branch-name and push = true")]
     CreatePrRequiresBranchAndPush,
+
+    #[error("release.changelog.changelog-heading cannot be empty")]
+    EmptyChangelogHeading,
+
+    #[error("release.changelog.changelog-heading cannot start with '#', got: '{value}'")]
+    ChangelogHeadingStartsWithHash { value: String },
 }
 
 #[cfg(test)]

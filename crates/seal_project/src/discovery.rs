@@ -100,7 +100,8 @@ mod tests {
             "push": false,
             "create-pr": false,
             "confirm": true
-          }
+          },
+          "changelog": null
         }
         "#);
     }
@@ -136,7 +137,8 @@ mod tests {
             "push": false,
             "create-pr": false,
             "confirm": true
-          }
+          },
+          "changelog": null
         }
         "#);
     }
@@ -194,7 +196,8 @@ mod tests {
             "push": false,
             "create-pr": false,
             "confirm": true
-          }
+          },
+          "changelog": null
         }
         "#);
     }
