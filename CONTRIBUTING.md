@@ -51,3 +51,20 @@ To run and review a specific snapshot test:
 cargo test --package <package> --test <test> -- <test_name> -- --exact
 cargo insta review
 ```
+
+## Releasing a new version
+
+Funnily enough, we use `seal` to release a new version. To do so, run:
+
+```shell
+cargo run bump <version>
+```
+
+Then accept the changes.
+
+Then fix any issues there may be.
+
+After merging the pull request, run the
+[release workflow](https://github.com/MatthewMckee4/seal/actions/workflows/release.yml) with the version
+tag. **Do not include a leading `v`**. The release will automatically be created on GitHub after
+everything else publishes.
