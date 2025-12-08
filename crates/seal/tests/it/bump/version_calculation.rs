@@ -76,12 +76,16 @@ version = "1.2.3"
     -version = "1.2.3"
     +version = "2.0.0"
 
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `package.json`
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/v2.0.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release v2.0.0"
+      `git checkout -b release/v2.0.0`
+      `git add -A`
+      `git commit -m "Release v2.0.0"`
 
     Creating branch: release/v2.0.0
     Updating version files...
@@ -154,12 +158,14 @@ version = "1.2.3"
     -version = "1.2.3"
     +version = "1.3.0"
 
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b releases/1.3.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "bump to 1.3.0"
+      `git checkout -b releases/1.3.0`
+      `git add -A`
+      `git commit -m "bump to 1.3.0"`
 
     Creating branch: releases/1.3.0
     Updating version files...
@@ -221,12 +227,14 @@ confirm = false
     -version = "2.1.5"
     +version = "2.1.6"
 
+    Changes to be made:
+      - Update `VERSION.txt`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b bump/2.1.6
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Version 2.1.6"
+      `git checkout -b bump/2.1.6`
+      `git add -A`
+      `git commit -m "Version 2.1.6"`
 
     Creating branch: bump/2.1.6
     Updating version files...
@@ -284,12 +292,14 @@ confirm = false
     -version = "1.2.3"
     +version = "2.0.0-alpha.1"
 
+    Changes to be made:
+      - Update `version.txt`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b rel/2.0.0-alpha.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Bump 2.0.0-alpha.1"
+      `git checkout -b rel/2.0.0-alpha.1`
+      `git add -A`
+      `git commit -m "Bump 2.0.0-alpha.1"`
 
     Creating branch: rel/2.0.0-alpha.1
     Updating version files...
@@ -356,12 +366,14 @@ edition = "2021"
     +version = "1.3.0-beta.1"
      edition = "2021"
 
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/1.3.0-beta.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.3.0-beta.1"
+      `git checkout -b release/1.3.0-beta.1`
+      `git add -A`
+      `git commit -m "Release 1.3.0-beta.1"`
 
     Creating branch: release/1.3.0-beta.1
     Updating version files...
@@ -423,12 +435,14 @@ confirm = false
     -version = "1.0.0"
     +version = "1.0.1-rc.1"
 
+    Changes to be made:
+      - Update `version`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/1.0.1-rc.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.0.1-rc.1"
+      `git checkout -b release/1.0.1-rc.1`
+      `git add -A`
+      `git commit -m "Release 1.0.1-rc.1"`
 
     Creating branch: release/1.0.1-rc.1
     Updating version files...
@@ -483,12 +497,14 @@ confirm = false
     -version = "1.2.3-alpha.1"
     +version = "1.2.3-alpha.2"
 
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b rel/1.2.3-alpha.2
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Bump 1.2.3-alpha.2"
+      `git checkout -b rel/1.2.3-alpha.2`
+      `git add -A`
+      `git commit -m "Bump 1.2.3-alpha.2"`
 
     Creating branch: rel/1.2.3-alpha.2
     Updating version files...
@@ -545,12 +561,14 @@ confirm = false
     -version = "2.0.0-beta.5"
     +version = "2.0.0-beta.6"
 
+    Changes to be made:
+      - Update `ver.txt`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/2.0.0-beta.6
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 2.0.0-beta.6"
+      `git checkout -b release/2.0.0-beta.6`
+      `git add -A`
+      `git commit -m "Release 2.0.0-beta.6"`
 
     Creating branch: release/2.0.0-beta.6
     Updating version files...
@@ -605,12 +623,14 @@ confirm = false
     -version = "1.2.3"
     +version = "3.0.0"
 
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/3.0.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 3.0.0"
+      `git checkout -b release/3.0.0`
+      `git add -A`
+      `git commit -m "Release 3.0.0"`
 
     Creating branch: release/3.0.0
     Updating version files...
@@ -667,12 +687,14 @@ confirm = false
     -version = "1.2.3"
     +version = "2.0.0-beta.1"
 
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/2.0.0-beta.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 2.0.0-beta.1"
+      `git checkout -b release/2.0.0-beta.1`
+      `git add -A`
+      `git commit -m "Release 2.0.0-beta.1"`
 
     Creating branch: release/2.0.0-beta.1
     Updating version files...
@@ -773,12 +795,17 @@ version = "0.1.0"
     -__version__ = "0.1.0"
     +__version__ = "0.2.0"
 
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `package.json`
+      - Update `VERSION`
+      - Update `version.py`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b bump/0.2.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Bump to 0.2.0"
+      `git checkout -b bump/0.2.0`
+      `git add -A`
+      `git commit -m "Bump to 0.2.0"`
 
     Creating branch: bump/0.2.0
     Updating version files...
@@ -895,12 +922,14 @@ confirm = false
     -version = "1.2.3"
     +version = "1.2.3-alpha.0"
 
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/1.2.3-alpha.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.2.3-alpha.0"
+      `git checkout -b release/1.2.3-alpha.0`
+      `git add -A`
+      `git commit -m "Release 1.2.3-alpha.0"`
 
     Creating branch: release/1.2.3-alpha.0
     Updating version files...
@@ -935,12 +964,14 @@ confirm = false
     -version = "1.2.3-alpha.0"
     +version = "1.2.3-alpha.1"
 
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/1.2.3-alpha.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.2.3-alpha.1"
+      `git checkout -b release/1.2.3-alpha.1`
+      `git add -A`
+      `git commit -m "Release 1.2.3-alpha.1"`
 
     Creating branch: release/1.2.3-alpha.1
     Updating version files...
@@ -1030,12 +1061,14 @@ confirm = false
     -version = "1.2.3"
     +version = "2.0.0"
 
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/2.0.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 2.0.0"
+      `git checkout -b release/2.0.0`
+      `git add -A`
+      `git commit -m "Release 2.0.0"`
 
     Creating branch: release/2.0.0
 
@@ -1072,12 +1105,13 @@ confirm = false
     Preview of changes:
     -------------------
 
+    Changes to be made:
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/1.0.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.0.1"
+      `git checkout -b release/1.0.1`
+      `git add -A`
+      `git commit -m "Release 1.0.1"`
 
     Creating branch: release/1.0.1
     Updating version files...

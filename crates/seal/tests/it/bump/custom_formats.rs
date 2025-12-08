@@ -72,14 +72,18 @@ search = "APP_VERSION = '{version}'"
     +APP_VERSION = '2.6.0'
      DEBUG = False
 
-    Commands to be executed:
-      git checkout -b release/2.6.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 2.6.0"
+    Changes to be made:
+      - Update `version.sh`
+      - Update `config.py`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/2.6.0`
+      `git add -A`
+      `git commit -m "Release 2.6.0"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
@@ -233,14 +237,17 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -version=2.0.0-beta.1
     +version=2.0.0beta.2
 
-    Commands to be executed:
-      git checkout -b release/2.0.0-beta.2
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 2.0.0-beta.2"
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/2.0.0-beta.2`
+      `git add -A`
+      `git commit -m "Release 2.0.0-beta.2"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
@@ -397,14 +404,17 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -ver=1.0.0
     +ver=1.1.0
 
-    Commands to be executed:
-      git checkout -b release/1.1.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.1.0"
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/1.1.0`
+      `git add -A`
+      `git commit -m "Release 1.1.0"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
@@ -454,14 +464,17 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -version=2.0.0-rc.3
     +version=2.0.0
 
-    Commands to be executed:
-      git checkout -b release/2.0.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 2.0.0"
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/2.0.0`
+      `git add -A`
+      `git commit -m "Release 2.0.0"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
@@ -511,14 +524,17 @@ version-template = "{major}.{minor}.{patch}-{extra}"
     -APP_VERSION=1.0.0-alpha.1
     +APP_VERSION=1.0.0-alpha.2
 
-    Commands to be executed:
-      git checkout -b release/1.0.0-alpha.2
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 1.0.0-alpha.2"
+    Changes to be made:
+      - Update `version.txt`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/1.0.0-alpha.2`
+      `git add -A`
+      `git commit -m "Release 1.0.0-alpha.2"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
@@ -550,9 +566,7 @@ search = "version `{version}`"
         .child("README.md")
         .write_str(concat!(
             "# My Project\n",
-            "\n",
             "Current version `0.5.0` is stable.\n",
-            "\n",
             "Install version `0.5.0` with npm.\n"
         ))
         .unwrap();
@@ -569,32 +583,83 @@ search = "version `{version}`"
     diff --git a/README.md b/README.md
     --- a/README.md
     +++ b/README.md
-    @@ -1,5 +1,5 @@
+    @@ -1,3 +1,3 @@
      # My Project
-     
     -Current version `0.5.0` is stable.
-    +Current version `0.6.0` is stable.
-     
     -Install version `0.5.0` with npm.
+    +Current version `0.6.0` is stable.
     +Install version `0.6.0` with npm.
 
-    Commands to be executed:
-      git checkout -b release/0.6.0
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release 0.6.0"
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/0.6.0`
+      `git add -A`
+      `git commit -m "Release 0.6.0"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @r"
     # My Project
-
     Current version `0.5.0` is stable.
-
     Install version `0.5.0` with npm.
     ");
+}
+
+#[test]
+fn bump_version_in_nested_string() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "README.md"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# Tool(0.0.1)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/README.md b/README.md
+    --- a/README.md
+    +++ b/README.md
+    @@ -1 +1 @@
+    -# Tool(0.0.1)
+    +# Tool(0.0.2)
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Note: No branch or commit will be created (branch-name and commit-message not configured)
+
+    Proceed with these changes? (y/n):
+    No changes applied.
+
+    ----- stderr -----
+    ");
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
 }

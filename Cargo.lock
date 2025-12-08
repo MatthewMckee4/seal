@@ -577,6 +577,7 @@ dependencies = [
  "assert_fs",
  "clap",
  "dunce",
+ "fs-err",
  "insta",
  "itertools",
  "owo-colors",
@@ -648,6 +649,7 @@ name = "seal_project"
 version = "0.0.0"
 dependencies = [
  "dunce",
+ "fs-err",
  "insta",
  "seal_macros",
  "seal_options_metadata",

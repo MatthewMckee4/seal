@@ -1,9 +1,11 @@
 use std::fmt::Write as _;
 use std::io;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::LazyLock;
 
 use anyhow::{Context, Result};
+use owo_colors::OwoColorize;
 use seal_bump::VersionBump;
 use seal_project::ProjectWorkspace;
 use semver::Version;
@@ -100,33 +102,35 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let has_git_operations = branch_name.is_some() || commit_message.is_some();
 
+    writeln!(stdout, "Changes to be made:")?;
+    for change in &changes {
+        writeln!(stdout, "  - Update `{}`", change.path.display())?;
+    }
+    writeln!(stdout, "  - Update `seal.toml`")?;
+    writeln!(stdout)?;
+
     if has_git_operations {
         writeln!(stdout, "Commands to be executed:")?;
         if let Some(branch) = &branch_name {
-            writeln!(stdout, "  git checkout -b {branch}")?;
+            writeln!(stdout, "  `git checkout -b {branch}`")?;
         }
-        writeln!(stdout, "  # Update version files")?;
-        writeln!(stdout, "  # Update seal.toml")?;
+
         if let Some(message) = &commit_message {
-            writeln!(stdout, "  git add -A")?;
-            writeln!(stdout, "  git commit -m \"{message}\"")?;
+            writeln!(stdout, "  `git add -A`")?;
+            writeln!(stdout, "  `git commit -m \"{message}\"`")?;
         }
         if release_config.push {
             if let Some(branch) = &branch_name {
-                writeln!(stdout, "  git push -u origin {branch}")?;
+                writeln!(stdout, "  `git push -u origin {branch}`")?;
             }
             if release_config.create_pr {
                 writeln!(
                     stdout,
-                    "  gh pr create --title \"Release v{new_version_string}\" --body \"Automated release for version {new_version_string}\""
+                    "  `gh pr create --title \"Release v{new_version_string}\" --body \"Automated release for version {new_version_string}\"`"
                 )?;
             }
         }
     } else {
-        writeln!(stdout, "Changes to be made:")?;
-        writeln!(stdout, "  # Update version files")?;
-        writeln!(stdout, "  # Update seal.toml")?;
-        writeln!(stdout)?;
         writeln!(
             stdout,
             "Note: No branch or commit will be created (branch-name and commit-message not configured)"
@@ -142,7 +146,8 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     if release_config.confirm {
         writeln!(stdout)?;
         if !confirm_changes(&mut stdout)? {
-            writeln!(stdout, "Aborted.")?;
+            writeln!(stdout)?;
+            writeln!(stdout, "No changes applied.")?;
             return Ok(ExitStatus::Success);
         }
     }
@@ -195,13 +200,13 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 }
 
 struct FileChange {
-    path: String,
+    path: PathBuf,
     old_content: String,
     new_content: String,
 }
 
 fn calculate_version_file_changes(
-    root: &std::path::Path,
+    root: &Path,
     version_files: &[seal_project::VersionFile],
     current_version: &str,
     new_version: &Version,
@@ -210,14 +215,16 @@ fn calculate_version_file_changes(
 
     for version_file in version_files {
         let full_path = root.join(version_file.path());
+
         if !full_path.exists() {
             anyhow::bail!("Version file not found: {}", full_path.display());
         }
 
-        let old_content = std::fs::read_to_string(&full_path)
+        let old_content = fs_err::read_to_string(&full_path)
             .context(format!("Failed to read {}", full_path.display()))?;
 
         let new_content = update_version_in_content(
+            &full_path,
             &old_content,
             current_version,
             new_version,
@@ -226,7 +233,7 @@ fn calculate_version_file_changes(
         )?;
 
         changes.push(FileChange {
-            path: version_file.path().to_string(),
+            path: version_file.path().to_path_buf(),
             old_content,
             new_content,
         });
@@ -235,10 +242,10 @@ fn calculate_version_file_changes(
     Ok(changes)
 }
 
-fn apply_version_file_changes(root: &std::path::Path, changes: &[FileChange]) -> Result<()> {
+fn apply_version_file_changes(root: &Path, changes: &[FileChange]) -> Result<()> {
     for change in changes {
         let full_path = root.join(&change.path);
-        std::fs::write(&full_path, &change.new_content)
+        fs_err::write(&full_path, &change.new_content)
             .context(format!("Failed to write {}", full_path.display()))?;
     }
 
@@ -247,29 +254,34 @@ fn apply_version_file_changes(root: &std::path::Path, changes: &[FileChange]) ->
 
 fn display_diff(
     stdout: &mut impl std::fmt::Write,
-    path: &str,
+    path: &Path,
     old_content: &str,
     new_content: &str,
 ) -> Result<()> {
     use similar::{ChangeTag, TextDiff};
 
     writeln!(stdout)?;
-    writeln!(stdout, "diff --git a/{path} b/{path}")?;
-    writeln!(stdout, "--- a/{path}")?;
-    writeln!(stdout, "+++ b/{path}")?;
+    writeln!(
+        stdout,
+        "{}",
+        format!("diff --git a/{} b/{}", path.display(), path.display()).bold()
+    )?;
+    writeln!(stdout, "{}", format!("--- a/{}", path.display()).blue())?;
+    writeln!(stdout, "{}", format!("+++ b/{}", path.display()).blue())?;
 
     let diff = TextDiff::from_lines(old_content, new_content);
 
     for hunk in diff.unified_diff().iter_hunks() {
-        writeln!(stdout, "{}", hunk.header())?;
+        writeln!(stdout, "{}", hunk.header().yellow().bold())?;
+
         for change in hunk.iter_changes() {
-            let sign = match change.tag() {
-                ChangeTag::Delete => "-",
-                ChangeTag::Insert => "+",
-                ChangeTag::Equal => " ",
+            let (sign, value): (&str, String) = match change.tag() {
+                ChangeTag::Delete => ("-", change.value().red().to_string()),
+                ChangeTag::Insert => ("+", change.value().green().to_string()),
+                ChangeTag::Equal => (" ", change.value().dimmed().to_string()),
             };
-            let value = change.value();
-            if value.ends_with('\n') {
+
+            if change.value().ends_with('\n') {
                 write!(stdout, "{sign}{value}")?;
             } else {
                 writeln!(stdout, "{sign}{value}")?;
@@ -293,13 +305,9 @@ fn confirm_changes(stdout: &mut impl std::fmt::Write) -> Result<bool> {
     Ok(answer == "y" || answer == "yes")
 }
 
-fn update_seal_toml(
-    root: &std::path::Path,
-    current_version: &str,
-    new_version: &str,
-) -> Result<()> {
+fn update_seal_toml(root: &Path, current_version: &str, new_version: &str) -> Result<()> {
     let seal_toml_path = root.join("seal.toml");
-    let content = std::fs::read_to_string(&seal_toml_path).context("Failed to read seal.toml")?;
+    let content = fs_err::read_to_string(&seal_toml_path).context("Failed to read seal.toml")?;
 
     let old_line = format!(r#"current-version = "{current_version}""#);
     let new_line = format!(r#"current-version = "{new_version}""#);
@@ -310,7 +318,7 @@ fn update_seal_toml(
 
     let updated_content = content.replace(&old_line, &new_line);
 
-    std::fs::write(&seal_toml_path, updated_content).context("Failed to write seal.toml")?;
+    fs_err::write(&seal_toml_path, updated_content).context("Failed to write seal.toml")?;
 
     Ok(())
 }
@@ -329,6 +337,7 @@ fn create_git_branch(branch_name: &str) -> Result<()> {
 }
 
 fn update_version_in_content(
+    file_path: &Path,
     content: &str,
     current_version: &str,
     new_version: &Version,
@@ -364,7 +373,14 @@ fn update_version_in_content(
         }
     }
 
-    anyhow::bail!("No version field found in file");
+    if content.contains(current_version) {
+        return Ok(content.replace(current_version, &version_str));
+    }
+
+    anyhow::bail!(format!(
+        "No version field found in file `{}`",
+        file_path.display()
+    ));
 }
 
 fn format_version_with_template(version: &Version, template: &str) -> String {

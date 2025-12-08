@@ -246,7 +246,7 @@ current-version = "{version}"
 
     /// Read a file and return its contents as a string.
     pub fn read_file(&self, path: &str) -> String {
-        std::fs::read_to_string(self.root.join(path))
+        fs_err::read_to_string(self.root.join(path))
             .unwrap_or_else(|_| panic!("Failed to read file: {path}"))
     }
 
