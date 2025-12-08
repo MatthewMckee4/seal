@@ -53,27 +53,27 @@ search = "APP_VERSION = '{version}'"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/version.sh b/[TEMP]/version.sh
-    --- a/[TEMP]/version.sh
-    +++ b/[TEMP]/version.sh
+    diff --git a[TEMP]/version.sh b[TEMP]/version.sh
+    --- a[TEMP]/version.sh
+    +++ b[TEMP]/version.sh
     @@ -1,3 +1,3 @@
      #!/bin/bash
     -export VERSION="2.5.0"
     +export VERSION="2.6.0"
      export APP_NAME="MyApp"
 
-    diff --git a/[TEMP]/config.py b/[TEMP]/config.py
-    --- a/[TEMP]/config.py
-    +++ b/[TEMP]/config.py
+    diff --git a[TEMP]/config.py b[TEMP]/config.py
+    --- a[TEMP]/config.py
+    +++ b[TEMP]/config.py
     @@ -1,3 +1,3 @@
      # Configuration
     -APP_VERSION = '2.5.0'
     +APP_VERSION = '2.6.0'
      DEBUG = False
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.5.0"
@@ -233,16 +233,16 @@ search = "version={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version=2.0.0-beta.1
     +version=2.0.0-beta.2
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-beta.1"
@@ -407,16 +407,16 @@ search = "ver={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -ver=1.0.0
     +ver=1.1.0
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -476,16 +476,16 @@ search = "version={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version=2.0.0-rc.3
     +version=2.0.0
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-rc.3"
@@ -545,16 +545,16 @@ search = "APP_VERSION={version}"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/version.txt b/[TEMP]/version.txt
-    --- a/[TEMP]/version.txt
-    +++ b/[TEMP]/version.txt
+    diff --git a[TEMP]/version.txt b[TEMP]/version.txt
+    --- a[TEMP]/version.txt
+    +++ b[TEMP]/version.txt
     @@ -1 +1 @@
     -APP_VERSION=1.0.0-alpha.1
     +APP_VERSION=1.0.0-alpha.2
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0-alpha.1"
@@ -618,9 +618,9 @@ search = "version `{version}`"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/README.md b/[TEMP]/README.md
-    --- a/[TEMP]/README.md
-    +++ b/[TEMP]/README.md
+    diff --git a[TEMP]/README.md b[TEMP]/README.md
+    --- a[TEMP]/README.md
+    +++ b[TEMP]/README.md
     @@ -1,3 +1,3 @@
      # My Project
     -Current version `0.5.0` is stable.
@@ -628,9 +628,9 @@ search = "version `{version}`"
     +Current version `0.6.0` is stable.
     +Install version `0.6.0` with npm.
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.5.0"
@@ -691,16 +691,16 @@ path = "README.md"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/README.md b/[TEMP]/README.md
-    --- a/[TEMP]/README.md
-    +++ b/[TEMP]/README.md
+    diff --git a[TEMP]/README.md b[TEMP]/README.md
+    --- a[TEMP]/README.md
+    +++ b[TEMP]/README.md
     @@ -1 +1 @@
     -# Tool(0.0.1)
     +# Tool(0.0.2)
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.0.1"
@@ -781,9 +781,9 @@ version = \"0.0.1\"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/crates/bar/Cargo.toml b/[TEMP]/crates/bar/Cargo.toml
-    --- a/[TEMP]/crates/bar/Cargo.toml
-    +++ b/[TEMP]/crates/bar/Cargo.toml
+    diff --git a[TEMP]/crates/bar/Cargo.toml b[TEMP]/crates/bar/Cargo.toml
+    --- a[TEMP]/crates/bar/Cargo.toml
+    +++ b[TEMP]/crates/bar/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "bar"
@@ -791,9 +791,9 @@ version = \"0.0.1\"
     +version = "0.0.2"
              
 
-    diff --git a/[TEMP]/crates/baz/Cargo.toml b/[TEMP]/crates/baz/Cargo.toml
-    --- a/[TEMP]/crates/baz/Cargo.toml
-    +++ b/[TEMP]/crates/baz/Cargo.toml
+    diff --git a[TEMP]/crates/baz/Cargo.toml b[TEMP]/crates/baz/Cargo.toml
+    --- a[TEMP]/crates/baz/Cargo.toml
+    +++ b[TEMP]/crates/baz/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "baz"
@@ -801,9 +801,9 @@ version = \"0.0.1\"
     +version = "0.0.2"
              
 
-    diff --git a/[TEMP]/crates/foo/Cargo.toml b/[TEMP]/crates/foo/Cargo.toml
-    --- a/[TEMP]/crates/foo/Cargo.toml
-    +++ b/[TEMP]/crates/foo/Cargo.toml
+    diff --git a[TEMP]/crates/foo/Cargo.toml b[TEMP]/crates/foo/Cargo.toml
+    --- a[TEMP]/crates/foo/Cargo.toml
+    +++ b[TEMP]/crates/foo/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "foo"
@@ -811,9 +811,9 @@ version = \"0.0.1\"
     +version = "0.0.2"
              
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.0.1"

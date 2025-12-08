@@ -52,32 +52,32 @@ version = "1.2.3"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
-    --- a/[TEMP]/Cargo.toml
-    +++ b/[TEMP]/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a/[TEMP]/package.json b/[TEMP]/package.json
-    --- a/[TEMP]/package.json
-    +++ b/[TEMP]/package.json
+    diff --git a[TEMP]/package.json b[TEMP]/package.json
+    --- a[TEMP]/package.json
+    +++ b[TEMP]/package.json
     @@ -1 +1 @@
     -{"name": "test", "version": "1.2.3"}
     +{"name": "test", "version": "2.0.0"}
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -157,18 +157,18 @@ version = "1.2.3"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
-    --- a/[TEMP]/Cargo.toml
-    +++ b/[TEMP]/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.2.3"
     +version = "1.3.0"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -237,16 +237,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION.txt b/[TEMP]/VERSION.txt
-    --- a/[TEMP]/VERSION.txt
-    +++ b/[TEMP]/VERSION.txt
+    diff --git a[TEMP]/VERSION.txt b[TEMP]/VERSION.txt
+    --- a[TEMP]/VERSION.txt
+    +++ b[TEMP]/VERSION.txt
     @@ -1 +1 @@
     -version = "2.1.5"
     +version = "2.1.6"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.1.5"
@@ -311,16 +311,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/version.txt b/[TEMP]/version.txt
-    --- a/[TEMP]/version.txt
-    +++ b/[TEMP]/version.txt
+    diff --git a[TEMP]/version.txt b[TEMP]/version.txt
+    --- a[TEMP]/version.txt
+    +++ b[TEMP]/version.txt
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-alpha.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -391,9 +391,9 @@ edition = "2021"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
-    --- a/[TEMP]/Cargo.toml
-    +++ b/[TEMP]/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "my-app"
@@ -401,9 +401,9 @@ edition = "2021"
     +version = "1.3.0-beta.1"
      edition = "2021"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -472,16 +472,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/version b/[TEMP]/version
-    --- a/[TEMP]/version
-    +++ b/[TEMP]/version
+    diff --git a[TEMP]/version b[TEMP]/version
+    --- a[TEMP]/version
+    +++ b[TEMP]/version
     @@ -1 +1 @@
     -version = "1.0.0"
     +version = "1.0.1-rc.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -543,16 +543,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3-alpha.1"
     +version = "1.2.3-alpha.2"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3-alpha.1"
@@ -616,16 +616,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/ver.txt b/[TEMP]/ver.txt
-    --- a/[TEMP]/ver.txt
-    +++ b/[TEMP]/ver.txt
+    diff --git a[TEMP]/ver.txt b[TEMP]/ver.txt
+    --- a[TEMP]/ver.txt
+    +++ b[TEMP]/ver.txt
     @@ -1 +1 @@
     -version = "2.0.0-beta.5"
     +version = "2.0.0-beta.6"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-beta.5"
@@ -687,16 +687,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "3.0.0"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -760,16 +760,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-beta.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -854,39 +854,39 @@ version = "0.1.0"
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/Cargo.toml b/[TEMP]/Cargo.toml
-    --- a/[TEMP]/Cargo.toml
-    +++ b/[TEMP]/Cargo.toml
+    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
+    --- a[TEMP]/Cargo.toml
+    +++ b[TEMP]/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "multi"
     -version = "0.1.0"
     +version = "0.2.0"
 
-    diff --git a/[TEMP]/package.json b/[TEMP]/package.json
-    --- a/[TEMP]/package.json
-    +++ b/[TEMP]/package.json
+    diff --git a[TEMP]/package.json b[TEMP]/package.json
+    --- a[TEMP]/package.json
+    +++ b[TEMP]/package.json
     @@ -1 +1 @@
     -{"version": "0.1.0"}
     +{"version": "0.2.0"}
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "0.1.0"
     +version = "0.2.0"
 
-    diff --git a/[TEMP]/version.py b/[TEMP]/version.py
-    --- a/[TEMP]/version.py
-    +++ b/[TEMP]/version.py
+    diff --git a[TEMP]/version.py b[TEMP]/version.py
+    --- a[TEMP]/version.py
+    +++ b[TEMP]/version.py
     @@ -1 +1 @@
     -__version__ = "0.1.0"
     +__version__ = "0.2.0"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.1.0"
@@ -1012,16 +1012,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "1.2.3-alpha.0"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -1064,16 +1064,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3-alpha.0"
     +version = "1.2.3-alpha.1"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3-alpha.0"
@@ -1169,16 +1169,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/VERSION b/[TEMP]/VERSION
-    --- a/[TEMP]/VERSION
-    +++ b/[TEMP]/VERSION
+    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
+    --- a[TEMP]/VERSION
+    +++ b[TEMP]/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -1231,9 +1231,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
-    --- a/[TEMP]/seal.toml
-    +++ b/[TEMP]/seal.toml
+    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
+    --- a[TEMP]/seal.toml
+    +++ b[TEMP]/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
