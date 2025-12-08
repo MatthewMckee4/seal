@@ -607,9 +607,7 @@ search = "version `{version}`"
 
     insta::assert_snapshot!(context.read_file("README.md"), @r"
     # My Project
-
     Current version `0.5.0` is stable.
-
     Install version `0.5.0` with npm.
     ");
 }
