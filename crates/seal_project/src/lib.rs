@@ -6,7 +6,9 @@ mod project;
 mod project_name;
 mod workspace_member;
 
-pub use config::{BranchName, CommitMessage, Config, ReleaseConfig, TagFormat, VersionFile};
+pub use config::{
+    BranchName, CommitMessage, Config, ReleaseConfig, TagFormat, VersionFile, VersionFileTextFormat,
+};
 pub use discovery::find_project_config;
 pub use error::{ConfigValidationError, ProjectError};
 pub use git::{find_git_root, get_base_branch, get_remote};

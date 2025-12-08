@@ -115,9 +115,9 @@ current-version = "1.0.0"
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 2, column 9
+    error: TOML parse error at line 1, column 9
       |
-    2 | [release
+    1 | [release
       |         ^
     invalid table header
     expected `.`, `]`
@@ -140,9 +140,9 @@ version-files = ["Cargo.toml"]
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 2, column 1
+    error: TOML parse error at line 1, column 1
       |
-    2 | [release]
+    1 | [release]
       | ^^^^^^^^^
     missing field `current-version`
     ");
@@ -165,9 +165,9 @@ commit-message = ""
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 18
+    error: TOML parse error at line 3, column 18
       |
-    4 | commit-message = ""
+    3 | commit-message = ""
       |                  ^^
     release.commit-message cannot be empty
     "#);
@@ -190,9 +190,9 @@ branch-name = ""
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 15
+    error: TOML parse error at line 3, column 15
       |
-    4 | branch-name = ""
+    3 | branch-name = ""
       |               ^^
     release.branch-name cannot be empty
     "#);
@@ -215,9 +215,9 @@ tag-format = ""
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 14
+    error: TOML parse error at line 3, column 14
       |
-    4 | tag-format = ""
+    3 | tag-format = ""
       |              ^^
     release.tag-format cannot be empty
     "#);
@@ -240,9 +240,9 @@ commit-message = "Release without placeholder"
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 18
+    error: TOML parse error at line 3, column 18
       |
-    4 | commit-message = "Release without placeholder"
+    3 | commit-message = "Release without placeholder"
       |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     release.commit-message must contain '{version}' placeholder, got: 'Release without placeholder'
     "#);
@@ -265,9 +265,9 @@ branch-name = "release-branch"
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 15
+    error: TOML parse error at line 3, column 15
       |
-    4 | branch-name = "release-branch"
+    3 | branch-name = "release-branch"
       |               ^^^^^^^^^^^^^^^^
     release.branch-name must contain '{version}' placeholder, got: 'release-branch'
     "#);
@@ -290,9 +290,9 @@ tag-format = "release"
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 14
+    error: TOML parse error at line 3, column 14
       |
-    4 | tag-format = "release"
+    3 | tag-format = "release"
       |              ^^^^^^^^^
     release.tag-format must contain '{version}' placeholder, got: 'release'
     "#);
@@ -357,9 +357,9 @@ unknown-field = "value"
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 1
+    error: TOML parse error at line 3, column 1
       |
-    4 | unknown-field = "value"
+    3 | unknown-field = "value"
       | ^^^^^^^^^^^^^
     unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`
     "#);
@@ -382,9 +382,9 @@ commit-message = "   "
     ----- stdout -----
 
     ----- stderr -----
-    error: TOML parse error at line 4, column 18
+    error: TOML parse error at line 3, column 18
       |
-    4 | commit-message = "   "
+    3 | commit-message = "   "
       |                  ^^^^^
     release.commit-message cannot be empty
     "#);

@@ -176,12 +176,25 @@ The version files that need to be updated.
 
     ```toml
     [[release.version-files]]
-    path = "version.sh"
-    search = "export PUBLIC_VERSION=\"{version}\""
+    path = "**/Cargo.toml"
+    format = "toml"
+    field = "package.version"
 
     [[release.version-files]]
-    path = "Cargo.toml"
-    search = "version = \"{version}\""
+    path = "version.sh"
+    format = "text"
+
+    [[release.version-files]]
+    path = "version.sh"
+    search = "export FULL_VERSION = '{version}'"
+
+    [[release.version-files]]
+    path = "README.md"
+
+    [release]
+    version-files = [
+        "docs/version.txt"
+    ]
     ```
 
 ---

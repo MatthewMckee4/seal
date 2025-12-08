@@ -72,10 +72,21 @@ search = "APP_VERSION = '{version}'"
     +APP_VERSION = '2.6.0'
      DEBUG = False
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "2.5.0"
+    +current-version = "2.6.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `version.sh`
       - Update `config.py`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.6.0`
@@ -116,7 +127,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION.txt"
 search = "Version: {version}"
-version-template = "{major}.{minor}"
 "#,
         )
         .init_git();
@@ -148,8 +158,7 @@ fn bump_with_version_template_with_v_prefix() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r##"
-[release]
+            r##"[release]
 current-version = "3.0.5"
 commit-message = "Bump to {version}"
 branch-name = "bump/{version}"
@@ -158,7 +167,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "version.h"
 search = "#define VERSION \"{version}\""
-version-template = "v{major}.{minor}.{patch}"
 "##,
         )
         .init_git();
@@ -210,7 +218,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION"
 search = "version={version}"
-version-template = "{major}.{minor}.{patch}{extra}"
 "#,
         )
         .init_git();
@@ -235,11 +242,22 @@ version-template = "{major}.{minor}.{patch}{extra}"
     +++ b/VERSION
     @@ -1 +1 @@
     -version=2.0.0-beta.1
-    +version=2.0.0beta.2
+    +version=2.0.0-beta.2
+
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "2.0.0-beta.1"
+    +current-version = "2.0.0-beta.2"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
 
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.2`
@@ -266,7 +284,7 @@ current-version = "1.5.2"
 
 version-files = [
     "Cargo.toml",
-    { path = "version.txt", search = "Version: {version}", version-template = "{major}.{minor}" },
+    { path = "version.txt", search = "Version: {version}" },
     { path = "full_version.txt", search = "Full: {version}" }
 ]
 
@@ -377,7 +395,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION"
 search = "ver={version}"
-version-template = "{major}.{minor}.{patch}{extra}"
 "#,
         )
         .init_git();
@@ -404,9 +421,20 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -ver=1.0.0
     +ver=1.1.0
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.1.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.1.0`
@@ -437,7 +465,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "VERSION"
 search = "version={version}"
-version-template = "{major}.{minor}.{patch}{extra}"
 "#,
         )
         .init_git();
@@ -464,9 +491,20 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -version=2.0.0-rc.3
     +version=2.0.0
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "2.0.0-rc.3"
+    +current-version = "2.0.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0`
@@ -497,7 +535,6 @@ tag-format = "v{version}"
 [[release.version-files]]
 path = "version.txt"
 search = "APP_VERSION={version}"
-version-template = "{major}.{minor}.{patch}-{extra}"
 "#,
         )
         .init_git();
@@ -524,9 +561,20 @@ version-template = "{major}.{minor}.{patch}-{extra}"
     -APP_VERSION=1.0.0-alpha.1
     +APP_VERSION=1.0.0-alpha.2
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "1.0.0-alpha.1"
+    +current-version = "1.0.0-alpha.2"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `version.txt`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.0-alpha.2`
@@ -590,9 +638,20 @@ search = "version `{version}`"
     +Current version `0.6.0` is stable.
     +Install version `0.6.0` with npm.
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "0.5.0"
+    +current-version = "0.6.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `README.md`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/0.6.0`
@@ -633,7 +692,7 @@ path = "README.md"
         .write_str("# Tool(0.0.1)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -649,9 +708,20 @@ path = "README.md"
     -# Tool(0.0.1)
     +# Tool(0.0.2)
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+     path = "README.md"
+
     Changes to be made:
       - Update `README.md`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
@@ -659,7 +729,262 @@ path = "README.md"
     No changes applied.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
+}
+
+#[test]
+fn bump_version_with_glob_path() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "**/Cargo.toml"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("crates/foo/Cargo.toml")
+        .write_str(
+            "[package]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    context
+        .root
+        .child("crates/bar/Cargo.toml")
+        .write_str(
+            "[package]
+name = \"bar\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    context
+        .root
+        .child("crates/baz/Cargo.toml")
+        .write_str(
+            "[package]
+name = \"baz\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/crates/bar/Cargo.toml b/crates/bar/Cargo.toml
+    --- a/crates/bar/Cargo.toml
+    +++ b/crates/bar/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "bar"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/crates/baz/Cargo.toml b/crates/baz/Cargo.toml
+    --- a/crates/baz/Cargo.toml
+    +++ b/crates/baz/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "baz"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/crates/foo/Cargo.toml b/crates/foo/Cargo.toml
+    --- a/crates/foo/Cargo.toml
+    +++ b/crates/foo/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "foo"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+     path = "**/Cargo.toml"
+
+    Changes to be made:
+      - Update `crates/bar/Cargo.toml`
+      - Update `crates/baz/Cargo.toml`
+      - Update `crates/foo/Cargo.toml`
+      - Update `[TEMP]/seal.toml`
+
+    Note: No branch or commit will be created (branch-name and commit-message not configured)
+
+    Proceed with these changes? (y/n):
+    Updating version files...
+    Successfully bumped to 0.0.2
+    Note: No git branch or commit was created
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.read_file("crates/foo/Cargo.toml"), @r#"
+    [package]
+    name = "foo"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("crates/bar/Cargo.toml"), @r#"
+    [package]
+    name = "bar"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("crates/baz/Cargo.toml"), @r#"
+    [package]
+    name = "baz"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.2"
+
+    [[release.version-files]]
+    path = "**/Cargo.toml"
+    "#);
+}
+
+#[test]
+fn bump_version_cargo_toml_invalid_field_name() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "Cargo.toml"
+format = "toml"
+field = "package.vversion"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("Cargo.toml")
+        .write_str(
+            "[package]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    ----- stderr -----
+    error: Expected `package` to refer to a TOML table
+    ");
+
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
+    [package]
+    name = "foo"
+    version = "0.0.1"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.1"
+
+    [[release.version-files]]
+    path = "Cargo.toml"
+    format = "toml"
+    field = "package.vversion"
+    "#);
+}
+
+#[test]
+fn bump_version_cargo_toml_invalid_version_format() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "Cargo.toml"
+format = "toml"
+field = "package.version.version"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("Cargo.toml")
+        .write_str(
+            "[package.version]
+vversion = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    ----- stderr -----
+    error: Expected `package` to refer to a TOML table
+    ");
+
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
+    [package.version]
+    vversion = "0.0.1"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.1"
+
+    [[release.version-files]]
+    path = "Cargo.toml"
+    format = "toml"
+    field = "package.version.version"
+    "#);
 }

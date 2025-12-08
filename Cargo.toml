@@ -25,6 +25,7 @@ assert_fs = "1.1"
 clap = { version = "4.5.17", features = ["derive", "env", "string", "wrap_help"] }
 dunce = { version = "1.0.5" }
 fs-err = { version = "3.0.0", features = ["tokio"] }
+glob = { version = "0.3.3" }
 insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
 markdown = { version = "1.0.0-alpha.23" }
