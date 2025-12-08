@@ -98,9 +98,17 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
                 }
             }
         } else {
+            writeln!(
+                stdout,
+                "Skipping changelog update because no `[changelog]` section was found in the configuration."
+            )?;
             None
         }
     } else {
+        writeln!(
+            stdout,
+            "Skipping changelog update because `--no-changelog` was provided."
+        )?;
         None
     };
 

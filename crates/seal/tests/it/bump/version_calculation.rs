@@ -85,6 +85,7 @@ version = "1.2.3"
      version-files = ["Cargo.toml", "package.json", "VERSION"]
      commit-message = "Release v{version}"
      branch-name = "release/v{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/Cargo.toml`
@@ -176,6 +177,7 @@ version = "1.2.3"
      version-files = ["Cargo.toml"]
      commit-message = "bump to {version}"
      branch-name = "releases/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/Cargo.toml`
@@ -254,6 +256,7 @@ confirm = false
      version-files = ["VERSION.txt"]
      commit-message = "Version {version}"
      branch-name = "bump/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION.txt`
@@ -328,6 +331,7 @@ confirm = false
      version-files = ["version.txt"]
      commit-message = "Bump {version}"
      branch-name = "rel/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/version.txt`
@@ -411,6 +415,7 @@ edition = "2021"
      version-files = ["Cargo.toml"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/Cargo.toml`
@@ -489,6 +494,7 @@ confirm = false
      version-files = ["version"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/version`
@@ -560,6 +566,7 @@ confirm = false
      version-files = ["VERSION"]
      commit-message = "Bump {version}"
      branch-name = "rel/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -633,6 +640,7 @@ confirm = false
      version-files = ["ver.txt"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/ver.txt`
@@ -704,6 +712,7 @@ confirm = false
      version-files = ["VERSION"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -777,6 +786,7 @@ confirm = false
      version-files = ["VERSION"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -894,6 +904,7 @@ version = "0.1.0"
      version-files = ["Cargo.toml", "package.json", "VERSION", "version.py"]
      commit-message = "Bump to {version}"
      branch-name = "bump/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/Cargo.toml`
@@ -1029,6 +1040,7 @@ confirm = false
      version-files = ["VERSION"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -1081,6 +1093,7 @@ confirm = false
      version-files = ["VERSION"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -1186,6 +1199,7 @@ confirm = false
      version-files = ["VERSION"]
      commit-message = "Release {version}"
      branch-name = "release/{version}"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -1241,6 +1255,7 @@ confirm = false
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      push = false
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/seal.toml`

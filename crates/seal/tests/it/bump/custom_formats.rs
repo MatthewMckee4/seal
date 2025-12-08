@@ -81,6 +81,7 @@ search = "APP_VERSION = '{version}'"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/version.sh`
@@ -250,6 +251,7 @@ search = "version={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -424,6 +426,7 @@ search = "ver={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -493,6 +496,7 @@ search = "version={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/VERSION`
@@ -562,6 +566,7 @@ search = "APP_VERSION={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/version.txt`
@@ -638,6 +643,7 @@ search = "version `{version}`"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/README.md`
@@ -708,6 +714,7 @@ path = "README.md"
      
      [[release.version-files]]
      path = "README.md"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/README.md`
@@ -821,6 +828,7 @@ version = \"0.0.1\"
      
      [[release.version-files]]
      path = "**/Cargo.toml"
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/crates/bar/Cargo.toml`

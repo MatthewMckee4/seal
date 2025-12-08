@@ -61,6 +61,7 @@ version = "1.0.0"
      version-files = ["Cargo.toml"]
      commit-message = "Release v{version}"
      branch-name = "release/v{version}"
+    Skipping changelog update because `--no-changelog` was provided.
 
     Changes to be made:
       - Update `[TEMP]/Cargo.toml`
@@ -131,6 +132,7 @@ version = "1.0.0"
     +current-version = "1.0.1"
      version-files = ["Cargo.toml"]
      confirm = false
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `[TEMP]/Cargo.toml`
