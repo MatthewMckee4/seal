@@ -97,7 +97,6 @@ mod tests {
             ],
             "commit-message": null,
             "branch-name": null,
-            "tag-format": null,
             "push": false,
             "create-pr": false,
             "confirm": true
@@ -134,7 +133,6 @@ mod tests {
             ],
             "commit-message": null,
             "branch-name": null,
-            "tag-format": null,
             "push": false,
             "create-pr": false,
             "confirm": true
@@ -193,7 +191,6 @@ mod tests {
             ],
             "commit-message": null,
             "branch-name": null,
-            "tag-format": null,
             "push": false,
             "create-pr": false,
             "confirm": true

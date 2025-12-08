@@ -12,7 +12,6 @@ fn bump_with_custom_search_pattern() {
 current-version = "2.5.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "version.sh"
@@ -81,7 +80,7 @@ search = "APP_VERSION = '{version}'"
     +current-version = "2.6.0"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
-     tag-format = "v{version}"
+     
 
     Changes to be made:
       - Update `version.sh`
@@ -122,7 +121,6 @@ fn bump_with_version_template_major_minor_only() {
 current-version = "1.2.3"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "VERSION.txt"
@@ -162,7 +160,6 @@ fn bump_with_version_template_with_v_prefix() {
 current-version = "3.0.5"
 commit-message = "Bump to {version}"
 branch-name = "bump/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "version.h"
@@ -213,7 +210,6 @@ fn bump_with_version_template_prerelease() {
 current-version = "2.0.0-beta.1"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "VERSION"
@@ -253,7 +249,7 @@ search = "version={version}"
     +current-version = "2.0.0-beta.2"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
-     tag-format = "v{version}"
+     
 
     Changes to be made:
       - Update `VERSION`
@@ -290,7 +286,6 @@ version-files = [
 
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 "#,
         )
         .init_git();
@@ -351,7 +346,6 @@ fn bump_with_custom_search_pattern_not_found() {
 current-version = "1.0.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "VERSION"
@@ -390,7 +384,6 @@ fn bump_with_version_template_extra_on_stable() {
 current-version = "1.0.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "VERSION"
@@ -430,7 +423,7 @@ search = "ver={version}"
     +current-version = "1.1.0"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
-     tag-format = "v{version}"
+     
 
     Changes to be made:
       - Update `VERSION`
@@ -460,7 +453,6 @@ fn bump_prerelease_to_stable_with_template() {
 current-version = "2.0.0-rc.3"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "VERSION"
@@ -500,7 +492,7 @@ search = "version={version}"
     +current-version = "2.0.0"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
-     tag-format = "v{version}"
+     
 
     Changes to be made:
       - Update `VERSION`
@@ -530,7 +522,6 @@ fn bump_with_template_prerelease_with_hyphen() {
 current-version = "1.0.0-alpha.1"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "version.txt"
@@ -570,7 +561,7 @@ search = "APP_VERSION={version}"
     +current-version = "1.0.0-alpha.2"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
-     tag-format = "v{version}"
+     
 
     Changes to be made:
       - Update `version.txt`
@@ -600,7 +591,6 @@ fn bump_with_multiple_occurrences_same_file() {
 current-version = "0.5.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
-tag-format = "v{version}"
 
 [[release.version-files]]
 path = "README.md"
@@ -647,7 +637,7 @@ search = "version `{version}`"
     +current-version = "0.6.0"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
-     tag-format = "v{version}"
+     
 
     Changes to be made:
       - Update `README.md`

@@ -155,16 +155,6 @@ pub struct ReleaseConfig {
     )]
     pub branch_name: Option<BranchName>,
 
-    /// The tag format to use when creating a new tag.
-    #[field(
-        default = "null",
-        value_type = "string",
-        example = r#"
-        tag-format = "v{version}"
-    "#
-    )]
-    pub tag_format: Option<TagFormat>,
-
     /// Whether to push the release changes to the remote repository.
     #[serde(default = "default_push")]
     #[field(
@@ -318,54 +308,6 @@ impl<'de> Deserialize<'de> for BranchName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct TagFormat(String);
-
-impl TagFormat {
-    pub fn new(value: String) -> Result<Self, ConfigValidationError> {
-        if value.trim().is_empty() {
-            return Err(ConfigValidationError::EmptyTagFormat);
-        }
-        if !value.contains("{version}") {
-            return Err(ConfigValidationError::MissingVersionPlaceholder {
-                field: "tag-format".to_string(),
-                value,
-            });
-        }
-        Ok(Self(value))
-    }
-
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
-impl fmt::Display for TagFormat {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Serialize for TagFormat {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&self.0)
-    }
-}
-
-impl<'de> Deserialize<'de> for TagFormat {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let value = String::deserialize(deserializer)?;
-        Self::new(value).map_err(serde::de::Error::custom)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use insta::{assert_debug_snapshot, assert_json_snapshot};
@@ -380,7 +322,6 @@ current-version = "1.2.3"
 version-files = ["Cargo.toml", "package.json"]
 commit-message = "release v{version}"
 branch-name = "release-{version}"
-tag-format = "{version}"
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
@@ -395,7 +336,6 @@ tag-format = "{version}"
             ],
             "commit-message": "release v{version}",
             "branch-name": "release-{version}",
-            "tag-format": "{version}",
             "push": false,
             "create-pr": false,
             "confirm": true
@@ -423,7 +363,6 @@ version-files = ["VERSION"]
             ],
             "commit-message": null,
             "branch-name": null,
-            "tag-format": null,
             "push": false,
             "create-pr": false,
             "confirm": true
@@ -452,7 +391,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -526,35 +465,6 @@ branch-name = "release-branch"
     }
 
     #[test]
-    fn test_missing_version_placeholder_in_tag_format() {
-        let toml = r#"
-[release]
-current-version = "1.0.0"
-tag-format = "release"
-"#;
-
-        let result = Config::from_toml_str(toml);
-        let err = result.unwrap_err();
-        assert_debug_snapshot!(err, @r#"
-        ConfigParseError(
-            Error {
-                message: "release.tag-format must contain '{version}' placeholder, got: 'release'",
-                input: Some(
-                    "\n[release]\ncurrent-version = \"1.0.0\"\ntag-format = \"release\"\n",
-                ),
-                keys: [
-                    "release",
-                    "tag-format",
-                ],
-                span: Some(
-                    50..59,
-                ),
-            },
-        )
-        "#);
-    }
-
-    #[test]
     fn test_empty_commit_message() {
         let toml = r#"
 [release]
@@ -606,35 +516,6 @@ branch-name = ""
                 ],
                 span: Some(
                     51..53,
-                ),
-            },
-        )
-        "#);
-    }
-
-    #[test]
-    fn test_empty_tag_format() {
-        let toml = r#"
-[release]
-current-version = "1.0.0"
-tag-format = ""
-"#;
-
-        let result = Config::from_toml_str(toml);
-        let err = result.unwrap_err();
-        assert_debug_snapshot!(err, @r#"
-        ConfigParseError(
-            Error {
-                message: "release.tag-format cannot be empty",
-                input: Some(
-                    "\n[release]\ncurrent-version = \"1.0.0\"\ntag-format = \"\"\n",
-                ),
-                keys: [
-                    "release",
-                    "tag-format",
-                ],
-                span: Some(
-                    50..52,
                 ),
             },
         )
@@ -701,35 +582,6 @@ tag-format = ""
     }
 
     #[test]
-    fn test_tag_format_new_valid() {
-        let tag = TagFormat::new("v{version}".to_string()).unwrap();
-        insta::assert_snapshot!(tag.as_str(), @"v{version}");
-        insta::assert_snapshot!(tag.to_string(), @"v{version}");
-    }
-
-    #[test]
-    fn test_tag_format_new_empty() {
-        let result = TagFormat::new(String::new());
-        assert!(result.is_err());
-        assert!(matches!(
-            result.unwrap_err(),
-            ConfigValidationError::EmptyTagFormat
-        ));
-    }
-
-    #[test]
-    fn test_tag_format_new_missing_placeholder() {
-        let result = TagFormat::new("release".to_string());
-        assert!(result.is_err());
-        assert_debug_snapshot!(result.unwrap_err(), @r#"
-        MissingVersionPlaceholder {
-            field: "tag-format",
-            value: "release",
-        }
-        "#);
-    }
-
-    #[test]
     fn test_serialization_round_trip() {
         let config = Config {
             members: None,
@@ -738,7 +590,6 @@ tag-format = ""
                 version_files: Some(vec![VersionFile::Simple("Cargo.toml".to_string())]),
                 commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
-                tag_format: Some(TagFormat::new("v{version}".to_string()).unwrap()),
                 push: true,
                 create_pr: true,
                 confirm: true,
@@ -758,7 +609,6 @@ tag-format = ""
             ],
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
-            "tag-format": "v{version}",
             "push": true,
             "create-pr": true,
             "confirm": true
@@ -790,7 +640,6 @@ commit-message = "Release {version} with {version} tag"
                         ),
                     ),
                     branch_name: None,
-                    tag_format: None,
                     push: false,
                     create_pr: false,
                     confirm: true,
@@ -859,7 +708,6 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     ),
                     commit_message: None,
                     branch_name: None,
-                    tag_format: None,
                     push: false,
                     create_pr: false,
                     confirm: true,
@@ -889,7 +737,6 @@ version-files = []
                     ),
                     commit_message: None,
                     branch_name: None,
-                    tag_format: None,
                     push: false,
                     create_pr: false,
                     confirm: true,

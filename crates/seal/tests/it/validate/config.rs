@@ -12,7 +12,6 @@ current-version = "1.0.0"
 version-files = ["Cargo.toml", "README.md"]
 commit-message = "Release v{version}"
 branch-name = "release/v{version}"
-tag-format = "v{version}"
 push = false
 create-pr = false
 confirm = false
@@ -204,22 +203,17 @@ fn validate_config_empty_tag_format() {
         r#"
 [release]
 current-version = "1.0.0"
-tag-format = ""
 "#,
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
-    success: false
-    exit_code: 2
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
+    success: true
+    exit_code: 0
     ----- stdout -----
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
-    error: TOML parse error at line 3, column 14
-      |
-    3 | tag-format = ""
-      |              ^^
-    release.tag-format cannot be empty
-    "#);
+    ");
 }
 
 #[test]
@@ -279,22 +273,17 @@ fn validate_config_missing_version_placeholder_in_tag_format() {
         r#"
 [release]
 current-version = "1.0.0"
-tag-format = "release"
 "#,
     );
 
-    seal_snapshot!(context.command().arg("validate").arg("config"), @r#"
-    success: false
-    exit_code: 2
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
+    success: true
+    exit_code: 0
     ----- stdout -----
+    Config file `[TEMP]/seal.toml` is valid
 
     ----- stderr -----
-    error: TOML parse error at line 3, column 14
-      |
-    3 | tag-format = "release"
-      |              ^^^^^^^^^
-    release.tag-format must contain '{version}' placeholder, got: 'release'
-    "#);
+    ");
 }
 
 #[test]
@@ -360,7 +349,7 @@ unknown-field = "value"
       |
     3 | unknown-field = "value"
       | ^^^^^^^^^^^^^
-    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`
+    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`
     "#);
 }
 
@@ -420,7 +409,6 @@ current-version = "1.0.0"
 version-files = ["Cargo.toml"]
 commit-message = "bump version to {version}"
 branch-name = "releases/{version}"
-tag-format = "{version}"
 push = false
 create-pr = false
 confirm = false
