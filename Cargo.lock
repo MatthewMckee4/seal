@@ -575,7 +575,7 @@ dependencies = [
 
 [[package]]
 name = "seal"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 dependencies = [
  "anstream",
  "anyhow",
@@ -672,7 +672,7 @@ dependencies = [
 
 [[package]]
 name = "seal_version"
-version = "0.0.1-alpha.1"
+version = "0.0.1-alpha.2"
 
 [[package]]
 name = "semver"
