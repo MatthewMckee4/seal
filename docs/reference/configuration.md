@@ -141,26 +141,6 @@ Whether to push the release changes to the remote repository.
 
 ---
 
-#### [`tag-format`](#release_tag-format)
-<span id="tag-format"></span>
-
-The tag format to use when creating a new tag.
-
-**Default value**: `null`
-
-**Type**: `string`
-
-**Example usage**:
-
-=== "seal.toml"
-
-    ```toml
-    [release]
-    tag-format = "v{version}"
-    ```
-
----
-
 #### [`version-files`](#release_version-files)
 <span id="version-files"></span>
 
