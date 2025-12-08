@@ -7,6 +7,7 @@ homepage.workspace = true
 repository.workspace = true
 authors.workspace = true
 license.workspace = true
+default-run = "seal"
 
 [dependencies]
 seal_bump = { workspace = true }
