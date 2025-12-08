@@ -72,10 +72,22 @@ search = "APP_VERSION = '{version}'"
     +APP_VERSION = '2.6.0'
      DEBUG = False
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "2.5.0"
+    +current-version = "2.6.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `version.sh`
       - Update `config.py`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.6.0`
@@ -237,9 +249,21 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -version=2.0.0-beta.1
     +version=2.0.0beta.2
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "2.0.0-beta.1"
+    +current-version = "2.0.0-beta.2"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.2`
@@ -404,9 +428,21 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -ver=1.0.0
     +ver=1.1.0
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.1.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.1.0`
@@ -464,9 +500,21 @@ version-template = "{major}.{minor}.{patch}{extra}"
     -version=2.0.0-rc.3
     +version=2.0.0
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "2.0.0-rc.3"
+    +current-version = "2.0.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `VERSION`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0`
@@ -524,9 +572,21 @@ version-template = "{major}.{minor}.{patch}-{extra}"
     -APP_VERSION=1.0.0-alpha.1
     +APP_VERSION=1.0.0-alpha.2
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0-alpha.1"
+    +current-version = "1.0.0-alpha.2"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `version.txt`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.0-alpha.2`
@@ -590,9 +650,21 @@ search = "version `{version}`"
     +Current version `0.6.0` is stable.
     +Install version `0.6.0` with npm.
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "0.5.0"
+    +current-version = "0.6.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+     tag-format = "v{version}"
+
     Changes to be made:
       - Update `README.md`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/0.6.0`
@@ -633,7 +705,7 @@ path = "README.md"
         .write_str("# Tool(0.0.1)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -649,9 +721,21 @@ path = "README.md"
     -# Tool(0.0.1)
     +# Tool(0.0.2)
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+     path = "README.md"
+
     Changes to be made:
       - Update `README.md`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
@@ -659,7 +743,7 @@ path = "README.md"
     No changes applied.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
 }

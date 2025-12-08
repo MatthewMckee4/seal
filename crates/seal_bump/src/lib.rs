@@ -1,8 +1,13 @@
 use std::fmt;
 use std::str::FromStr;
 
-use semver::{Prerelease, Version};
+use semver::Prerelease;
 use thiserror::Error;
+
+mod bump;
+
+pub use bump::calculate_version_file_changes;
+pub use semver::Version;
 
 /// Pre-release identifier type
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -127,7 +132,10 @@ impl fmt::Display for VersionBump {
     }
 }
 
-pub fn calculate_version(current: &str, bump: &VersionBump) -> Result<Version, VersionBumpError> {
+pub fn calculate_new_version(
+    current: &str,
+    bump: &VersionBump,
+) -> Result<Version, VersionBumpError> {
     let mut current_version = Version::parse(current)
         .map_err(|_| VersionBumpError::MalformedVersion(current.to_string()))?;
 
@@ -422,11 +430,11 @@ mod tests {
     #[test]
     fn test_calculate_version_major() {
         assert_eq!(
-            calculate_version("1.2.3", &VersionBump::Major).unwrap(),
+            calculate_new_version("1.2.3", &VersionBump::Major).unwrap(),
             Version::new(2, 0, 0)
         );
         assert_eq!(
-            calculate_version("0.5.10", &VersionBump::Major).unwrap(),
+            calculate_new_version("0.5.10", &VersionBump::Major).unwrap(),
             Version::new(1, 0, 0)
         );
     }
@@ -434,11 +442,11 @@ mod tests {
     #[test]
     fn test_calculate_version_minor() {
         assert_eq!(
-            calculate_version("1.2.3", &VersionBump::Minor).unwrap(),
+            calculate_new_version("1.2.3", &VersionBump::Minor).unwrap(),
             Version::new(1, 3, 0)
         );
         assert_eq!(
-            calculate_version("2.0.0", &VersionBump::Minor).unwrap(),
+            calculate_new_version("2.0.0", &VersionBump::Minor).unwrap(),
             Version::new(2, 1, 0)
         );
     }
@@ -446,11 +454,11 @@ mod tests {
     #[test]
     fn test_calculate_version_patch() {
         assert_eq!(
-            calculate_version("1.2.3", &VersionBump::Patch).unwrap(),
+            calculate_new_version("1.2.3", &VersionBump::Patch).unwrap(),
             Version::new(1, 2, 4)
         );
         assert_eq!(
-            calculate_version("1.0.0", &VersionBump::Patch).unwrap(),
+            calculate_new_version("1.0.0", &VersionBump::Patch).unwrap(),
             Version::new(1, 0, 1)
         );
     }
@@ -458,7 +466,7 @@ mod tests {
     #[test]
     fn test_calculate_version_major_prerelease() {
         assert_eq!(
-            calculate_version(
+            calculate_new_version(
                 "1.2.3",
                 &VersionBump::MajorPreRelease(PreReleaseType::Alpha)
             )
@@ -466,12 +474,13 @@ mod tests {
             Version::parse("2.0.0-alpha.1").unwrap()
         );
         assert_eq!(
-            calculate_version("0.5.0", &VersionBump::MajorPreRelease(PreReleaseType::Beta))
+            calculate_new_version("0.5.0", &VersionBump::MajorPreRelease(PreReleaseType::Beta))
                 .unwrap(),
             Version::parse("1.0.0-beta.1").unwrap()
         );
         assert_eq!(
-            calculate_version("1.9.9", &VersionBump::MajorPreRelease(PreReleaseType::Rc)).unwrap(),
+            calculate_new_version("1.9.9", &VersionBump::MajorPreRelease(PreReleaseType::Rc))
+                .unwrap(),
             Version::parse("2.0.0-rc.1").unwrap()
         );
     }
@@ -479,7 +488,7 @@ mod tests {
     #[test]
     fn test_calculate_version_minor_prerelease() {
         assert_eq!(
-            calculate_version(
+            calculate_new_version(
                 "1.2.3",
                 &VersionBump::MinorPreRelease(PreReleaseType::Alpha)
             )
@@ -487,7 +496,7 @@ mod tests {
             Version::parse("1.3.0-alpha.1").unwrap()
         );
         assert_eq!(
-            calculate_version("2.0.0", &VersionBump::MinorPreRelease(PreReleaseType::Beta))
+            calculate_new_version("2.0.0", &VersionBump::MinorPreRelease(PreReleaseType::Beta))
                 .unwrap(),
             Version::parse("2.1.0-beta.1").unwrap()
         );
@@ -496,7 +505,7 @@ mod tests {
     #[test]
     fn test_calculate_version_patch_prerelease() {
         assert_eq!(
-            calculate_version(
+            calculate_new_version(
                 "1.2.3",
                 &VersionBump::PatchPreRelease(PreReleaseType::Alpha)
             )
@@ -504,7 +513,8 @@ mod tests {
             Version::parse("1.2.4-alpha.1").unwrap()
         );
         assert_eq!(
-            calculate_version("1.0.0", &VersionBump::PatchPreRelease(PreReleaseType::Rc)).unwrap(),
+            calculate_new_version("1.0.0", &VersionBump::PatchPreRelease(PreReleaseType::Rc))
+                .unwrap(),
             Version::parse("1.0.1-rc.1").unwrap()
         );
     }
@@ -512,7 +522,7 @@ mod tests {
     #[test]
     fn test_calculate_version_prerelease_bump() {
         assert_eq!(
-            calculate_version(
+            calculate_new_version(
                 "1.2.3-alpha.1",
                 &VersionBump::PreRelease(PreReleaseType::Alpha)
             )
@@ -520,7 +530,7 @@ mod tests {
             Version::parse("1.2.3-alpha.2").unwrap()
         );
         assert_eq!(
-            calculate_version(
+            calculate_new_version(
                 "2.0.0-beta.5",
                 &VersionBump::PreRelease(PreReleaseType::Beta)
             )
@@ -528,14 +538,15 @@ mod tests {
             Version::parse("2.0.0-beta.6").unwrap()
         );
         assert_eq!(
-            calculate_version("1.5.0-rc.1", &VersionBump::PreRelease(PreReleaseType::Rc)).unwrap(),
+            calculate_new_version("1.5.0-rc.1", &VersionBump::PreRelease(PreReleaseType::Rc))
+                .unwrap(),
             Version::parse("1.5.0-rc.2").unwrap()
         );
     }
 
     #[test]
     fn test_calculate_version_prerelease_mismatch() {
-        let result = calculate_version(
+        let result = calculate_new_version(
             "1.2.3-alpha.1",
             &VersionBump::PreRelease(PreReleaseType::Beta),
         );
@@ -551,11 +562,12 @@ mod tests {
     #[test]
     fn test_calculate_version_explicit() {
         assert_eq!(
-            calculate_version("1.2.3", &VersionBump::Explicit("3.0.0".to_string())).unwrap(),
+            calculate_new_version("1.2.3", &VersionBump::Explicit("3.0.0".to_string())).unwrap(),
             Version::parse("3.0.0").unwrap()
         );
         assert_eq!(
-            calculate_version("1.2.3", &VersionBump::Explicit("2.0.0-beta.1".to_string())).unwrap(),
+            calculate_new_version("1.2.3", &VersionBump::Explicit("2.0.0-beta.1".to_string()))
+                .unwrap(),
             Version::parse("2.0.0-beta.1").unwrap()
         );
     }

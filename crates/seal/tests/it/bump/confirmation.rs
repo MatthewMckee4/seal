@@ -49,9 +49,21 @@ version = "1.0.0"
     -version = "1.0.0"
     +version = "1.0.1"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+     version-files = ["Cargo.toml"]
+     commit-message = "Release v{version}"
+     branch-name = "release/v{version}"
+
     Changes to be made:
       - Update `Cargo.toml`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v1.0.1`
@@ -61,7 +73,6 @@ version = "1.0.0"
     Proceed with these changes? (y/n):
     Creating branch: release/v1.0.1
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.0.1
 
@@ -138,9 +149,21 @@ version = "1.0.0"
     -version = "1.0.0"
     +version = "1.0.1"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+     version-files = ["Cargo.toml"]
+     commit-message = "Release v{version}"
+     branch-name = "release/v{version}"
+
     Changes to be made:
       - Update `Cargo.toml`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v1.0.1`
@@ -224,9 +247,21 @@ version = "1.0.0"
     -version = "1.0.0"
     +version = "1.0.1"
 
+    diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
+    --- a/[TEMP]/seal.toml
+    +++ b/[TEMP]/seal.toml
+    @@ -1,6 +1,6 @@
+     
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+     version-files = ["Cargo.toml"]
+     commit-message = "Release v{version}"
+     branch-name = "release/v{version}"
+
     Changes to be made:
       - Update `Cargo.toml`
-      - Update `seal.toml`
+      - Update `[TEMP]/seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v1.0.1`
@@ -235,7 +270,6 @@ version = "1.0.0"
 
     Creating branch: release/v1.0.1
     Updating version files...
-    Updating seal.toml...
     Committing changes...
     Successfully bumped to 1.0.1
 

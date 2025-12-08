@@ -53,45 +53,44 @@ impl Config {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum VersionFile {
-    /// Detailed configuration with search pattern
-    Detailed {
-        path: PathBuf,
-        search: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
+    /// Text or TOML replacement (format determines behavior)
+    Text {
+        path: String, // Glob pattern allowed
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        format: Option<TextFormat>, // "toml" or "text", default is "text"
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        field: Option<String>, // For TOML: key to update; for Text: unused
+    },
+    /// Search and replace with optional template
+    Search {
+        path: String,   // Glob pattern allowed
+        search: String, // Pattern to search for
+        #[serde(default, skip_serializing_if = "Option::is_none")]
         #[serde(rename = "version-template")]
-        version_template: Option<String>,
+        version_template: Option<String>, // Replacement template
     },
+    /// Just path, does a straight string replacement
     JustPath {
-        path: PathBuf,
+        path: String, // Glob pattern allowed
     },
-    /// Simple string path: "Cargo.toml"
-    Simple(PathBuf),
+    /// Simple path, also does string replacement
+    Simple(String), // Path as string, glob allowed
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TextFormat {
+    Toml,
+    Text,
 }
 
 impl VersionFile {
-    pub fn path(&self) -> &Path {
+    pub fn path(&self) -> &str {
         match self {
-            Self::Detailed { path, .. } => path,
+            Self::Text { path, .. } => path,
+            Self::Search { path, .. } => path,
             Self::JustPath { path } => path,
             Self::Simple(path) => path,
-        }
-    }
-
-    pub fn search_pattern(&self) -> Option<&str> {
-        match self {
-            Self::Detailed { search, .. } => Some(search),
-            Self::JustPath { .. } => None,
-            Self::Simple(_) => None,
-        }
-    }
-
-    pub fn version_template(&self) -> Option<&str> {
-        match self {
-            Self::Detailed {
-                version_template, ..
-            } => version_template.as_deref(),
-            Self::JustPath { .. } => None,
-            Self::Simple(_) => None,
         }
     }
 }
@@ -109,13 +108,31 @@ pub struct ReleaseConfig {
         default = "[]",
         value_type = "list",
         example = r#"
+            # TOML file, update a specific field
+            # TOML file, update a specific field
+            [[release.version-files]]
+            path = "**/Cargo.toml"
+            format = "toml"
+            field = "workspace.package.version"
+
+            # Text file, straight replacement
             [[release.version-files]]
             path = "version.sh"
-            search = "export PUBLIC_VERSION=\"{version}\""
+            format = "text"
 
+            # Search and replace with template
             [[release.version-files]]
-            path = "Cargo.toml"
-            search = "version = \"{version}\""
+            path = "version.sh"
+            search = "export FULL_VERSION = '{version}'"
+            version_template = "export FULL_VERSION = '{version}'"
+
+            # Just path, string replacement
+            [[release.version-files]]
+            path = "README.md"
+
+            # Simple path, string replacement
+            [[release.version-files]]
+            "docs/version.txt"
         "#
     )]
     pub version_files: Option<Vec<VersionFile>>,
@@ -720,7 +737,7 @@ tag-format = ""
             members: None,
             release: Some(ReleaseConfig {
                 current_version: "1.2.3".to_string(),
-                version_files: Some(vec![VersionFile::Simple(PathBuf::from("Cargo.toml"))]),
+                version_files: Some(vec![VersionFile::Simple("Cargo.toml".to_string())]),
                 commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
                 tag_format: Some(TagFormat::new("v{version}".to_string()).unwrap()),
@@ -907,17 +924,8 @@ search = "version = \"{version}\""
             .version_files
             .as_ref()
             .unwrap();
-        assert_eq!(version_files.len(), 2);
-        assert_eq!(version_files[0].path(), PathBuf::from("version.sh"));
-        assert_eq!(
-            version_files[0].search_pattern(),
-            Some("export PUBLIC_VERSION=\"{version}\"")
-        );
-        assert_eq!(version_files[1].path(), PathBuf::from("Cargo.toml"));
-        assert_eq!(
-            version_files[1].search_pattern(),
-            Some("version = \"{version}\"")
-        );
+
+        assert_debug_snapshot!(version_files, @r"");
     }
 
     #[test]
@@ -939,16 +947,8 @@ version-files = [
             .version_files
             .as_ref()
             .unwrap();
-        assert_eq!(version_files.len(), 2);
 
-        assert_eq!(version_files[0].path(), PathBuf::from("package.json"));
-        assert_eq!(version_files[0].search_pattern(), None);
-
-        assert_eq!(version_files[1].path(), PathBuf::from("version.sh"));
-        assert_eq!(
-            version_files[1].search_pattern(),
-            Some("VERSION=\"{version}\"")
-        );
+        assert_debug_snapshot!(version_files, @r"");
     }
 
     #[test]

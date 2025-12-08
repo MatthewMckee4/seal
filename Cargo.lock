@@ -586,10 +586,8 @@ dependencies = [
  "seal_cli",
  "seal_project",
  "seal_version",
- "semver",
  "serde",
  "serde_json",
- "similar",
  "tempfile",
  "which",
 ]
@@ -598,7 +596,13 @@ dependencies = [
 name = "seal_bump"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
+ "fs-err",
+ "owo-colors",
+ "regex",
+ "seal_project",
  "semver",
+ "similar",
  "thiserror",
 ]
 
