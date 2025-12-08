@@ -52,7 +52,7 @@ impl TestContext {
     pub fn seal_toml(&self, content: &str) -> &Self {
         self.root
             .child("seal.toml")
-            .write_str(content)
+            .write_str(content.strip_prefix("\n").unwrap_or(content))
             .expect("Failed to write seal.toml");
         self
     }

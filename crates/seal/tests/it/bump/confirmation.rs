@@ -52,8 +52,7 @@ version = "1.0.0"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1"
@@ -152,8 +151,7 @@ version = "1.0.0"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1"
@@ -250,8 +248,7 @@ version = "1.0.0"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1"

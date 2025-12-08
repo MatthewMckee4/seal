@@ -79,8 +79,7 @@ version = "1.2.3"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "2.0.0"
@@ -172,8 +171,7 @@ version = "1.2.3"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "1.3.0"
@@ -252,8 +250,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.1.5"
     +current-version = "2.1.6"
@@ -328,8 +325,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "2.0.0-alpha.1"
@@ -413,8 +409,7 @@ edition = "2021"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "1.3.0-beta.1"
@@ -493,8 +488,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1-rc.1"
@@ -566,8 +560,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3-alpha.1"
     +current-version = "1.2.3-alpha.2"
@@ -641,8 +634,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-beta.5"
     +current-version = "2.0.0-beta.6"
@@ -714,8 +706,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "3.0.0"
@@ -789,8 +780,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "2.0.0-beta.1"
@@ -908,8 +898,7 @@ version = "0.1.0"
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.1.0"
     +current-version = "0.2.0"
@@ -1046,8 +1035,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "1.2.3-alpha.0"
@@ -1099,8 +1087,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3-alpha.0"
     +current-version = "1.2.3-alpha.1"
@@ -1207,8 +1194,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
     +current-version = "2.0.0"
@@ -1263,8 +1249,7 @@ confirm = false
     diff --git a/[TEMP]/seal.toml b/[TEMP]/seal.toml
     --- a/[TEMP]/seal.toml
     +++ b/[TEMP]/seal.toml
-    @@ -1,6 +1,6 @@
-     
+    @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1"

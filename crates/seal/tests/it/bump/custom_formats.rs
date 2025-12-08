@@ -7,7 +7,8 @@ fn bump_with_custom_search_pattern() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "2.5.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -116,7 +117,8 @@ fn bump_with_version_template_major_minor_only() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "1.2.3"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -206,7 +208,8 @@ fn bump_with_version_template_prerelease() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "2.0.0-beta.1"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -275,7 +278,8 @@ fn bump_with_mixed_version_formats() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "1.5.2"
 
 version-files = [
@@ -342,7 +346,8 @@ fn bump_with_custom_search_pattern_not_found() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "1.0.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -380,7 +385,8 @@ fn bump_with_version_template_extra_on_stable() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "1.0.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -449,7 +455,8 @@ fn bump_prerelease_to_stable_with_template() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "2.0.0-rc.3"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -518,7 +525,8 @@ fn bump_with_template_prerelease_with_hyphen() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "1.0.0-alpha.1"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -587,7 +595,8 @@ fn bump_with_multiple_occurrences_same_file() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "0.5.0"
 commit-message = "Release {version}"
 branch-name = "release/{version}"
@@ -667,7 +676,8 @@ fn bump_version_in_nested_string() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "0.0.1"
 
 [[release.version-files]]
@@ -729,7 +739,8 @@ fn bump_version_with_glob_path() {
     let context = TestContext::new();
     context
         .seal_toml(
-            r#"[release]
+            r#"
+[release]
 current-version = "0.0.1"
 
 [[release.version-files]]
