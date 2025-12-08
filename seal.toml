@@ -1,7 +1,11 @@
 [release]
-current-version = "0.0.1-alpha.1"
+current-version = "0.0.1-alpha.2"
 
-version-files = ["crates/seal_version/Cargo.toml"]
+version-files = [
+    "crates/seal_version/Cargo.toml",
+    "crates/seal/Cargo.toml",
+    { path = "dist-workspace.toml", field = "workspace.version", format = "cargo" }
+]
 
 commit-message = "Release v{version}"
 
@@ -11,6 +15,6 @@ tag-format = "v{version}"
 
 push = true
 
-create_pr = true
+create-pr = true
 
 confirm = true
