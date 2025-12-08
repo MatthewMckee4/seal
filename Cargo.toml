@@ -42,7 +42,7 @@ syn = { version = "2.0.77" }
 tempfile = { version = "3.14" }
 textwrap = { version = "0.16.1" }
 thiserror = { version = "2.0" }
-toml = { version = "0.8" }
+toml = { version = "0.9" }
 which = { version = "8.0.0" }
 
 [workspace.lints.clippy]

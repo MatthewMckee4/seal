@@ -119,8 +119,7 @@ current-version = "1.0.0"
       |
     1 | [release
       |         ^
-    invalid table header
-    expected `.`, `]`
+    unclosed table, expected `]`
     ");
 }
 

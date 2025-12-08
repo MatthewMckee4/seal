@@ -451,9 +451,9 @@ unknown-field = "value"
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `tag-format`, `push`, `create-pr`, `confirm`",
-                raw: Some(
+                input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
                 keys: [
@@ -479,9 +479,9 @@ commit-message = "Release without placeholder"
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.commit-message must contain '{version}' placeholder, got: 'Release without placeholder'",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"Release without placeholder\"\n",
                 ),
                 keys: [
@@ -508,9 +508,9 @@ branch-name = "release-branch"
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.branch-name must contain '{version}' placeholder, got: 'release-branch'",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\nbranch-name = \"release-branch\"\n",
                 ),
                 keys: [
@@ -537,9 +537,9 @@ tag-format = "release"
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.tag-format must contain '{version}' placeholder, got: 'release'",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ntag-format = \"release\"\n",
                 ),
                 keys: [
@@ -566,9 +566,9 @@ commit-message = ""
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.commit-message cannot be empty",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"\"\n",
                 ),
                 keys: [
@@ -595,9 +595,9 @@ branch-name = ""
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.branch-name cannot be empty",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\nbranch-name = \"\"\n",
                 ),
                 keys: [
@@ -624,9 +624,9 @@ tag-format = ""
         let err = result.unwrap_err();
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.tag-format cannot be empty",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ntag-format = \"\"\n",
                 ),
                 keys: [
@@ -812,9 +812,9 @@ commit-message = "Release {VERSION}"
         assert!(result.is_err());
         assert_debug_snapshot!(result.unwrap_err(), @r#"
         ConfigParseError(
-            TomlError {
+            Error {
                 message: "release.commit-message must contain '{version}' placeholder, got: 'Release {VERSION}'",
-                raw: Some(
+                input: Some(
                     "\n[release]\ncurrent-version = \"1.0.0\"\ncommit-message = \"Release {VERSION}\"\n",
                 ),
                 keys: [
