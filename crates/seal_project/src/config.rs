@@ -35,7 +35,7 @@ impl Config {
 
     pub fn from_file(path: &Path) -> Result<Self, ProjectError> {
         let content =
-            std::fs::read_to_string(path).map_err(|e| ProjectError::ConfigFileNotReadable {
+            fs_err::read_to_string(path).map_err(|e| ProjectError::ConfigFileNotReadable {
                 path: path.to_path_buf(),
                 source: e,
             })?;
@@ -55,20 +55,24 @@ impl Config {
 pub enum VersionFile {
     /// Detailed configuration with search pattern
     Detailed {
-        path: String,
+        path: PathBuf,
         search: String,
         #[serde(skip_serializing_if = "Option::is_none")]
         #[serde(rename = "version-template")]
         version_template: Option<String>,
     },
+    JustPath {
+        path: PathBuf,
+    },
     /// Simple string path: "Cargo.toml"
-    Simple(String),
+    Simple(PathBuf),
 }
 
 impl VersionFile {
-    pub fn path(&self) -> &str {
+    pub fn path(&self) -> &Path {
         match self {
             Self::Detailed { path, .. } => path,
+            Self::JustPath { path } => path,
             Self::Simple(path) => path,
         }
     }
@@ -76,6 +80,7 @@ impl VersionFile {
     pub fn search_pattern(&self) -> Option<&str> {
         match self {
             Self::Detailed { search, .. } => Some(search),
+            Self::JustPath { .. } => None,
             Self::Simple(_) => None,
         }
     }
@@ -85,6 +90,7 @@ impl VersionFile {
             Self::Detailed {
                 version_template, ..
             } => version_template.as_deref(),
+            Self::JustPath { .. } => None,
             Self::Simple(_) => None,
         }
     }
@@ -714,7 +720,7 @@ tag-format = ""
             members: None,
             release: Some(ReleaseConfig {
                 current_version: "1.2.3".to_string(),
-                version_files: Some(vec![VersionFile::Simple("Cargo.toml".to_string())]),
+                version_files: Some(vec![VersionFile::Simple(PathBuf::from("Cargo.toml"))]),
                 commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
                 tag_format: Some(TagFormat::new("v{version}".to_string()).unwrap()),
@@ -902,12 +908,12 @@ search = "version = \"{version}\""
             .as_ref()
             .unwrap();
         assert_eq!(version_files.len(), 2);
-        assert_eq!(version_files[0].path(), "version.sh");
+        assert_eq!(version_files[0].path(), PathBuf::from("version.sh"));
         assert_eq!(
             version_files[0].search_pattern(),
             Some("export PUBLIC_VERSION=\"{version}\"")
         );
-        assert_eq!(version_files[1].path(), "Cargo.toml");
+        assert_eq!(version_files[1].path(), PathBuf::from("Cargo.toml"));
         assert_eq!(
             version_files[1].search_pattern(),
             Some("version = \"{version}\"")
@@ -935,10 +941,10 @@ version-files = [
             .unwrap();
         assert_eq!(version_files.len(), 2);
 
-        assert_eq!(version_files[0].path(), "package.json");
+        assert_eq!(version_files[0].path(), PathBuf::from("package.json"));
         assert_eq!(version_files[0].search_pattern(), None);
 
-        assert_eq!(version_files[1].path(), "version.sh");
+        assert_eq!(version_files[1].path(), PathBuf::from("version.sh"));
         assert_eq!(
             version_files[1].search_pattern(),
             Some("VERSION=\"{version}\"")

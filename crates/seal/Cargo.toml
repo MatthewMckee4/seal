@@ -18,6 +18,7 @@ anstream = { workspace = true }
 anyhow = { workspace = true }
 clap = { workspace = true }
 dunce = { workspace = true }
+fs-err = { workspace = true }
 itertools = { workspace = true }
 owo-colors = { workspace = true }
 regex = { workspace = true }

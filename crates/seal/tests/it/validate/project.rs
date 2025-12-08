@@ -57,8 +57,8 @@ fn validate_project_not_found() {
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: [OS ERROR 2]
-      Caused by: [OS ERROR 2]
+    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
     ");
 }
 

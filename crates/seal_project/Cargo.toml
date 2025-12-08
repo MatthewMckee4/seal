@@ -12,6 +12,7 @@ license.workspace = true
 seal_macros = { workspace = true }
 seal_options_metadata = { workspace = true }
 
+fs-err = { workspace = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
 toml = { workspace = true }

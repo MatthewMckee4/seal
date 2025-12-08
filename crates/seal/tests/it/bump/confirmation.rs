@@ -31,7 +31,7 @@ version = "1.0.0"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -49,12 +49,14 @@ version = "1.0.0"
     -version = "1.0.0"
     +version = "1.0.1"
 
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/v1.0.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release v1.0.1"
+      `git checkout -b release/v1.0.1`
+      `git add -A`
+      `git commit -m "Release v1.0.1"`
 
     Proceed with these changes? (y/n):
     Creating branch: release/v1.0.1
@@ -118,7 +120,7 @@ version = "1.0.0"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("n\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -136,14 +138,17 @@ version = "1.0.0"
     -version = "1.0.0"
     +version = "1.0.1"
 
-    Commands to be executed:
-      git checkout -b release/v1.0.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release v1.0.1"
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
-    Proceed with these changes? (y/n):Aborted.
+    Commands to be executed:
+      `git checkout -b release/v1.0.1`
+      `git add -A`
+      `git commit -m "Release v1.0.1"`
+
+    Proceed with these changes? (y/n):
+    No changes applied.
 
     ----- stderr -----
     "#);
@@ -219,12 +224,14 @@ version = "1.0.0"
     -version = "1.0.0"
     +version = "1.0.1"
 
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `seal.toml`
+
     Commands to be executed:
-      git checkout -b release/v1.0.1
-      # Update version files
-      # Update seal.toml
-      git add -A
-      git commit -m "Release v1.0.1"
+      `git checkout -b release/v1.0.1`
+      `git add -A`
+      `git commit -m "Release v1.0.1"`
 
     Creating branch: release/v1.0.1
     Updating version files...
