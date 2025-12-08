@@ -43,9 +43,6 @@ pub enum ConfigValidationError {
     #[error("release.branch-name cannot be empty")]
     EmptyBranchName,
 
-    #[error("release.tag-format cannot be empty")]
-    EmptyTagFormat,
-
     #[error("release.{field} must contain '{{version}}' placeholder, got: '{value}'")]
     MissingVersionPlaceholder { field: String, value: String },
 
@@ -96,9 +93,6 @@ mod tests {
 
         let err = ConfigValidationError::EmptyBranchName;
         assert_snapshot!(err.to_string(), @"release.branch-name cannot be empty");
-
-        let err = ConfigValidationError::EmptyTagFormat;
-        assert_snapshot!(err.to_string(), @"release.tag-format cannot be empty");
 
         let err = ConfigValidationError::MissingVersionPlaceholder {
             field: "commit-message".to_string(),
