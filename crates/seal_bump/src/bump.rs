@@ -24,11 +24,12 @@ pub fn calculate_version_file_changes(
                 field,
             } => {
                 for path in glob(path)?.filter_map(Result::ok) {
+                    let absolute_path = make_absolute(root, &path);
                     let old_content = fs_err::read_to_string(&path)?;
 
                     let new_content = match format {
                         VersionFileTextFormat::Toml => {
-                            let toml = toml::Value::try_from(&old_content)?;
+                            let toml: toml::Value = toml::from_str(&old_content)?;
 
                             let field = field.clone().unwrap_or("package.version".to_string());
 
@@ -38,8 +39,13 @@ pub fn calculate_version_file_changes(
                                 anyhow::bail!("Failed to replace version in {}", path.display())
                             };
 
-                            if found_old_version == current_version {
-                                anyhow::bail!("Version already up-to-date in {}", path.display())
+                            if found_old_version != current_version {
+                                anyhow::bail!(
+                                    "Mismatched version in `{}`, expected `{}`, found `{}`",
+                                    path.display(),
+                                    current_version,
+                                    found_old_version
+                                )
                             }
 
                             old_content.replace(
@@ -49,17 +55,14 @@ pub fn calculate_version_file_changes(
                         }
 
                         VersionFileTextFormat::Text => exact_version_replacement(
+                            &absolute_path,
                             &old_content,
                             current_version,
                             &new_version_str,
                         )?,
                     };
 
-                    changes.push(FileChange::new(
-                        make_absolute(root, &path),
-                        old_content,
-                        new_content,
-                    ));
+                    changes.push(FileChange::new(absolute_path, old_content, new_content));
                 }
 
                 if changes.is_empty() {
@@ -94,16 +97,17 @@ pub fn calculate_version_file_changes(
             }
             VersionFile::JustPath { path } | VersionFile::Simple(path) => {
                 for path in glob(path)?.filter_map(Result::ok) {
+                    let absolute_path = make_absolute(root, &path);
                     let old_content = fs_err::read_to_string(&path)?;
 
-                    let new_content =
-                        exact_version_replacement(&old_content, current_version, &new_version_str)?;
+                    let new_content = exact_version_replacement(
+                        &absolute_path,
+                        &old_content,
+                        current_version,
+                        &new_version_str,
+                    )?;
 
-                    changes.push(FileChange::new(
-                        make_absolute(root, &path),
-                        old_content,
-                        new_content,
-                    ));
+                    changes.push(FileChange::new(absolute_path, old_content, new_content));
                 }
 
                 if changes.is_empty() {
@@ -137,6 +141,7 @@ pub fn calculate_version_file_changes(
 }
 
 fn exact_version_replacement(
+    path: &Path,
     content: &str,
     current_version: &str,
     version_str: &str,
@@ -144,7 +149,10 @@ fn exact_version_replacement(
     if content.contains(current_version) {
         Ok(content.replace(current_version, version_str))
     } else {
-        anyhow::bail!(format!("Version `{current_version}` not found in file",));
+        anyhow::bail!(format!(
+            "Version `{current_version}` not found in file `{}`",
+            path.display()
+        ));
     }
 }
 
@@ -158,7 +166,9 @@ fn nested_toml_key<'a>(source: &'a toml::Value, key: &str) -> Result<&'a str> {
                     .get(part)
                     .ok_or_else(|| anyhow::anyhow!("Key `{part}` not found"))?;
             }
-            _ => anyhow::bail!("Expected `{part}` to refer to a TOML table"),
+            _ => {
+                anyhow::bail!("Expected `{part}` to refer to a TOML table")
+            }
         }
     }
 

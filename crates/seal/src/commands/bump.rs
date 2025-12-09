@@ -4,6 +4,7 @@ use std::process::Command;
 
 use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
+use seal_fs::FileResolver;
 use seal_project::ProjectWorkspace;
 
 use seal_cli::BumpArgs;
@@ -75,8 +76,10 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         &new_version,
     )?;
 
+    let file_resolver = FileResolver::new(workspace.root().clone());
+
     for change in &changes {
-        change.display_diff(&mut stdout)?;
+        change.display_diff(&mut stdout, &file_resolver)?;
     }
 
     let changelog_changes = if !args.no_changelog {
@@ -88,7 +91,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             ) {
                 Ok(changes) => {
                     for change in &changes {
-                        change.display_diff(&mut stdout)?;
+                        change.display_diff(&mut stdout, &file_resolver)?;
                     }
                     Some(changes)
                 }

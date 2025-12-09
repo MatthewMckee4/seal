@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use owo_colors::OwoColorize;
+use seal_fs::FileResolver;
 use std::path::{Path, PathBuf};
 
 pub struct FileChanges(Vec<FileChange>);
@@ -40,7 +41,7 @@ impl<'a> IntoIterator for &'a FileChanges {
 }
 
 pub struct FileChange {
-    path: PathBuf,
+    abslute_path: PathBuf,
     old_content: String,
     new_content: String,
 }
@@ -48,32 +49,38 @@ pub struct FileChange {
 impl FileChange {
     pub fn new(path: PathBuf, old_content: String, new_content: String) -> Self {
         Self {
-            path,
+            abslute_path: path,
             old_content,
             new_content,
         }
     }
 
     pub fn apply(self) -> Result<()> {
-        fs_err::write(&self.path, &self.new_content)
-            .context(format!("Failed to write {}", self.path.display()))?;
+        fs_err::write(&self.abslute_path, &self.new_content)
+            .context(format!("Failed to write {}", self.abslute_path.display()))?;
         Ok(())
     }
 
-    pub fn display_diff(&self, stdout: &mut impl std::fmt::Write) -> Result<()> {
+    pub fn display_diff(
+        &self,
+        stdout: &mut impl std::fmt::Write,
+        file_resolver: &FileResolver,
+    ) -> Result<()> {
         use similar::{ChangeTag, TextDiff};
 
-        let path_string = self.path.display().to_string();
-        let path_stripped = path_string.strip_suffix("/").unwrap_or(&path_string);
+        let path_string = file_resolver
+            .relative_path(&self.abslute_path)
+            .display()
+            .to_string();
 
         writeln!(stdout)?;
         writeln!(
             stdout,
             "{}",
-            format!("diff --git a{path_stripped} b{path_stripped}").bold()
+            format!("diff --git a/{path_string} b/{path_string}").bold()
         )?;
-        writeln!(stdout, "{}", format!("--- a{path_stripped}").blue())?;
-        writeln!(stdout, "{}", format!("+++ b{path_stripped}").blue())?;
+        writeln!(stdout, "{}", format!("--- a/{path_string}").blue())?;
+        writeln!(stdout, "{}", format!("+++ b/{path_string}").blue())?;
 
         let diff = TextDiff::from_lines(&self.old_content, &self.new_content);
 
@@ -99,7 +106,7 @@ impl FileChange {
     }
 
     pub fn path(&self) -> &PathBuf {
-        &self.path
+        &self.abslute_path
     }
 }
 

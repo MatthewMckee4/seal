@@ -1321,6 +1321,7 @@ dependencies = [
  "seal_bump",
  "seal_changelog",
  "seal_cli",
+ "seal_fs",
  "seal_project",
  "seal_version",
  "serde",
@@ -1394,8 +1395,13 @@ dependencies = [
  "anyhow",
  "fs-err",
  "owo-colors",
+ "seal_fs",
  "similar",
 ]
+
+[[package]]
+name = "seal_fs"
+version = "0.1.0"
 
 [[package]]
 name = "seal_macros"

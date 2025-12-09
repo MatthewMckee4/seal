@@ -4,7 +4,8 @@ current-version = "0.0.1-alpha.3"
 version-files = [
     "crates/seal_version/Cargo.toml",
     "crates/seal/Cargo.toml",
-    { path = "dist-workspace.toml", field = "workspace.version", format = "cargo" }
+    "README.md",
+    { path = "dist-workspace.toml", field = "workspace.version", format = "toml" }
 ]
 
 commit-message = "Release v{version}"

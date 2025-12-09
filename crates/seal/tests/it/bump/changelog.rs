@@ -42,18 +42,18 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
-    --- a[TEMP]/Cargo.toml
-    +++ b[TEMP]/Cargo.toml
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -114,18 +114,18 @@ version = "1.0.0"
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
-    --- a[TEMP]/Cargo.toml
-    +++ b[TEMP]/Cargo.toml
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.0.0"
     +version = "1.0.1"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,4 +1,4 @@
      [release]
     -current-version = "1.0.0"
