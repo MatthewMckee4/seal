@@ -2,9 +2,8 @@
 
 An extremely fast release management tool, written in Rust.
 
-> [!WARNING]
->
-> seal is not ready for production use.
+!!! warning
+    seal is not ready for production use.
 
 ## What is Seal?
 
