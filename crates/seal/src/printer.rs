@@ -27,7 +27,6 @@ impl Printer {
     }
 
     /// Return the [`Stderr`] for this printer.
-    #[expect(unused)]
     pub(crate) fn stderr(self) -> Stderr {
         match self {
             Self::Silent => Stderr::Disabled,

@@ -1,10 +1,12 @@
 use std::fmt::Write as _;
 use std::io;
 use std::process::Command;
+use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
 use seal_fs::FileResolver;
+use seal_github::GitHubService;
 use seal_project::ProjectWorkspace;
 
 use seal_cli::BumpArgs;
@@ -32,11 +34,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let current_version_string = &release_config.current_version;
 
-    let new_version = seal_bump::calculate_new_version(current_version_string, &version_bump)
-        .context(format!(
-            "Failed to calculate new version from '{current_version_string}' with bump '{version_bump}'"
-        ))?
-       ;
+    let new_version = seal_bump::calculate_new_version(current_version_string, &version_bump)?;
 
     let new_version_string = new_version.to_string();
 
@@ -48,11 +46,12 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let branch_name = release_config
         .branch_name
         .as_ref()
-        .map(|bn| bn.as_str().replace("{version}", &new_version_string));
+        .map(|name| name.as_str().replace("{version}", &new_version_string));
+
     let commit_message = release_config
         .commit_message
         .as_ref()
-        .map(|cm| cm.as_str().replace("{version}", &new_version_string));
+        .map(|message| message.as_str().replace("{version}", &new_version_string));
 
     writeln!(stdout)?;
 
@@ -71,6 +70,21 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let file_resolver = FileResolver::new(workspace.root().clone());
 
+    #[cfg(feature = "integration-test")]
+    let github_client: Arc<dyn GitHubService> = {
+        #[cfg(any(test, feature = "integration-test"))]
+        use seal_github::MockGithubClient;
+        Arc::new(MockGithubClient)
+    };
+    #[cfg(not(feature = "integration-test"))]
+    let github_client: Arc<dyn GitHubService> = {
+        use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
+
+        let repo_url = get_git_remote_url()?;
+        let (owner, repo) = parse_github_repo(&repo_url)?;
+        Arc::new(GitHubClient::new(owner, repo)?)
+    };
+
     let changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
@@ -83,24 +97,22 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         change.display_diff(&mut stdout, &file_resolver)?;
     }
 
+    writeln!(stdout)?;
+
     let changelog_changes = if !args.no_changelog {
         if let Some(changelog_config) = config.changelog.as_ref() {
-            match seal_changelog::prepare_changelog_changes(
+            let changes = seal_changelog::prepare_changelog_changes(
                 workspace.root(),
                 &new_version_string,
                 changelog_config,
-            ) {
-                Ok(changes) => {
-                    for change in &changes {
-                        change.display_diff(&mut stdout, &file_resolver)?;
-                    }
-                    Some(changes)
-                }
-                Err(e) => {
-                    writeln!(stdout, "Warning: Failed to prepare changelog: {e}")?;
-                    None
-                }
+                &github_client,
+            )
+            .context("Failed to prepare changelog")?;
+
+            for change in &changes {
+                change.display_diff(&mut stdout, &file_resolver)?;
             }
+            Some(changes)
         } else {
             writeln!(
                 stdout,
@@ -176,8 +188,8 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     if release_config.confirm {
         writeln!(stdout)?;
         if !confirm_changes(&mut stdout)? {
-            writeln!(stdout)?;
-            writeln!(stdout, "No changes applied.")?;
+            writeln!(printer.stderr())?;
+            writeln!(printer.stderr(), "No changes applied.")?;
             return Ok(ExitStatus::Success);
         }
     }
@@ -205,11 +217,11 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     if release_config.push {
         if let Some(branch) = &branch_name {
             writeln!(stdout, "Pushing branch to remote...")?;
-            push_branch(branch)?;
+            github_client.push_branch(branch)?;
 
             if release_config.create_pr {
                 writeln!(stdout, "Creating pull request...")?;
-                create_pull_request(&new_version_string)?;
+                github_client.create_pull_request(&new_version_string)?;
             }
         }
     }
@@ -240,14 +252,10 @@ fn confirm_changes(stdout: &mut impl std::fmt::Write) -> Result<bool> {
 }
 
 fn create_git_branch(branch_name: &str) -> Result<()> {
-    let output = Command::new("git")
+    Command::new("git")
         .args(["checkout", "-b", branch_name])
         .output()
         .context("Failed to execute git checkout")?;
-
-    if !output.status.success() {
-        anyhow::bail!("Failed to create git branch");
-    }
 
     Ok(())
 }
@@ -258,46 +266,10 @@ fn commit_changes(message: &str) -> Result<()> {
         .output()
         .context("Failed to execute git add")?;
 
-    let output = Command::new("git")
+    Command::new("git")
         .args(["commit", "-m", message])
         .output()
         .context("Failed to execute git commit")?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Failed to commit changes: {stderr}");
-    }
-
-    Ok(())
-}
-
-fn push_branch(branch_name: &str) -> Result<()> {
-    let output = Command::new("git")
-        .args(["push", "-u", "origin", branch_name])
-        .output()
-        .context("Failed to execute git push")?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Failed to push branch: {stderr}");
-    }
-
-    Ok(())
-}
-
-fn create_pull_request(version: &str) -> Result<()> {
-    let title = format!("Release v{version}");
-    let body = format!("Automated release for version {version}");
-
-    let output = Command::new("gh")
-        .args(["pr", "create", "--title", &title, "--body", &body])
-        .output()
-        .context("Failed to execute gh pr create")?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Failed to create pull request: {stderr}");
-    }
 
     Ok(())
 }

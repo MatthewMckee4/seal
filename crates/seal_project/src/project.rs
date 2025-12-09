@@ -1,3 +1,4 @@
+use anyhow::Result;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
@@ -20,17 +21,13 @@ pub struct ProjectWorkspace {
 
 impl ProjectWorkspace {
     /// Discover workspace from current directory
-    pub fn discover() -> Result<Self, ProjectError> {
-        let current_dir =
-            std::env::current_dir().map_err(|e| ProjectError::ConfigFileNotReadable {
-                path: PathBuf::from("."),
-                source: e,
-            })?;
+    pub fn discover() -> Result<Self> {
+        let current_dir = std::env::current_dir()?;
         Self::from_project_path(&current_dir)
     }
 
     /// Load workspace from a specific config file path
-    pub fn from_config_file(config_path: &Path) -> Result<Self, ProjectError> {
+    pub fn from_config_file(config_path: &Path) -> Result<Self> {
         let config = Config::from_file(config_path)?;
         let root = config_path
             .parent()
@@ -54,7 +51,7 @@ impl ProjectWorkspace {
     }
 
     /// Load workspace from a project directory path
-    pub fn from_project_path(project_path: &Path) -> Result<Self, ProjectError> {
+    pub fn from_project_path(project_path: &Path) -> Result<Self> {
         let seal_toml_path = project_path.join("seal.toml");
         let config = Config::from_file(&seal_toml_path)?;
 
@@ -349,7 +346,11 @@ current-version = "1.0.0"
         assert!(result.is_err());
 
         let err = result.unwrap_err();
-        assert!(matches!(err, ProjectError::MemberMissingSealToml { .. }));
+
+        assert!(matches!(
+            err.downcast_ref::<ProjectError>(),
+            Some(ProjectError::MemberMissingSealToml { .. })
+        ));
     }
 
     #[test]
@@ -373,6 +374,9 @@ current-version = "1.0.0"
         assert!(result.is_err());
 
         let err = result.unwrap_err();
-        assert!(matches!(err, ProjectError::MemberPathNotFound { .. }));
+        assert!(matches!(
+            err.downcast_ref::<ProjectError>(),
+            Some(ProjectError::MemberPathNotFound { .. })
+        ));
     }
 }

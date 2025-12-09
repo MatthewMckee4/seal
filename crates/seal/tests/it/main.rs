@@ -3,7 +3,9 @@
 
 pub(crate) mod common;
 
+#[cfg(feature = "integration-test")]
 mod bump;
+
 mod help;
 mod self_version;
 mod validate;

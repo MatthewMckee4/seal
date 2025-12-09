@@ -8,3 +8,8 @@ coverage:
     patch:
       default:
         enabled: false
+
+ignore:
+  - "crates/seal_macros/**/*"
+  - "crates/seal_options_metadata/**/*"
+  - "crates/seal_dev/**/*"

@@ -12,7 +12,7 @@ pub use config::{
 };
 pub use discovery::find_project_config;
 pub use error::{ConfigValidationError, ProjectError};
-pub use git::{find_git_root, get_base_branch, get_remote};
+pub use git::find_git_root;
 pub use project::ProjectWorkspace;
 pub use project_name::ProjectName;
 pub use workspace_member::WorkspaceMember;
