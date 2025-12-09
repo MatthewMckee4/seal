@@ -36,3 +36,16 @@ We do not (yet) have support for installation from other sources, like PyPI or c
 ## Documentation
 
 seal's documentation is available at [matthewmckee4.github.io/seal](https://matthewmckee4.github.io/seal/)
+
+## Acknowledgements
+
+I'd like to thank the [Astral team](https://github.com/astral-sh) for all of their contributions to the Rust ecosystem.
+
+Particularly, the projects [uv](https://github.com/astral-sh/uv) and [ruff](https://github.com/astral-sh/ruff).
+
+## License
+
+Seal is licensed under the MIT License.
+
+We also include the [uv MIT license at](https://github.com/MatthewMckee4/seal/blob/main/licenses/astral.LICENSE-MIT), as we often
+take inspiration or code snippets from the [uv](https://github.com/astral-sh/uv) repository.
