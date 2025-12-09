@@ -12,8 +12,8 @@ An extremely fast release management tool, written in Rust.
 
 Seal is a release management tool that can be used to automate version updating.
 
-There are other tools out there for version bumping and changelog generation and management, 
-but often tools only support one of these. 
+There are other tools out there for version bumping and changelog generation and management,
+but often tools only support one of these.
 
 Seal aims to provide a unified solution for both version bumping and changelog management.
 
