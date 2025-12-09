@@ -4,6 +4,7 @@ use std::process::Command;
 
 use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
+use seal_fs::FileResolver;
 use seal_project::ProjectWorkspace;
 
 use seal_cli::BumpArgs;
@@ -68,15 +69,18 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Preview of changes:")?;
     writeln!(stdout, "-------------------")?;
 
+    let file_resolver = FileResolver::new(workspace.root().clone());
+
     let changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
         current_version_string,
         &new_version,
+        &file_resolver,
     )?;
 
     for change in &changes {
-        change.display_diff(&mut stdout)?;
+        change.display_diff(&mut stdout, &file_resolver)?;
     }
 
     let changelog_changes = if !args.no_changelog {
@@ -88,7 +92,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             ) {
                 Ok(changes) => {
                     for change in &changes {
-                        change.display_diff(&mut stdout)?;
+                        change.display_diff(&mut stdout, &file_resolver)?;
                     }
                     Some(changes)
                 }
@@ -118,11 +122,19 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     writeln!(stdout, "Changes to be made:")?;
     for change in &changes {
-        writeln!(stdout, "  - Update `{}`", change.path().display())?;
+        writeln!(
+            stdout,
+            "  - Update `{}`",
+            file_resolver.relative_path(change.path()).display()
+        )?;
     }
     if let Some(ref changelog) = changelog_changes {
         for change in changelog {
-            writeln!(stdout, "  - Update `{}`", change.path().display())?;
+            writeln!(
+                stdout,
+                "  - Update `{}`",
+                file_resolver.relative_path(change.path()).display()
+            )?;
         }
     }
     writeln!(stdout)?;

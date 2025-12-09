@@ -10,6 +10,7 @@ license.workspace = true
 
 [dependencies]
 seal_file_change = { workspace = true }
+seal_fs = { workspace = true }
 seal_project = { workspace = true }
 
 anyhow = { workspace = true }

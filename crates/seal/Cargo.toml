@@ -13,6 +13,7 @@ default-run = "seal"
 seal_bump = { workspace = true }
 seal_changelog = { workspace = true }
 seal_cli = { workspace = true }
+seal_fs = { workspace = true }
 seal_project = { workspace = true }
 seal_version = { workspace = true }
 

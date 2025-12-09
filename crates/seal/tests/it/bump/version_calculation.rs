@@ -52,32 +52,32 @@ version = "1.2.3"
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
-    --- a[TEMP]/Cargo.toml
-    +++ b[TEMP]/Cargo.toml
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a[TEMP]/package.json b[TEMP]/package.json
-    --- a[TEMP]/package.json
-    +++ b[TEMP]/package.json
+    diff --git a/package.json b/package.json
+    --- a/package.json
+    +++ b/package.json
     @@ -1 +1 @@
     -{"name": "test", "version": "1.2.3"}
     +{"name": "test", "version": "2.0.0"}
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -88,10 +88,10 @@ version = "1.2.3"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/package.json`
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `package.json`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v2.0.0`
@@ -158,18 +158,18 @@ version = "1.2.3"
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
-    --- a[TEMP]/Cargo.toml
-    +++ b[TEMP]/Cargo.toml
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "test"
     -version = "1.2.3"
     +version = "1.3.0"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -180,8 +180,8 @@ version = "1.2.3"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b releases/1.3.0`
@@ -239,16 +239,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION.txt b[TEMP]/VERSION.txt
-    --- a[TEMP]/VERSION.txt
-    +++ b[TEMP]/VERSION.txt
+    diff --git a/VERSION.txt b/VERSION.txt
+    --- a/VERSION.txt
+    +++ b/VERSION.txt
     @@ -1 +1 @@
     -version = "2.1.5"
     +version = "2.1.6"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.1.5"
@@ -259,8 +259,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b bump/2.1.6`
@@ -314,16 +314,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/version.txt b[TEMP]/version.txt
-    --- a[TEMP]/version.txt
-    +++ b[TEMP]/version.txt
+    diff --git a/version.txt b/version.txt
+    --- a/version.txt
+    +++ b/version.txt
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-alpha.1"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -334,8 +334,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/version.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `version.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b rel/2.0.0-alpha.1`
@@ -395,9 +395,9 @@ edition = "2021"
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
-    --- a[TEMP]/Cargo.toml
-    +++ b[TEMP]/Cargo.toml
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "my-app"
@@ -405,9 +405,9 @@ edition = "2021"
     +version = "1.3.0-beta.1"
      edition = "2021"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -418,8 +418,8 @@ edition = "2021"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.3.0-beta.1`
@@ -477,16 +477,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/version b[TEMP]/version
-    --- a[TEMP]/version
-    +++ b[TEMP]/version
+    diff --git a/version b/version
+    --- a/version
+    +++ b/version
     @@ -1 +1 @@
     -version = "1.0.0"
     +version = "1.0.1-rc.1"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -497,8 +497,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/version`
-      - Update `[TEMP]/seal.toml`
+      - Update `version`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.1-rc.1`
@@ -549,16 +549,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3-alpha.1"
     +version = "1.2.3-alpha.2"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3-alpha.1"
@@ -569,8 +569,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b rel/1.2.3-alpha.2`
@@ -623,16 +623,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/ver.txt b[TEMP]/ver.txt
-    --- a[TEMP]/ver.txt
-    +++ b[TEMP]/ver.txt
+    diff --git a/ver.txt b/ver.txt
+    --- a/ver.txt
+    +++ b/ver.txt
     @@ -1 +1 @@
     -version = "2.0.0-beta.5"
     +version = "2.0.0-beta.6"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "2.0.0-beta.5"
@@ -643,8 +643,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/ver.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `ver.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.6`
@@ -695,16 +695,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "3.0.0"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -715,8 +715,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/3.0.0`
@@ -769,16 +769,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0-beta.1"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -789,8 +789,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.1`
@@ -864,39 +864,39 @@ version = "0.1.0"
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/Cargo.toml b[TEMP]/Cargo.toml
-    --- a[TEMP]/Cargo.toml
-    +++ b[TEMP]/Cargo.toml
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
     @@ -1,3 +1,3 @@
      [package]
      name = "multi"
     -version = "0.1.0"
     +version = "0.2.0"
 
-    diff --git a[TEMP]/package.json b[TEMP]/package.json
-    --- a[TEMP]/package.json
-    +++ b[TEMP]/package.json
+    diff --git a/package.json b/package.json
+    --- a/package.json
+    +++ b/package.json
     @@ -1 +1 @@
     -{"version": "0.1.0"}
     +{"version": "0.2.0"}
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "0.1.0"
     +version = "0.2.0"
 
-    diff --git a[TEMP]/version.py b[TEMP]/version.py
-    --- a[TEMP]/version.py
-    +++ b[TEMP]/version.py
+    diff --git a/version.py b/version.py
+    --- a/version.py
+    +++ b/version.py
     @@ -1 +1 @@
     -__version__ = "0.1.0"
     +__version__ = "0.2.0"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "0.1.0"
@@ -907,11 +907,11 @@ version = "0.1.0"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/package.json`
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/version.py`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `package.json`
+      - Update `VERSION`
+      - Update `version.py`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b bump/0.2.0`
@@ -1023,16 +1023,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "1.2.3-alpha.0"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -1043,8 +1043,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.2.3-alpha.0`
@@ -1076,16 +1076,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3-alpha.0"
     +version = "1.2.3-alpha.1"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3-alpha.0"
@@ -1096,8 +1096,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.2.3-alpha.1`
@@ -1182,16 +1182,16 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/VERSION b[TEMP]/VERSION
-    --- a[TEMP]/VERSION
-    +++ b[TEMP]/VERSION
+    diff --git a/VERSION b/VERSION
+    --- a/VERSION
+    +++ b/VERSION
     @@ -1 +1 @@
     -version = "1.2.3"
     +version = "2.0.0"
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.2.3"
@@ -1202,8 +1202,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0`
@@ -1245,9 +1245,9 @@ confirm = false
     Preview of changes:
     -------------------
 
-    diff --git a[TEMP]/seal.toml b[TEMP]/seal.toml
-    --- a[TEMP]/seal.toml
-    +++ b[TEMP]/seal.toml
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
     @@ -1,5 +1,5 @@
      [release]
     -current-version = "1.0.0"
@@ -1258,7 +1258,7 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/seal.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.1`

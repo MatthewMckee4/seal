@@ -16,13 +16,17 @@ nav = [
         { "Configuration" = "reference/configuration.md"},
         { "CLI" = "reference/cli.md"},
     ]},
+    { "Usage" = [
+        { "Bumping Versions" = "usage/bumping_versions.md"},
+    ]},
 ]
 
 [project.theme]
 language = "en"
 features = [
     "navigation.instant",
-    "search.highlight"
+    "search.highlight",
+    "navigation.sections"
 ]
 
 [[project.theme.palette]]
@@ -40,12 +44,6 @@ accent = "cyan"
 scheme = "slate"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"
-
-features = [
-    "announce.dismiss",
-    "navigation.instant",
-    "search.highlight",
-]
 
 [project.markdown_extensions.pymdownx.highlight]
 linenums = true

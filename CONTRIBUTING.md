@@ -52,6 +52,15 @@ cargo test --package <package> --test <test> -- <test_name> -- --exact
 cargo insta review
 ```
 
+## Documentation
+
+To prepare and run the documentation locally, run:
+
+```shell
+uv run -s scripts/prepare_docs.py
+uv run --isolated --with-requirements docs/requirements.txt zensical serve
+```
+
 ## Releasing a new version
 
 Funnily enough, we use `seal` to release a new version. To do so, run:

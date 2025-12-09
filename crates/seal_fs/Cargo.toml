@@ -1,5 +1,5 @@
 [package]
-name = "seal_file_change"
+name = "seal_fs"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
@@ -9,12 +9,6 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-seal_fs = { workspace = true }
-
-anyhow = { workspace = true }
-fs-err = { workspace = true }
-owo-colors = { workspace = true }
-similar = { workspace = true }
 
 [lints]
 workspace = true
