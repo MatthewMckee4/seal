@@ -47,5 +47,5 @@ Particularly, the projects [uv](https://github.com/astral-sh/uv) and [ruff](http
 
 Seal is licensed under the MIT License.
 
-We also include the [uv MIT license at](https://github.com/MatthewMckee4/seal/blob/main/licenses/astral.LICENSE-MIT), as we often
+We also include the [uv MIT license](https://github.com/MatthewMckee4/seal/blob/main/licenses/astral.LICENSE-MIT), as we often
 take inspiration or code snippets from the [uv](https://github.com/astral-sh/uv) repository.
