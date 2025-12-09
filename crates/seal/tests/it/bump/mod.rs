@@ -6,7 +6,7 @@ mod custom_formats;
 
 #[test]
 fn bump_no_seal_toml() {
-    let context = TestContext::new();
+    let context = TestContext::new().with_filtered_missing_file_error();
     context.init_git();
 
     seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
@@ -15,8 +15,8 @@ fn bump_no_seal_toml() {
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: No such file or directory (os error 2)
-      Caused by: failed to open file `[TEMP]/seal.toml`: No such file or directory (os error 2)
+    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
     ");
 
     insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
