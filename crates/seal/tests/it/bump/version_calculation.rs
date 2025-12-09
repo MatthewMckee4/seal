@@ -88,10 +88,10 @@ version = "1.2.3"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/package.json`
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `package.json`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v2.0.0`
@@ -180,8 +180,8 @@ version = "1.2.3"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b releases/1.3.0`
@@ -259,8 +259,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b bump/2.1.6`
@@ -334,8 +334,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/version.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `version.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b rel/2.0.0-alpha.1`
@@ -418,8 +418,8 @@ edition = "2021"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.3.0-beta.1`
@@ -497,8 +497,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/version`
-      - Update `[TEMP]/seal.toml`
+      - Update `version`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.1-rc.1`
@@ -569,8 +569,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b rel/1.2.3-alpha.2`
@@ -643,8 +643,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/ver.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `ver.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.6`
@@ -715,8 +715,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/3.0.0`
@@ -789,8 +789,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.1`
@@ -907,11 +907,11 @@ version = "0.1.0"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/package.json`
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/version.py`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `package.json`
+      - Update `VERSION`
+      - Update `version.py`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b bump/0.2.0`
@@ -1043,8 +1043,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.2.3-alpha.0`
@@ -1096,8 +1096,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.2.3-alpha.1`
@@ -1202,8 +1202,8 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0`
@@ -1258,7 +1258,7 @@ confirm = false
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/seal.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.1`

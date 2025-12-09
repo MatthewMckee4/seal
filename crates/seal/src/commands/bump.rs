@@ -69,14 +69,15 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Preview of changes:")?;
     writeln!(stdout, "-------------------")?;
 
+    let file_resolver = FileResolver::new(workspace.root().clone());
+
     let changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
         current_version_string,
         &new_version,
+        &file_resolver,
     )?;
-
-    let file_resolver = FileResolver::new(workspace.root().clone());
 
     for change in &changes {
         change.display_diff(&mut stdout, &file_resolver)?;
@@ -121,11 +122,19 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     writeln!(stdout, "Changes to be made:")?;
     for change in &changes {
-        writeln!(stdout, "  - Update `{}`", change.path().display())?;
+        writeln!(
+            stdout,
+            "  - Update `{}`",
+            file_resolver.relative_path(change.path()).display()
+        )?;
     }
     if let Some(ref changelog) = changelog_changes {
         for change in changelog {
-            writeln!(stdout, "  - Update `{}`", change.path().display())?;
+            writeln!(
+                stdout,
+                "  - Update `{}`",
+                file_resolver.relative_path(change.path()).display()
+            )?;
         }
     }
     writeln!(stdout)?;

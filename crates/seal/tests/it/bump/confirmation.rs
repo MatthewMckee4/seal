@@ -61,8 +61,8 @@ version = "1.0.0"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v1.0.1`
@@ -159,8 +159,8 @@ version = "1.0.0"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v1.0.1`
@@ -255,8 +255,8 @@ version = "1.0.0"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `Cargo.toml`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/v1.0.1`

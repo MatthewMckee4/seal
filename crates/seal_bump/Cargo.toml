@@ -9,6 +9,7 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+seal_fs = { workspace = true }
 seal_file_change = { workspace = true }
 seal_project = { workspace = true }
 

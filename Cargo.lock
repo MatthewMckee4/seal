@@ -1340,6 +1340,7 @@ dependencies = [
  "glob",
  "owo-colors",
  "seal_file_change",
+ "seal_fs",
  "seal_project",
  "semver",
  "similar",

@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use glob::glob;
 use seal_file_change::{FileChange, FileChanges, make_absolute};
+use seal_fs::FileResolver;
 use seal_project::{VersionFile, VersionFileTextFormat};
 use std::path::Path;
 
@@ -11,6 +12,7 @@ pub fn calculate_version_file_changes(
     version_files: &[seal_project::VersionFile],
     current_version: &str,
     new_version: &Version,
+    file_resolver: &FileResolver,
 ) -> Result<FileChanges> {
     let mut changes = Vec::new();
 
@@ -36,13 +38,16 @@ pub fn calculate_version_file_changes(
                             let found_old_version = nested_toml_key(&toml, &field)?;
 
                             let Some(last_key) = field.split('.').next_back() else {
-                                anyhow::bail!("Failed to replace version in {}", path.display())
+                                anyhow::bail!(
+                                    "Failed to replace version in {}",
+                                    file_resolver.relative_path(&path).display()
+                                )
                             };
 
                             if found_old_version != current_version {
                                 anyhow::bail!(
                                     "Mismatched version in `{}`, expected `{}`, found `{}`",
-                                    path.display(),
+                                    file_resolver.relative_path(&path).display(),
                                     current_version,
                                     found_old_version
                                 )
@@ -55,7 +60,7 @@ pub fn calculate_version_file_changes(
                         }
 
                         VersionFileTextFormat::Text => exact_version_replacement(
-                            &absolute_path,
+                            file_resolver.relative_path(&absolute_path),
                             &old_content,
                             current_version,
                             &new_version_str,
@@ -101,7 +106,7 @@ pub fn calculate_version_file_changes(
                     let old_content = fs_err::read_to_string(&path)?;
 
                     let new_content = exact_version_replacement(
-                        &absolute_path,
+                        file_resolver.relative_path(&absolute_path),
                         &old_content,
                         current_version,
                         &new_version_str,

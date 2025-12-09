@@ -84,9 +84,9 @@ search = "APP_VERSION = '{version}'"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/version.sh`
-      - Update `[TEMP]/config.py`
-      - Update `[TEMP]/seal.toml`
+      - Update `version.sh`
+      - Update `config.py`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.6.0`
@@ -254,8 +254,8 @@ search = "version={version}"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0-beta.2`
@@ -429,8 +429,8 @@ search = "ver={version}"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.1.0`
@@ -499,8 +499,8 @@ search = "version={version}"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/VERSION`
-      - Update `[TEMP]/seal.toml`
+      - Update `VERSION`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/2.0.0`
@@ -569,8 +569,8 @@ search = "APP_VERSION={version}"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/version.txt`
-      - Update `[TEMP]/seal.toml`
+      - Update `version.txt`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/1.0.0-alpha.2`
@@ -646,8 +646,8 @@ search = "version `{version}`"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/README.md`
-      - Update `[TEMP]/seal.toml`
+      - Update `README.md`
+      - Update `seal.toml`
 
     Commands to be executed:
       `git checkout -b release/0.6.0`
@@ -717,8 +717,8 @@ path = "README.md"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/README.md`
-      - Update `[TEMP]/seal.toml`
+      - Update `README.md`
+      - Update `seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
@@ -831,10 +831,10 @@ version = \"0.0.1\"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/crates/bar/Cargo.toml`
-      - Update `[TEMP]/crates/baz/Cargo.toml`
-      - Update `[TEMP]/crates/foo/Cargo.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `crates/bar/Cargo.toml`
+      - Update `crates/baz/Cargo.toml`
+      - Update `crates/foo/Cargo.toml`
+      - Update `seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
@@ -1045,8 +1045,8 @@ version = \"0.0.1\"
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
-      - Update `[TEMP]/pyproject.toml`
-      - Update `[TEMP]/seal.toml`
+      - Update `pyproject.toml`
+      - Update `seal.toml`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
