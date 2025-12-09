@@ -9,6 +9,9 @@ authors.workspace = true
 license.workspace = true
 default-run = "seal"
 
+[features]
+integration-test = []
+
 [dependencies]
 seal_bump = { workspace = true }
 seal_changelog = { workspace = true }
@@ -39,6 +42,3 @@ tempfile = { workspace = true }
 
 [lints]
 workspace = true
-
-[features]
-integration-test = []

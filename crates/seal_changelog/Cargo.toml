@@ -8,6 +8,9 @@ repository.workspace = true
 authors.workspace = true
 license.workspace = true
 
+[features]
+integration-test = []
+
 [dependencies]
 seal_file_change = { workspace = true }
 seal_github = { workspace = true }
@@ -25,6 +28,3 @@ tempfile = { workspace = true }
 
 [lints]
 workspace = true
-
-[features]
-integration-test = []
