@@ -124,7 +124,7 @@ jobs:
 
       - name: "Cargo test"
         run: |
-          cargo nextest run --no-fail-fast
+          cargo nextest run --no-fail-fast --all-features
 
   coverage:
     name: "coverage"

@@ -1,6 +1,7 @@
 use std::fmt;
 use std::str::FromStr;
 
+use anyhow::Context;
 use semver::Prerelease;
 use thiserror::Error;
 
@@ -132,12 +133,8 @@ impl fmt::Display for VersionBump {
     }
 }
 
-pub fn calculate_new_version(
-    current: &str,
-    bump: &VersionBump,
-) -> Result<Version, VersionBumpError> {
-    let mut current_version = Version::parse(current)
-        .map_err(|_| VersionBumpError::MalformedVersion(current.to_string()))?;
+pub fn calculate_new_version(current: &str, bump: &VersionBump) -> anyhow::Result<Version> {
+    let mut current_version = Version::parse(current).context("Invalid current version")?;
 
     if let VersionBump::Explicit(version) = bump {
         let new_version = Version::parse(version)
@@ -147,14 +144,16 @@ pub fn calculate_new_version(
             return Err(VersionBumpError::ExplicitVersionPrior {
                 current: current_version.to_string(),
                 new: new_version.to_string(),
-            });
+            })
+            .context("Invalid version bump");
         }
 
         if new_version == current_version {
             return Err(VersionBumpError::ExplicitVersionSame {
                 current: current_version.to_string(),
                 new: new_version.to_string(),
-            });
+            })
+            .context("Invalid version bump");
         }
 
         return Ok(new_version);
@@ -201,10 +200,9 @@ pub fn calculate_new_version(
     Ok(current_version)
 }
 
-fn make_prerelease(pr_type: PreReleaseType, number: u64) -> Result<Prerelease, VersionBumpError> {
-    Prerelease::new(&format!("{pr_type}.{number}")).map_err(|_| {
-        VersionBumpError::InvalidBump(format!("Invalid prerelease: {pr_type}.{number}"))
-    })
+fn make_prerelease(pr_type: PreReleaseType, number: u64) -> anyhow::Result<Prerelease> {
+    let pr = Prerelease::new(&format!("{pr_type}.{number}"))?;
+    Ok(pr)
 }
 
 fn extract_prerelease_number(
@@ -216,12 +214,6 @@ fn extract_prerelease_number(
     }
 
     let parts: Vec<&str> = pre.as_str().split('.').collect();
-
-    if parts.is_empty() {
-        return Err(VersionBumpError::MalformedVersion(format!(
-            "Invalid prerelease: {pre}"
-        )));
-    }
 
     let current_type = parts[0];
 
@@ -323,6 +315,10 @@ mod tests {
             "minor-rc".parse::<VersionBump>().unwrap(),
             VersionBump::MinorPreRelease(PreReleaseType::Rc)
         );
+        assert_eq!(
+            "patch-rc".parse::<VersionBump>().unwrap(),
+            VersionBump::PatchPreRelease(PreReleaseType::Rc)
+        );
     }
 
     #[test]
@@ -409,6 +405,11 @@ mod tests {
         assert_eq!(
             VersionBump::MinorPreRelease(PreReleaseType::Rc).to_string(),
             "minor-rc"
+        );
+
+        assert_eq!(
+            VersionBump::PatchPreRelease(PreReleaseType::Alpha).to_string(),
+            "patch-alpha"
         );
         assert_eq!(
             VersionBump::Explicit("1.2.3".to_string()).to_string(),

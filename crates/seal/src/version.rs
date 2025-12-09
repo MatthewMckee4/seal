@@ -22,12 +22,6 @@ impl fmt::Display for VersionInfo {
     }
 }
 
-impl From<VersionInfo> for clap::builder::Str {
-    fn from(val: VersionInfo) -> Self {
-        val.to_string().into()
-    }
-}
-
 /// Returns information about seal's version.
 pub fn seal_self_version() -> VersionInfo {
     // This version is pulled from Cargo.toml and set by Cargo

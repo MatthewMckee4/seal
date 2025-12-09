@@ -81,6 +81,7 @@ search = "APP_VERSION = '{version}'"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -94,9 +95,9 @@ search = "APP_VERSION = '{version}'"
       `git commit -m "Release 2.6.0"`
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("version.sh"), @r#"
@@ -251,6 +252,7 @@ search = "version={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -263,9 +265,9 @@ search = "version={version}"
       `git commit -m "Release 2.0.0-beta.2"`
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-beta.1");
@@ -426,6 +428,7 @@ search = "ver={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -438,9 +441,9 @@ search = "ver={version}"
       `git commit -m "Release 1.1.0"`
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"ver=1.0.0");
@@ -496,6 +499,7 @@ search = "version={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -508,9 +512,9 @@ search = "version={version}"
       `git commit -m "Release 2.0.0"`
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-rc.3");
@@ -566,6 +570,7 @@ search = "APP_VERSION={version}"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -578,9 +583,9 @@ search = "APP_VERSION={version}"
       `git commit -m "Release 1.0.0-alpha.2"`
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("version.txt"), @"APP_VERSION=1.0.0-alpha.1");
@@ -643,6 +648,7 @@ search = "version `{version}`"
      commit-message = "Release {version}"
      branch-name = "release/{version}"
      
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -655,9 +661,9 @@ search = "version `{version}`"
       `git commit -m "Release 0.6.0"`
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @r"
@@ -714,6 +720,7 @@ path = "README.md"
      
      [[release.version-files]]
      path = "README.md"
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -723,9 +730,9 @@ path = "README.md"
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Proceed with these changes? (y/n):
-    No changes applied.
-
     ----- stderr -----
+
+    No changes applied.
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
@@ -828,6 +835,7 @@ version = \"0.0.1\"
      
      [[release.version-files]]
      path = "**/Cargo.toml"
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
@@ -1042,6 +1050,7 @@ version = \"0.0.1\"
      
      [[release.version-files]]
      path = "pyproject.toml"
+
     Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:

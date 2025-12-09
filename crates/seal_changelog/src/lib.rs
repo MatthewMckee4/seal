@@ -1,123 +1,45 @@
 use std::collections::{BTreeMap, HashSet};
 use std::fmt::Write;
 use std::path::Path;
-use std::process::Command;
+use std::sync::Arc;
 
-use anyhow::{Context, Result};
-use octocrab::Octocrab;
-use octocrab::models::pulls::PullRequest;
+use anyhow::Result;
 use seal_file_change::{FileChange, FileChanges};
+use seal_github::GitHubService;
+
 use seal_project::ChangelogConfig;
 
-pub struct ChangelogGenerator {
-    octocrab: Octocrab,
-    owner: String,
-    repo: String,
+struct ChangelogGenerator<'a> {
+    github_service: &'a Arc<dyn GitHubService>,
 }
 
-impl ChangelogGenerator {
-    pub fn new(owner: String, repo: String) -> Result<Self> {
-        let github_token = std::env::var("GITHUB_TOKEN")
-            .or_else(|_| std::env::var("GH_TOKEN"))
-            .ok();
-
-        let mut octocrab = Octocrab::builder();
-
-        if let Some(token) = github_token {
-            octocrab = octocrab.personal_token(token);
-        }
-
-        let octocrab = octocrab.build()?;
-
-        Ok(Self {
-            octocrab,
-            owner,
-            repo,
-        })
+impl<'a> ChangelogGenerator<'a> {
+    fn new(github_service: &'a Arc<dyn GitHubService>) -> Self {
+        Self { github_service }
     }
 
-    pub async fn generate_changelog(
-        &self,
-        version: &str,
-        config: &ChangelogConfig,
-    ) -> Result<String> {
-        let last_release = self.get_last_release().await?;
-        let prs = self.get_prs_since_release(last_release.as_ref()).await?;
+    async fn generate_changelog(&self, version: &str, config: &ChangelogConfig) -> Result<String> {
+        let release = self.github_service.get_latest_release().await.ok();
+
+        let prs = self
+            .github_service
+            .get_prs_since_release(release.as_ref().map(|r| &r.created_at))
+            .await?;
+
         let pr_entries = fetch_pr_entries(prs);
 
         format_changelog_content(version, pr_entries, config)
     }
-
-    async fn get_last_release(&self) -> Result<Option<String>> {
-        let releases = self
-            .octocrab
-            .repos(&self.owner, &self.repo)
-            .releases()
-            .list()
-            .per_page(1)
-            .send()
-            .await?;
-
-        Ok(releases.items.first().and_then(|r| {
-            r.created_at
-                .map(|dt| dt.format("%Y-%m-%dT%H:%M:%SZ").to_string())
-        }))
-    }
-
-    async fn get_prs_since_release(&self, since: Option<&String>) -> Result<Vec<PullRequest>> {
-        let mut page = 1u32;
-        let mut all_prs = Vec::new();
-        let cutoff_date = since.as_ref().map(|s| s.as_str());
-
-        loop {
-            let prs = self
-                .octocrab
-                .pulls(&self.owner, &self.repo)
-                .list()
-                .state(octocrab::params::State::Closed)
-                .per_page(100)
-                .page(page)
-                .send()
-                .await?;
-
-            if prs.items.is_empty() {
-                break;
-            }
-
-            for pr in prs.items {
-                if pr.merged_at.is_none() {
-                    continue;
-                }
-
-                if let Some(cutoff) = cutoff_date {
-                    if let Some(merged) = &pr.merged_at {
-                        if merged.format("%Y-%m-%dT%H:%M:%SZ").to_string().as_str() <= cutoff {
-                            return Ok(all_prs);
-                        }
-                    }
-                }
-
-                all_prs.push(pr);
-            }
-
-            page += 1;
-        }
-
-        Ok(all_prs)
-    }
 }
 
-fn fetch_pr_entries(prs: Vec<PullRequest>) -> Vec<PREntry> {
+fn fetch_pr_entries(prs: Vec<seal_github::GitHubPullRequest>) -> Vec<PREntry> {
     prs.into_iter()
         .map(|pr| PREntry {
-            title: pr.title.unwrap_or_default(),
+            title: pr.title,
             number: pr.number,
-            url: pr.html_url.map(|u| u.to_string()),
-            labels: pr
-                .labels
-                .map(|labels| labels.iter().map(|l| l.name.clone()).collect())
-                .unwrap_or_default(),
-            author: pr.user.map(|u| u.login),
+            url: pr.url,
+            labels: pr.labels,
+            author: pr.author,
         })
         .collect()
 }
@@ -277,62 +199,18 @@ pub fn prepare_changelog_file_change(
     ))
 }
 
-pub fn parse_github_repo(repo_url: &str) -> Result<(String, String)> {
-    let url = repo_url
-        .trim_end_matches('/')
-        .trim_end_matches(".git")
-        .to_string();
-
-    let parts: Vec<&str> = if url.starts_with("https://github.com/") {
-        url.trim_start_matches("https://github.com/")
-            .split('/')
-            .collect()
-    } else if url.starts_with("git@github.com:") {
-        url.trim_start_matches("git@github.com:")
-            .split('/')
-            .collect()
-    } else {
-        anyhow::bail!("Invalid GitHub repository URL: {repo_url}");
-    };
-
-    if parts.len() != 2 {
-        anyhow::bail!("Invalid GitHub repository URL: {repo_url}");
-    }
-
-    Ok((parts[0].to_string(), parts[1].to_string()))
-}
-
-fn get_git_remote_url() -> Result<String> {
-    let output = Command::new("git")
-        .args(["config", "--get", "remote.origin.url"])
-        .output()
-        .context("Failed to execute git config")?;
-
-    if !output.status.success() {
-        anyhow::bail!("Failed to get git remote URL");
-    }
-
-    let url = String::from_utf8(output.stdout)
-        .context("Git remote URL is not valid UTF-8")?
-        .trim()
-        .to_string();
-
-    Ok(url)
-}
-
 pub fn prepare_changelog_changes(
     root: &Path,
     version: &str,
     config: &ChangelogConfig,
+    github_client: &Arc<dyn GitHubService>,
 ) -> Result<FileChanges> {
-    let repo_url = get_git_remote_url()?;
-    let (owner, repo) = parse_github_repo(&repo_url)?;
-
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()?;
+
     let changelog_content = runtime.block_on(async {
-        let generator = ChangelogGenerator::new(owner, repo)?;
+        let generator = ChangelogGenerator::new(github_client);
         generator.generate_changelog(version, config).await
     })?;
 
@@ -347,40 +225,6 @@ mod tests {
     use super::*;
     use seal_project::ChangelogHeading;
     use std::collections::BTreeMap;
-
-    #[test]
-    fn test_parse_github_repo_https() {
-        let (owner, repo) = parse_github_repo("https://github.com/owner/repo").unwrap();
-        assert_eq!(owner, "owner");
-        assert_eq!(repo, "repo");
-    }
-
-    #[test]
-    fn test_parse_github_repo_https_with_git() {
-        let (owner, repo) = parse_github_repo("https://github.com/owner/repo.git").unwrap();
-        assert_eq!(owner, "owner");
-        assert_eq!(repo, "repo");
-    }
-
-    #[test]
-    fn test_parse_github_repo_ssh() {
-        let (owner, repo) = parse_github_repo("git@github.com:owner/repo").unwrap();
-        assert_eq!(owner, "owner");
-        assert_eq!(repo, "repo");
-    }
-
-    #[test]
-    fn test_parse_github_repo_ssh_with_git() {
-        let (owner, repo) = parse_github_repo("git@github.com:owner/repo.git").unwrap();
-        assert_eq!(owner, "owner");
-        assert_eq!(repo, "repo");
-    }
-
-    #[test]
-    fn test_parse_github_repo_invalid() {
-        assert!(parse_github_repo("https://example.com/owner/repo").is_err());
-        assert!(parse_github_repo("not-a-url").is_err());
-    }
 
     #[test]
     fn test_format_changelog_with_section_labels() {
