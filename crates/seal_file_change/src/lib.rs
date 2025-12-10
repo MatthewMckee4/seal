@@ -11,7 +11,7 @@ impl FileChanges {
     }
 
     pub fn apply(self) -> Result<()> {
-        for change in self {
+        for change in self.iter() {
             change.apply()?;
         }
         Ok(())
@@ -19,15 +19,6 @@ impl FileChanges {
 
     pub fn iter(&self) -> impl Iterator<Item = &FileChange> {
         self.0.iter()
-    }
-}
-
-impl IntoIterator for FileChanges {
-    type Item = FileChange;
-    type IntoIter = std::vec::IntoIter<FileChange>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
     }
 }
 
@@ -55,7 +46,7 @@ impl FileChange {
         }
     }
 
-    pub fn apply(self) -> Result<()> {
+    pub fn apply(&self) -> Result<()> {
         fs_err::write(&self.abslute_path, &self.new_content)
             .context(format!("Failed to write {}", self.abslute_path.display()))?;
         Ok(())
@@ -115,5 +106,26 @@ pub fn make_absolute(base: &Path, path: &Path) -> PathBuf {
         path.to_path_buf()
     } else {
         base.join(path)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_make_absolute() {
+        let base = Path::new("/home/user");
+        let path = Path::new("file.txt");
+        assert_eq!(
+            make_absolute(base, path),
+            PathBuf::from("/home/user/file.txt")
+        );
+
+        let path = Path::new("/home/user/file.txt");
+        assert_eq!(
+            make_absolute(base, path),
+            PathBuf::from("/home/user/file.txt")
+        );
     }
 }

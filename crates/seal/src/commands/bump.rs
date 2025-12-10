@@ -80,7 +80,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let github_client: Arc<dyn GitHubService> = {
         use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
 
-        let repo_url = get_git_remote_url()?;
+        let repo_url = get_git_remote_url(workspace.root())?;
         let (owner, repo) = parse_github_repo(&repo_url)?;
         Arc::new(GitHubClient::new(owner, repo)?)
     };
@@ -217,11 +217,11 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     if release_config.push {
         if let Some(branch) = &branch_name {
             writeln!(stdout, "Pushing branch to remote...")?;
-            github_client.push_branch(branch)?;
+            github_client.push_branch(workspace.root(), branch)?;
 
             if release_config.create_pr {
                 writeln!(stdout, "Creating pull request...")?;
-                github_client.create_pull_request(&new_version_string)?;
+                github_client.create_pull_request(workspace.root(), &new_version_string)?;
             }
         }
     }
