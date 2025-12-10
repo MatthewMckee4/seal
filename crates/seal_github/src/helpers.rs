@@ -1,15 +1,12 @@
 use anyhow::{Context, Result};
-use std::process::Command;
+use std::{path::Path, process::Command};
 
-pub fn get_git_remote_url() -> Result<String> {
+pub fn get_git_remote_url<P: AsRef<Path>>(current_directory: P) -> Result<String> {
     let output = Command::new("git")
         .args(["config", "--get", "remote.origin.url"])
+        .current_dir(current_directory)
         .output()
         .context("Failed to execute git config")?;
-
-    if !output.status.success() {
-        anyhow::bail!("Failed to get git remote URL");
-    }
 
     let url = String::from_utf8(output.stdout)
         .context("Git remote URL is not valid UTF-8")?
@@ -44,33 +41,25 @@ pub fn parse_github_repo(repo_url: &str) -> Result<(String, String)> {
     Ok((parts[0].to_string(), parts[1].to_string()))
 }
 
-pub fn push_branch(branch_name: &str) -> Result<()> {
-    let output = Command::new("git")
+pub fn push_branch<P: AsRef<Path>>(current_directory: P, branch_name: &str) -> Result<()> {
+    Command::new("git")
         .args(["push", "-u", "origin", branch_name])
+        .current_dir(current_directory)
         .output()
         .context("Failed to execute git push")?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Failed to push branch: {stderr}");
-    }
 
     Ok(())
 }
 
-pub fn create_pull_request(version: &str) -> Result<()> {
+pub fn create_pull_request<P: AsRef<Path>>(current_directory: P, version: &str) -> Result<()> {
     let title = format!("Release v{version}");
     let body = format!("Automated release for version {version}");
 
-    let output = Command::new("gh")
+    Command::new("gh")
         .args(["pr", "create", "--title", &title, "--body", &body])
+        .current_dir(current_directory)
         .output()
         .context("Failed to execute gh pr create")?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("Failed to create pull request: {stderr}");
-    }
 
     Ok(())
 }
@@ -110,6 +99,7 @@ mod tests {
     #[test]
     fn test_parse_github_repo_invalid() {
         assert!(parse_github_repo("https://example.com/owner/repo").is_err());
+        assert!(parse_github_repo("https://github.com/owner/repo/other.git").is_err());
         assert!(parse_github_repo("not-a-url").is_err());
     }
 }

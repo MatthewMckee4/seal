@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use octocrab::Octocrab;
@@ -19,9 +21,9 @@ pub trait GitHubService: Send + Sync {
         Box<dyn std::future::Future<Output = Result<Vec<GitHubPullRequest>>> + Send + '_>,
     >;
 
-    fn push_branch(&self, branch_name: &str) -> Result<()>;
+    fn push_branch(&self, current_directory: &Path, branch_name: &str) -> Result<()>;
 
-    fn create_pull_request(&self, version: &str) -> Result<()>;
+    fn create_pull_request(&self, current_directory: &Path, version: &str) -> Result<()>;
 }
 
 #[derive(Debug, Error)]
@@ -30,10 +32,12 @@ pub enum GitHubError {
     NoReleasesFound { owner: String, repo: String },
 }
 
+#[derive(Debug)]
 pub struct GitHubRelease {
     pub created_at: DateTime<Utc>,
 }
 
+#[derive(Debug)]
 pub struct GitHubPullRequest {
     pub title: String,
     pub number: u64,
@@ -133,12 +137,12 @@ impl GitHubService for GitHubClient {
         })
     }
 
-    fn push_branch(&self, branch_name: &str) -> Result<()> {
-        push_branch(branch_name)
+    fn push_branch(&self, current_directory: &Path, branch_name: &str) -> Result<()> {
+        push_branch(current_directory, branch_name)
     }
 
-    fn create_pull_request(&self, version: &str) -> Result<()> {
-        create_pull_request(version)
+    fn create_pull_request(&self, current_directory: &Path, version: &str) -> Result<()> {
+        create_pull_request(current_directory, version)
     }
 }
 
@@ -250,11 +254,11 @@ impl GitHubService for MockGithubClient {
         })
     }
 
-    fn push_branch(&self, _branch_name: &str) -> Result<()> {
+    fn push_branch(&self, _current_directory: &Path, _branch_name: &str) -> Result<()> {
         Ok(())
     }
 
-    fn create_pull_request(&self, _version: &str) -> Result<()> {
+    fn create_pull_request(&self, _current_directory: &Path, _version: &str) -> Result<()> {
         Ok(())
     }
 }

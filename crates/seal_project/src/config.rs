@@ -93,17 +93,6 @@ pub enum VersionFileTextFormat {
     Text,
 }
 
-impl VersionFile {
-    pub fn path(&self) -> &str {
-        match self {
-            Self::Text { path, .. } => path,
-            Self::Search { path, .. } => path,
-            Self::JustPath { path } => path,
-            Self::Simple(path) => path,
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
@@ -724,6 +713,36 @@ branch-name = ""
     }
 
     #[test]
+    fn test_changelog_heading_new_empty() {
+        let result = ChangelogHeading::new(String::new());
+        assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @"EmptyChangelogHeading");
+    }
+
+    #[test]
+    fn test_changelog_heading_new_missing_placeholder() {
+        let result = ChangelogHeading::new("release".to_string());
+        assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        MissingVersionPlaceholder {
+            field: "changelog-heading",
+            value: "release",
+        }
+        "#);
+    }
+
+    #[test]
+    fn test_changelog_heading_new_starts_with_hash() {
+        let result = ChangelogHeading::new("# release-{version}".to_string());
+        assert!(result.is_err());
+        assert_debug_snapshot!(result.unwrap_err(), @r##"
+        ChangelogHeadingStartsWithHash {
+            value: "# release-{version}",
+        }
+        "##);
+    }
+
+    #[test]
     fn test_serialization_round_trip() {
         let config = Config {
             members: None,
@@ -1030,5 +1049,61 @@ create-pr = true
         let config = Config::from_toml_str(toml).unwrap();
         assert!(config.release.as_ref().unwrap().push);
         assert!(config.release.as_ref().unwrap().create_pr);
+    }
+
+    #[test]
+    fn test_validate_changelog_config() {
+        let toml = r#"
+[changelog]
+ignore-labels = ["ignore"]
+ignore-contributors = ["bot"]
+include-contributors = true
+changelog-heading = "\\# Release {version}"
+
+[changelog.section-labels]
+"Breaking changes" = ["breaking"]
+"Enhancements" = ["enhancement", "compatibility"]
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        assert_debug_snapshot!(config, @r#"
+        Config {
+            members: None,
+            release: None,
+            changelog: Some(
+                ChangelogConfig {
+                    ignore_labels: Some(
+                        [
+                            "ignore",
+                        ],
+                    ),
+                    ignore_contributors: Some(
+                        [
+                            "bot",
+                        ],
+                    ),
+                    section_labels: Some(
+                        {
+                            "Breaking changes": [
+                                "breaking",
+                            ],
+                            "Enhancements": [
+                                "enhancement",
+                                "compatibility",
+                            ],
+                        },
+                    ),
+                    changelog_heading: Some(
+                        ChangelogHeading(
+                            "\\# Release {version}",
+                        ),
+                    ),
+                    include_contributors: Some(
+                        true,
+                    ),
+                },
+            ),
+        }
+        "#);
     }
 }
