@@ -3,7 +3,7 @@ use std::process::ExitCode;
 use anyhow::Result;
 use clap::Parser;
 use owo_colors::OwoColorize;
-use seal_cli::{Cli, Commands, SelfCommand, ValidateCommand};
+use seal_cli::{Cli, Commands, GenerateCommand, SelfCommand, ValidateCommand};
 
 mod commands;
 mod printer;
@@ -40,10 +40,11 @@ impl From<ExitStatus> for std::process::ExitCode {
     }
 }
 
-fn main() -> ExitCode {
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> ExitCode {
     let cli = Cli::parse();
 
-    match run(cli) {
+    match run(cli).await {
         Ok(status) => status.into(),
         Err(err) => {
             #[allow(clippy::print_stderr)]
@@ -67,7 +68,7 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(cli: Cli) -> Result<ExitStatus> {
+async fn run(cli: Cli) -> Result<ExitStatus> {
     // Resolve the global settings.
     let globals = GlobalSettings::resolve(&cli.top_level.global_args);
 
@@ -100,7 +101,12 @@ fn run(cli: Cli) -> Result<ExitStatus> {
             }
             ValidateCommand::Project { project } => commands::validate_project(project, printer),
         },
-        Commands::Bump(bump_args) => commands::bump(&bump_args, printer),
+        Commands::Bump(bump_args) => commands::bump(&bump_args, printer).await,
+        Commands::Generate(generate_ns) => match generate_ns.command {
+            GenerateCommand::Changelog { dry_run, max_prs } => {
+                commands::generate_changelog(dry_run, printer, max_prs).await
+            }
+        },
         Commands::Help(args) => commands::help(
             args.command.unwrap_or_default().as_slice(),
             printer,

@@ -515,15 +515,15 @@ ignore-labels = ["internal", "ci"]
     +
     +### Bug Fixes
     +
-    +- Fix critical bug in module Y ([#3](https://github.com/owner/repo/pull/122))
+    +- Fix critical bug in module Y ([#4](https://github.com/owner/repo/pull/4))
     +
     +### Documentation
     +
-    +- Update documentation ([#2](https://github.com/owner/repo/pull/121))
+    +- Update documentation ([#3](https://github.com/owner/repo/pull/3))
     +
     +### New Features
     +
-    +- Add new feature X ([#4](https://github.com/owner/repo/pull/123))
+    +- Add new feature X ([#5](https://github.com/owner/repo/pull/5))
     +
     +### Contributors
     +

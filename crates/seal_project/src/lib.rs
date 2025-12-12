@@ -1,5 +1,4 @@
 mod config;
-mod discovery;
 mod error;
 mod git;
 mod project;
@@ -10,7 +9,6 @@ pub use config::{
     BranchName, ChangelogConfig, ChangelogHeading, CommitMessage, Config, ReleaseConfig,
     VersionFile, VersionFileTextFormat,
 };
-pub use discovery::find_project_config;
 pub use error::{ConfigValidationError, ProjectError};
 pub use git::find_git_root;
 pub use project::ProjectWorkspace;

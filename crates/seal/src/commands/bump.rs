@@ -14,7 +14,7 @@ use seal_cli::BumpArgs;
 use crate::ExitStatus;
 use crate::printer::Printer;
 
-pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
+pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
 
     let version_bump: VersionBump = args
@@ -74,7 +74,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let github_client: Arc<dyn GitHubService> = {
         #[cfg(any(test, feature = "integration-test"))]
         use seal_github::MockGithubClient;
-        Arc::new(MockGithubClient)
+        Arc::new(MockGithubClient::new())
     };
     #[cfg(not(feature = "integration-test"))]
     let github_client: Arc<dyn GitHubService> = {
@@ -107,6 +107,7 @@ pub fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
                 changelog_config,
                 &github_client,
             )
+            .await
             .context("Failed to prepare changelog")?;
 
             for change in &changes {

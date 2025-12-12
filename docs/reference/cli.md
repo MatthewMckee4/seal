@@ -15,6 +15,7 @@ seal [OPTIONS] <COMMAND>
 <dl class="cli-reference"><dt><a href="#seal-self"><code>seal self</code></a></dt><dd><p>Manage the seal executable</p></dd>
 <dt><a href="#seal-validate"><code>seal validate</code></a></dt><dd><p>Validate project configuration and structure</p></dd>
 <dt><a href="#seal-bump"><code>seal bump</code></a></dt><dd><p>Bump version and create release branch</p></dd>
+<dt><a href="#seal-generate"><code>seal generate</code></a></dt><dd><p>Generate project files</p></dd>
 <dt><a href="#seal-help"><code>seal help</code></a></dt><dd><p>Display documentation for a command</p></dd>
 </dl>
 
@@ -141,6 +142,50 @@ seal bump [OPTIONS] <VERSION>
 </dd><dt id="seal-bump--quiet"><a href="#seal-bump--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-bump--verbose"><a href="#seal-bump--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd></dl>
+
+## seal generate
+
+Generate project files
+
+<h3 class="cli-reference">Usage</h3>
+
+```
+seal generate [OPTIONS] <COMMAND>
+```
+
+<h3 class="cli-reference">Commands</h3>
+
+<dl class="cli-reference"><dt><a href="#seal-generate-changelog"><code>seal generate changelog</code></a></dt><dd><p>Generate changelog</p></dd>
+</dl>
+
+### seal generate changelog
+
+Generate changelog
+
+We look at all releases, and get all PRs from that release. Then add them to the changelog.
+
+We do not include PRs since the latest release.
+
+<h3 class="cli-reference">Usage</h3>
+
+```
+seal generate changelog [OPTIONS]
+```
+
+<h3 class="cli-reference">Options</h3>
+
+<dl class="cli-reference"><dt id="seal-generate-changelog--dry-run"><a href="#seal-generate-changelog--dry-run"><code>--dry-run</code></a></dt><dd><p>Perform a dry run without modifying files and print the result to stdout</p>
+</dd><dt id="seal-generate-changelog--help"><a href="#seal-generate-changelog--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+</dd><dt id="seal-generate-changelog--max-prs"><a href="#seal-generate-changelog--max-prs"><code>--max-prs</code></a> <i>max-prs</i></dt><dd><p>Maximum number of PRs to fetch.</p>
+<p>Be aware that this can be slow or can fail due to high number of requests if the number is too high.</p>
+<p>Note that this does not mean that you will see this number of PRs in the changelog, this just means before filtering, we will fetch this number of PRs.</p>
+<p>Defaults to 100.</p>
+</dd><dt id="seal-generate-changelog--no-progress"><a href="#seal-generate-changelog--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
+<p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-generate-changelog--quiet"><a href="#seal-generate-changelog--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
+<p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
+</dd><dt id="seal-generate-changelog--verbose"><a href="#seal-generate-changelog--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
 </dd></dl>
 
 ## seal help
