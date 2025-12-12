@@ -5,9 +5,21 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use seal_file_change::{FileChange, FileChanges};
-use seal_github::GitHubService;
+use seal_github::{GitHubPullRequest, GitHubService, filter_prs_by_date_range};
 
 use seal_project::ChangelogConfig;
+
+pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
+
+fn extract_version_from_release_name(name: Option<&String>) -> Option<String> {
+    name.as_ref().map(|n| {
+        if let Some(stripped) = n.strip_prefix('v') {
+            stripped.to_string()
+        } else {
+            (*n).clone()
+        }
+    })
+}
 
 struct ChangelogGenerator<'a> {
     github_service: &'a Arc<dyn GitHubService>,
@@ -23,42 +35,19 @@ impl<'a> ChangelogGenerator<'a> {
 
         let prs = self
             .github_service
-            .get_prs_since_release(release.as_ref().map(|r| &r.created_at))
+            .get_prs_between(release.as_ref().map(|r| &r.created_at), None)
             .await?;
 
-        let pr_entries = fetch_pr_entries(prs);
-
-        format_changelog_content(version, pr_entries, config)
+        format_changelog_content(version, prs, config)
     }
 }
 
-fn fetch_pr_entries(prs: Vec<seal_github::GitHubPullRequest>) -> Vec<PREntry> {
-    prs.into_iter()
-        .map(|pr| PREntry {
-            title: pr.title,
-            number: pr.number,
-            url: pr.url,
-            labels: pr.labels,
-            author: pr.author,
-        })
-        .collect()
-}
-
 pub struct CategorizedPRs {
-    pub sections: BTreeMap<String, Vec<PREntry>>,
+    pub sections: BTreeMap<String, Vec<GitHubPullRequest>>,
     pub contributors: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PREntry {
-    pub title: String,
-    pub number: u64,
-    pub url: Option<String>,
-    pub labels: Vec<String>,
-    pub author: Option<String>,
-}
-
-pub fn categorize_prs(prs: Vec<PREntry>, config: &ChangelogConfig) -> CategorizedPRs {
+pub fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> CategorizedPRs {
     let ignore_labels: HashSet<&String> = config.ignore_labels().iter().collect();
     let section_labels = config.section_labels();
 
@@ -95,13 +84,6 @@ pub fn categorize_prs(prs: Vec<PREntry>, config: &ChangelogConfig) -> Categorize
                 break;
             }
         }
-
-        if !categorized_pr && !section_labels.is_empty() {
-            categorized
-                .entry("Other".to_string())
-                .or_insert_with(Vec::new)
-                .push(pr);
-        }
     }
 
     CategorizedPRs {
@@ -112,7 +94,7 @@ pub fn categorize_prs(prs: Vec<PREntry>, config: &ChangelogConfig) -> Categorize
 
 pub fn format_changelog_content(
     version: &str,
-    prs: Vec<PREntry>,
+    prs: Vec<GitHubPullRequest>,
     config: &ChangelogConfig,
 ) -> Result<String> {
     let categorized = categorize_prs(prs, config);
@@ -124,18 +106,10 @@ pub fn format_changelog_content(
     write!(output, "## {heading}\n\n")?;
 
     for (section_name, prs) in &categorized.sections {
-        if prs.is_empty() {
-            continue;
-        }
-
         write!(output, "### {section_name}\n\n")?;
 
         for pr in prs {
-            if let Some(url) = &pr.url {
-                writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, url)?;
-            } else {
-                writeln!(output, "- {} (#{}) ", pr.title, pr.number)?;
-            }
+            writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
         }
 
         output.push('\n');
@@ -199,56 +173,137 @@ pub fn prepare_changelog_file_change(
     ))
 }
 
-pub fn prepare_changelog_changes(
+pub async fn prepare_changelog_changes(
     root: &Path,
     version: &str,
     config: &ChangelogConfig,
     github_client: &Arc<dyn GitHubService>,
 ) -> Result<FileChanges> {
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()?;
+    let generator = ChangelogGenerator::new(github_client);
+    let changelog_content = generator.generate_changelog(version, config).await?;
 
-    let changelog_content = runtime.block_on(async {
-        let generator = ChangelogGenerator::new(github_client);
-        generator.generate_changelog(version, config).await
-    })?;
-
-    let changelog_path = root.join("CHANGELOG.md");
+    let changelog_path = if let Some(path) = config.changelog_path.as_ref() {
+        root.join(path)
+    } else {
+        root.join("CHANGELOG.md")
+    };
     let change = prepare_changelog_file_change(&changelog_path, &changelog_content)?;
 
     Ok(FileChanges::new(vec![change]))
 }
 
+pub async fn generate_full_changelog(
+    config: &ChangelogConfig,
+    github_client: &Arc<dyn GitHubService>,
+    max_prs: usize,
+) -> Result<String> {
+    let releases = github_client.get_all_releases().await?;
+
+    let mut output = String::new();
+
+    let all_prs = github_client.get_prs(Some(max_prs)).await?;
+
+    let mut release_pairs: Vec<(
+        Option<&seal_github::GitHubRelease>,
+        &seal_github::GitHubRelease,
+    )> = Vec::new();
+
+    let Some(first_release) = releases.first() else {
+        return Ok(output);
+    };
+
+    release_pairs.push((None, first_release));
+
+    for i in 1..releases.len() {
+        release_pairs.push((Some(&releases[i - 1]), &releases[i]));
+    }
+
+    for (since, until) in release_pairs.iter().rev() {
+        let filter_prs_by_date_range = filter_prs_by_date_range(
+            &all_prs,
+            since.map(|release| &release.created_at),
+            Some(&until.created_at),
+        );
+
+        if filter_prs_by_date_range.is_empty() {
+            continue;
+        }
+
+        let categorized = categorize_prs(filter_prs_by_date_range, config);
+
+        if let Some(version) = extract_version_from_release_name(until.name.as_ref()) {
+            writeln!(output, "## {version}\n")?;
+        } else {
+            writeln!(
+                output,
+                "## Release {}\n",
+                until.created_at.format("%Y-%m-%d")
+            )?;
+        }
+
+        for (section_name, prs) in &categorized.sections {
+            write!(output, "### {section_name}\n\n")?;
+
+            for pr in prs {
+                writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
+            }
+
+            output.push('\n');
+        }
+
+        if config.include_contributors() && !categorized.contributors.is_empty() {
+            output.push_str("### Contributors\n\n");
+
+            let mut contributors = categorized.contributors;
+            contributors.sort();
+
+            for contributor in contributors {
+                writeln!(
+                    output,
+                    "- [@{contributor}](https://github.com/{contributor})"
+                )?;
+            }
+
+            output.push('\n');
+        }
+    }
+
+    Ok(output)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::{TimeZone, Utc};
     use seal_project::ChangelogHeading;
     use std::collections::BTreeMap;
 
     #[test]
     fn test_format_changelog_with_section_labels() {
         let prs = vec![
-            PREntry {
+            GitHubPullRequest {
                 title: "Breaking API change".to_string(),
                 number: 1,
-                url: Some("https://github.com/owner/repo/pull/1".to_string()),
+                url: "https://github.com/owner/repo/pull/1".to_string(),
                 labels: vec!["breaking".to_string()],
                 author: Some("alice".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 12, 1, 10, 0, 0).unwrap(),
             },
-            PREntry {
+            GitHubPullRequest {
                 title: "Add new feature".to_string(),
                 number: 2,
-                url: Some("https://github.com/owner/repo/pull/2".to_string()),
+                url: "https://github.com/owner/repo/pull/2".to_string(),
                 labels: vec!["enhancement".to_string()],
                 author: Some("bob".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 12, 2, 14, 30, 0).unwrap(),
             },
-            PREntry {
+            GitHubPullRequest {
                 title: "Fix bug".to_string(),
                 number: 3,
-                url: Some("https://github.com/owner/repo/pull/3".to_string()),
+                url: "https://github.com/owner/repo/pull/3".to_string(),
                 labels: vec!["bug".to_string()],
                 author: Some("alice".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 12, 3, 9, 15, 0).unwrap(),
             },
         ];
 
@@ -266,6 +321,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -296,26 +352,29 @@ mod tests {
     #[test]
     fn test_format_changelog_with_ignored_labels() {
         let prs = vec![
-            PREntry {
+            GitHubPullRequest {
                 title: "Add feature".to_string(),
                 number: 1,
-                url: Some("https://github.com/owner/repo/pull/1".to_string()),
+                url: "https://github.com/owner/repo/pull/1".to_string(),
                 labels: vec!["enhancement".to_string()],
                 author: Some("alice".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 11, 20, 11, 0, 0).unwrap(),
             },
-            PREntry {
+            GitHubPullRequest {
                 title: "Internal refactor".to_string(),
                 number: 2,
-                url: Some("https://github.com/owner/repo/pull/2".to_string()),
+                url: "https://github.com/owner/repo/pull/2".to_string(),
                 labels: vec!["internal".to_string()],
                 author: Some("bob".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 11, 21, 13, 45, 0).unwrap(),
             },
-            PREntry {
+            GitHubPullRequest {
                 title: "CI improvement".to_string(),
                 number: 3,
-                url: Some("https://github.com/owner/repo/pull/3".to_string()),
+                url: "https://github.com/owner/repo/pull/3".to_string(),
                 labels: vec!["ci".to_string()],
                 author: Some("charlie".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 11, 22, 16, 20, 0).unwrap(),
             },
         ];
 
@@ -328,6 +387,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -348,12 +408,13 @@ mod tests {
 
     #[test]
     fn test_format_changelog_with_custom_heading() {
-        let prs = vec![PREntry {
+        let prs = vec![GitHubPullRequest {
             title: "Add feature".to_string(),
             number: 1,
-            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            url: "https://github.com/owner/repo/pull/1".to_string(),
             labels: vec!["enhancement".to_string()],
             author: Some("alice".to_string()),
+            merged_at: Utc.with_ymd_and_hms(2025, 10, 15, 8, 30, 0).unwrap(),
         }];
 
         let mut section_labels = BTreeMap::new();
@@ -367,6 +428,7 @@ mod tests {
                 ChangelogHeading::new("Version {version} - Released".to_string()).unwrap(),
             ),
             include_contributors: Some(false),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -383,12 +445,13 @@ mod tests {
 
     #[test]
     fn test_format_changelog_without_contributors() {
-        let prs = vec![PREntry {
+        let prs = vec![GitHubPullRequest {
             title: "Add feature".to_string(),
             number: 1,
-            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            url: "https://github.com/owner/repo/pull/1".to_string(),
             labels: vec!["enhancement".to_string()],
             author: Some("alice".to_string()),
+            merged_at: Utc.with_ymd_and_hms(2025, 9, 5, 12, 0, 0).unwrap(),
         }];
 
         let mut section_labels = BTreeMap::new();
@@ -400,6 +463,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(false),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -417,19 +481,21 @@ mod tests {
     #[test]
     fn test_format_changelog_with_other_section() {
         let prs = vec![
-            PREntry {
+            GitHubPullRequest {
                 title: "Add feature".to_string(),
                 number: 1,
-                url: Some("https://github.com/owner/repo/pull/1".to_string()),
+                url: "https://github.com/owner/repo/pull/1".to_string(),
                 labels: vec!["enhancement".to_string()],
                 author: Some("alice".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 8, 12, 15, 20, 0).unwrap(),
             },
-            PREntry {
+            GitHubPullRequest {
                 title: "Update docs".to_string(),
                 number: 2,
-                url: Some("https://github.com/owner/repo/pull/2".to_string()),
+                url: "https://github.com/owner/repo/pull/2".to_string(),
                 labels: vec!["documentation".to_string()],
                 author: Some("bob".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 8, 13, 9, 45, 0).unwrap(),
             },
         ];
 
@@ -442,27 +508,23 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
 
-        insta::assert_snapshot!(result, @r###"
+        insta::assert_snapshot!(result, @r"
         ## 1.0.0
 
         ### Enhancements
 
         - Add feature ([#1](https://github.com/owner/repo/pull/1))
 
-        ### Other
-
-        - Update docs ([#2](https://github.com/owner/repo/pull/2))
-
         ### Contributors
 
         - [@alice](https://github.com/alice)
         - [@bob](https://github.com/bob)
-
-        "###);
+        ");
     }
 
     #[test]
@@ -475,6 +537,7 @@ mod tests {
             section_labels: None,
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -536,45 +599,14 @@ mod tests {
     }
 
     #[test]
-    fn test_format_changelog_without_urls() {
-        let prs = vec![PREntry {
-            title: "Add feature".to_string(),
-            number: 1,
-            url: None,
-            labels: vec!["enhancement".to_string()],
-            author: Some("alice".to_string()),
-        }];
-
-        let mut section_labels = BTreeMap::new();
-        section_labels.insert("Enhancements".to_string(), vec!["enhancement".to_string()]);
-
-        let config = ChangelogConfig {
-            ignore_labels: None,
-            ignore_contributors: None,
-            section_labels: Some(section_labels),
-            changelog_heading: None,
-            include_contributors: Some(false),
-        };
-
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
-
-        insta::assert_snapshot!(result, @r###"
-        ## 1.0.0
-
-        ### Enhancements
-
-        - Add feature (#1)
-        "###);
-    }
-
-    #[test]
     fn test_format_changelog_with_ignored_contributors() {
-        let prs = vec![PREntry {
+        let prs = vec![GitHubPullRequest {
             title: "Add feature".to_string(),
             number: 1,
-            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            url: "https://github.com/owner/repo/pull/1".to_string(),
             labels: vec!["enhancement".to_string()],
             author: Some("alice".to_string()),
+            merged_at: Utc.with_ymd_and_hms(2025, 6, 25, 14, 15, 0).unwrap(),
         }];
 
         let mut section_labels = BTreeMap::new();
@@ -586,6 +618,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();

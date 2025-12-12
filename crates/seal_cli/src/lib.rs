@@ -83,6 +83,8 @@ pub enum Commands {
     Validate(ValidateNamespace),
     /// Bump version and create release branch.
     Bump(BumpArgs),
+    /// Generate project files.
+    Generate(GenerateNamespace),
     /// Display documentation for a command.
     #[command(help_template = "\
 {about-with-newline}
@@ -163,5 +165,41 @@ pub enum ValidateCommand {
         /// Path to the project directory
         #[arg(long, short)]
         project: Option<PathBuf>,
+    },
+}
+
+#[derive(Args)]
+pub struct GenerateNamespace {
+    #[command(subcommand)]
+    pub command: GenerateCommand,
+}
+
+#[derive(Subcommand)]
+pub enum GenerateCommand {
+    /// Generate changelog
+    ///
+    /// We look at all releases, and get all PRs from that release.
+    /// Then add them to the changelog.
+    ///
+    /// We do not include PRs since the latest release.
+    Changelog {
+        /// Perform a dry run without modifying files and print the result to stdout
+        #[arg(long)]
+        dry_run: bool,
+
+        /// Maximum number of PRs to fetch.
+        ///
+        /// Be aware that this can be slow or can fail due to high number of requests if the number is too high.
+        ///
+        /// Note that this does not mean that you will see this number of PRs in the changelog, this just means
+        /// before filtering, we will fetch this number of PRs.
+        ///
+        /// Defaults to 100.
+        #[arg(long)]
+        max_prs: Option<usize>,
+
+        /// Overwrite the changelog file if it already exists
+        #[arg(long, default_missing_value = "true", num_args = 0..1)]
+        overwrite: Option<bool>,
     },
 }

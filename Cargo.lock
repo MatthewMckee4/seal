@@ -1354,6 +1354,7 @@ name = "seal_changelog"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "fs-err",
  "insta",
  "seal_file_change",

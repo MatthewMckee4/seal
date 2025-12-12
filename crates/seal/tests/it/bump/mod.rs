@@ -472,6 +472,7 @@ current-version = "1.0.0"
 
 [changelog]
 ignore-labels = ["internal", "ci"]
+ignore-contributors = ["ignored"]
 
 [changelog.section-labels]
 "Bug Fixes" = ["bug"]
@@ -515,15 +516,15 @@ ignore-labels = ["internal", "ci"]
     +
     +### Bug Fixes
     +
-    +- Fix critical bug in module Y ([#3](https://github.com/owner/repo/pull/122))
+    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
     +
     +### Documentation
     +
-    +- Update documentation ([#2](https://github.com/owner/repo/pull/121))
+    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
     +
     +### New Features
     +
-    +- Add new feature X ([#4](https://github.com/owner/repo/pull/123))
+    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
     +
     +### Contributors
     +
@@ -535,6 +536,94 @@ ignore-labels = ["internal", "ci"]
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGELOG.md`
+
+    Note: No branch or commit will be created (branch-name and commit-message not configured)
+
+    Proceed with these changes? (y/n):
+    Updating version files...
+    Updating changelog...
+    Successfully bumped to 1.0.1
+    Note: No git branch or commit was created
+
+    ----- stderr -----
+    "#);
+}
+
+#[test]
+fn bump_changelog_different_path() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+
+[changelog]
+ignore-labels = ["internal", "ci"]
+ignore-contributors = ["ignored"]
+changelog-path = "CHANGE_LOG.md"
+
+[changelog.section-labels]
+"Bug Fixes" = ["bug"]
+"New Features" = ["enhancement", "feature"]
+"Documentation" = ["documentation"]
+"#,
+    );
+
+    context.init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.0.0 to 1.0.1
+
+    Warning: No version files configured - only seal.toml will be updated
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+     
+     [changelog]
+     ignore-labels = ["internal", "ci"]
+
+
+    diff --git a/CHANGE_LOG.md b/CHANGE_LOG.md
+    --- a/CHANGE_LOG.md
+    +++ b/CHANGE_LOG.md
+    @@ -0,0 +1,22 @@
+    +# Changelog
+    +
+    +## 1.0.1
+    +
+    +### Bug Fixes
+    +
+    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
+    +
+    +### Documentation
+    +
+    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
+    +
+    +### New Features
+    +
+    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+    +
+    +### Contributors
+    +
+    +- [@alice](https://github.com/alice)
+    +- [@bob](https://github.com/bob)
+    +- [@joe](https://github.com/joe)
+    +
+
+    Changes to be made:
+      - Update `seal.toml`
+      - Update `CHANGE_LOG.md`
 
     Note: No branch or commit will be created (branch-name and commit-message not configured)
 

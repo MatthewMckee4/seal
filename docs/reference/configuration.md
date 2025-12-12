@@ -41,6 +41,26 @@ Template for the changelog heading. Must contain {version} placeholder.
 
 ---
 
+#### [`changelog-path`](#changelog_changelog-path)
+<span id="changelog-path"></span>
+
+Path to the changelog file. Defaults to `CHANGELOG.md`.
+
+**Default value**: `CHANGELOG.md`
+
+**Type**: `string`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [changelog]
+    changelog-path = "CHANGELOG.md"
+    ```
+
+---
+
 #### [`ignore-contributors`](#changelog_ignore-contributors)
 <span id="ignore-contributors"></span>
 

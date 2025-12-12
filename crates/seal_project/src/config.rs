@@ -303,7 +303,7 @@ impl<'de> Deserialize<'de> for BranchName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata, Default)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ChangelogConfig {
     /// Labels to ignore when generating changelog.
@@ -362,6 +362,17 @@ pub struct ChangelogConfig {
         "#
     )]
     pub include_contributors: Option<bool>,
+
+    /// Path to the changelog file. Defaults to `CHANGELOG.md`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "CHANGELOG.md",
+        value_type = "string",
+        example = r#"
+        changelog-path = "CHANGELOG.md"
+        "#
+    )]
+    pub changelog_path: Option<PathBuf>,
 }
 
 impl ChangelogConfig {
@@ -713,6 +724,13 @@ branch-name = ""
     }
 
     #[test]
+    fn test_changelog_heading_new_valid() {
+        let name = ChangelogHeading::new("Version {version}".to_string()).unwrap();
+        insta::assert_snapshot!(name.as_str(), @"Version {version}");
+        insta::assert_snapshot!(name.to_string(), @"Version {version}");
+    }
+
+    #[test]
     fn test_changelog_heading_new_empty() {
         let result = ChangelogHeading::new(String::new());
         assert!(result.is_err());
@@ -1058,7 +1076,7 @@ create-pr = true
 ignore-labels = ["ignore"]
 ignore-contributors = ["bot"]
 include-contributors = true
-changelog-heading = "\\# Release {version}"
+changelog-heading = "Release {version}"
 
 [changelog.section-labels]
 "Breaking changes" = ["breaking"]
@@ -1066,43 +1084,29 @@ changelog-heading = "\\# Release {version}"
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
-        assert_debug_snapshot!(config, @r#"
-        Config {
-            members: None,
-            release: None,
-            changelog: Some(
-                ChangelogConfig {
-                    ignore_labels: Some(
-                        [
-                            "ignore",
-                        ],
-                    ),
-                    ignore_contributors: Some(
-                        [
-                            "bot",
-                        ],
-                    ),
-                    section_labels: Some(
-                        {
-                            "Breaking changes": [
-                                "breaking",
-                            ],
-                            "Enhancements": [
-                                "enhancement",
-                                "compatibility",
-                            ],
-                        },
-                    ),
-                    changelog_heading: Some(
-                        ChangelogHeading(
-                            "\\# Release {version}",
-                        ),
-                    ),
-                    include_contributors: Some(
-                        true,
-                    ),
-                },
-            ),
+        assert_json_snapshot!(config, @r#"
+        {
+          "members": null,
+          "release": null,
+          "changelog": {
+            "ignore-labels": [
+              "ignore"
+            ],
+            "ignore-contributors": [
+              "bot"
+            ],
+            "section-labels": {
+              "Breaking changes": [
+                "breaking"
+              ],
+              "Enhancements": [
+                "enhancement",
+                "compatibility"
+              ]
+            },
+            "changelog-heading": "Release {version}",
+            "include-contributors": true
+          }
         }
         "#);
     }
