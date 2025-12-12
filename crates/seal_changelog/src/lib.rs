@@ -106,18 +106,10 @@ pub fn format_changelog_content(
     write!(output, "## {heading}\n\n")?;
 
     for (section_name, prs) in &categorized.sections {
-        if prs.is_empty() {
-            continue;
-        }
-
         write!(output, "### {section_name}\n\n")?;
 
         for pr in prs {
-            if let Some(url) = &pr.url {
-                writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, url)?;
-            } else {
-                writeln!(output, "- {} (#{}) ", pr.title, pr.number)?;
-            }
+            writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
         }
 
         output.push('\n');
@@ -190,7 +182,11 @@ pub async fn prepare_changelog_changes(
     let generator = ChangelogGenerator::new(github_client);
     let changelog_content = generator.generate_changelog(version, config).await?;
 
-    let changelog_path = root.join("CHANGELOG.md");
+    let changelog_path = if let Some(path) = config.changelog_path.as_ref() {
+        root.join(path)
+    } else {
+        root.join("CHANGELOG.md")
+    };
     let change = prepare_changelog_file_change(&changelog_path, &changelog_content)?;
 
     Ok(FileChanges::new(vec![change]))
@@ -212,11 +208,11 @@ pub async fn generate_full_changelog(
         &seal_github::GitHubRelease,
     )> = Vec::new();
 
-    if releases.is_empty() {
+    let Some(first_release) = releases.first() else {
         return Ok(output);
-    }
+    };
 
-    release_pairs.push((None, &releases[0]));
+    release_pairs.push((None, first_release));
 
     for i in 1..releases.len() {
         release_pairs.push((Some(&releases[i - 1]), &releases[i]));
@@ -246,18 +242,10 @@ pub async fn generate_full_changelog(
         }
 
         for (section_name, prs) in &categorized.sections {
-            if prs.is_empty() {
-                continue;
-            }
-
             write!(output, "### {section_name}\n\n")?;
 
             for pr in prs {
-                if let Some(url) = &pr.url {
-                    writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, url)?;
-                } else {
-                    writeln!(output, "- {} (#{}) ", pr.title, pr.number)?;
-                }
+                writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
             }
 
             output.push('\n');
@@ -296,7 +284,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Breaking API change".to_string(),
                 number: 1,
-                url: Some("https://github.com/owner/repo/pull/1".to_string()),
+                url: "https://github.com/owner/repo/pull/1".to_string(),
                 labels: vec!["breaking".to_string()],
                 author: Some("alice".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 12, 1, 10, 0, 0).unwrap(),
@@ -304,7 +292,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Add new feature".to_string(),
                 number: 2,
-                url: Some("https://github.com/owner/repo/pull/2".to_string()),
+                url: "https://github.com/owner/repo/pull/2".to_string(),
                 labels: vec!["enhancement".to_string()],
                 author: Some("bob".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 12, 2, 14, 30, 0).unwrap(),
@@ -312,7 +300,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Fix bug".to_string(),
                 number: 3,
-                url: Some("https://github.com/owner/repo/pull/3".to_string()),
+                url: "https://github.com/owner/repo/pull/3".to_string(),
                 labels: vec!["bug".to_string()],
                 author: Some("alice".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 12, 3, 9, 15, 0).unwrap(),
@@ -367,7 +355,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Add feature".to_string(),
                 number: 1,
-                url: Some("https://github.com/owner/repo/pull/1".to_string()),
+                url: "https://github.com/owner/repo/pull/1".to_string(),
                 labels: vec!["enhancement".to_string()],
                 author: Some("alice".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 11, 20, 11, 0, 0).unwrap(),
@@ -375,7 +363,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Internal refactor".to_string(),
                 number: 2,
-                url: Some("https://github.com/owner/repo/pull/2".to_string()),
+                url: "https://github.com/owner/repo/pull/2".to_string(),
                 labels: vec!["internal".to_string()],
                 author: Some("bob".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 11, 21, 13, 45, 0).unwrap(),
@@ -383,7 +371,7 @@ mod tests {
             GitHubPullRequest {
                 title: "CI improvement".to_string(),
                 number: 3,
-                url: Some("https://github.com/owner/repo/pull/3".to_string()),
+                url: "https://github.com/owner/repo/pull/3".to_string(),
                 labels: vec!["ci".to_string()],
                 author: Some("charlie".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 11, 22, 16, 20, 0).unwrap(),
@@ -423,7 +411,7 @@ mod tests {
         let prs = vec![GitHubPullRequest {
             title: "Add feature".to_string(),
             number: 1,
-            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            url: "https://github.com/owner/repo/pull/1".to_string(),
             labels: vec!["enhancement".to_string()],
             author: Some("alice".to_string()),
             merged_at: Utc.with_ymd_and_hms(2025, 10, 15, 8, 30, 0).unwrap(),
@@ -460,7 +448,7 @@ mod tests {
         let prs = vec![GitHubPullRequest {
             title: "Add feature".to_string(),
             number: 1,
-            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            url: "https://github.com/owner/repo/pull/1".to_string(),
             labels: vec!["enhancement".to_string()],
             author: Some("alice".to_string()),
             merged_at: Utc.with_ymd_and_hms(2025, 9, 5, 12, 0, 0).unwrap(),
@@ -496,7 +484,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Add feature".to_string(),
                 number: 1,
-                url: Some("https://github.com/owner/repo/pull/1".to_string()),
+                url: "https://github.com/owner/repo/pull/1".to_string(),
                 labels: vec!["enhancement".to_string()],
                 author: Some("alice".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 8, 12, 15, 20, 0).unwrap(),
@@ -504,7 +492,7 @@ mod tests {
             GitHubPullRequest {
                 title: "Update docs".to_string(),
                 number: 2,
-                url: Some("https://github.com/owner/repo/pull/2".to_string()),
+                url: "https://github.com/owner/repo/pull/2".to_string(),
                 labels: vec!["documentation".to_string()],
                 author: Some("bob".to_string()),
                 merged_at: Utc.with_ymd_and_hms(2025, 8, 13, 9, 45, 0).unwrap(),
@@ -611,45 +599,11 @@ mod tests {
     }
 
     #[test]
-    fn test_format_changelog_without_urls() {
-        let prs = vec![GitHubPullRequest {
-            title: "Add feature".to_string(),
-            number: 1,
-            url: None,
-            labels: vec!["enhancement".to_string()],
-            author: Some("alice".to_string()),
-            merged_at: Utc.with_ymd_and_hms(2025, 7, 18, 11, 30, 0).unwrap(),
-        }];
-
-        let mut section_labels = BTreeMap::new();
-        section_labels.insert("Enhancements".to_string(), vec!["enhancement".to_string()]);
-
-        let config = ChangelogConfig {
-            ignore_labels: None,
-            ignore_contributors: None,
-            section_labels: Some(section_labels),
-            changelog_heading: None,
-            include_contributors: Some(false),
-            ..Default::default()
-        };
-
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
-
-        insta::assert_snapshot!(result, @r###"
-        ## 1.0.0
-
-        ### Enhancements
-
-        - Add feature (#1)
-        "###);
-    }
-
-    #[test]
     fn test_format_changelog_with_ignored_contributors() {
         let prs = vec![GitHubPullRequest {
             title: "Add feature".to_string(),
             number: 1,
-            url: Some("https://github.com/owner/repo/pull/1".to_string()),
+            url: "https://github.com/owner/repo/pull/1".to_string(),
             labels: vec!["enhancement".to_string()],
             author: Some("alice".to_string()),
             merged_at: Utc.with_ymd_and_hms(2025, 6, 25, 14, 15, 0).unwrap(),

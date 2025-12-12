@@ -60,10 +60,11 @@ pub async fn generate_changelog(
     let file_resolver = FileResolver::new(workspace.root().clone());
 
     if !dry_run {
+        let relative_path = file_resolver.relative_path(&changelog_path).display();
+
         if changelog_path.exists() && !overwrite.unwrap_or(false) {
             anyhow::bail!(
-                "Changelog already exists at `{}`. Remove it first if you want to regenerate it.",
-                file_resolver.relative_path(&changelog_path).display()
+                "Changelog already exists at `{relative_path}`. Remove it first if you want to regenerate it.",
             );
         }
 
@@ -71,8 +72,7 @@ pub async fn generate_changelog(
 
         writeln!(
             stdout,
-            "Changelog generated successfully at `{}`.",
-            file_resolver.relative_path(&changelog_path).display()
+            "Changelog generated successfully at `{relative_path}`."
         )?;
     } else {
         write!(stdout, "{changelog_content}")?;

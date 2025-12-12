@@ -99,13 +99,23 @@ ignore-labels = ["internal", "ci"]
 
     ### Documentation
 
-    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+    - Update documentation ([#3](https://github.com/owner/repo/pull/3))
 
     ### Contributors
 
     - [@alice](https://github.com/alice)
 
     ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+
+    ## Release 2025-11-05
 
     ### Documentation
 
@@ -133,13 +143,23 @@ ignore-labels = ["internal", "ci"]
 
     ### Documentation
 
-    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+    - Update documentation ([#3](https://github.com/owner/repo/pull/3))
 
     ### Contributors
 
     - [@alice](https://github.com/alice)
 
     ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+
+    ## Release 2025-11-05
 
     ### Documentation
 
@@ -180,9 +200,15 @@ include-contributors = false
 
     ### Documentation
 
-    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+    - Update documentation ([#3](https://github.com/owner/repo/pull/3))
 
     ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ## Release 2025-11-05
 
     ### Documentation
 
@@ -214,7 +240,7 @@ include-contributors = false
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog").arg("--dry-run").arg("--max-prs").arg("4"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog").arg("--dry-run").arg("--max-prs").arg("5"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -222,7 +248,7 @@ include-contributors = false
 
     ### Documentation
 
-    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+    - Update documentation ([#3](https://github.com/owner/repo/pull/3))
 
 
     ----- stderr -----
@@ -264,13 +290,23 @@ changelog-path = "CHANGE_LOG.md"
 
     ### Documentation
 
-    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+    - Update documentation ([#3](https://github.com/owner/repo/pull/3))
 
     ### Contributors
 
     - [@alice](https://github.com/alice)
 
     ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+
+    ## Release 2025-11-05
 
     ### Documentation
 
@@ -322,13 +358,23 @@ ignore-labels = ["internal", "ci"]
 
     ### Documentation
 
-    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+    - Update documentation ([#3](https://github.com/owner/repo/pull/3))
 
     ### Contributors
 
     - [@alice](https://github.com/alice)
 
     ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+
+    ## Release 2025-11-05
 
     ### Documentation
 

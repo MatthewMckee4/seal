@@ -58,7 +58,7 @@ pub struct GitHubRelease {
 pub struct GitHubPullRequest {
     pub title: String,
     pub number: u64,
-    pub url: Option<String>,
+    pub url: String,
     pub labels: Vec<String>,
     pub author: Option<String>,
     pub merged_at: DateTime<Utc>,

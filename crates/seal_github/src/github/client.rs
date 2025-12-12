@@ -2,7 +2,7 @@ use std::path::Path;
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use octocrab::Octocrab;
+use octocrab::{Octocrab, models::pulls::PullRequest};
 
 use crate::{
     create_pull_request,
@@ -135,19 +135,7 @@ impl GitHubService for GitHubClient {
                     .send()
                     .await?
                     .into_iter()
-                    .filter_map(|pr| {
-                        pr.merged_at.map(|merged_at| GitHubPullRequest {
-                            title: pr.title.unwrap_or_default(),
-                            number: pr.number,
-                            url: pr.html_url.map(|u| u.to_string()),
-                            labels: pr
-                                .labels
-                                .map(|labels| labels.iter().map(|l| l.name.clone()).collect())
-                                .unwrap_or_default(),
-                            author: pr.user.map(|u| u.login),
-                            merged_at,
-                        })
-                    })
+                    .filter_map(gh_pr_to_github_pull_request)
                     .collect::<Vec<_>>();
 
                 if prs.is_empty() {
@@ -202,19 +190,7 @@ impl GitHubService for GitHubClient {
 
                 let merged_prs: Vec<_> = response
                     .into_iter()
-                    .filter_map(|pr| {
-                        pr.merged_at.map(|merged_at| GitHubPullRequest {
-                            title: pr.title.unwrap_or_default(),
-                            number: pr.number,
-                            url: pr.html_url.map(|u| u.to_string()),
-                            labels: pr
-                                .labels
-                                .map(|labels| labels.iter().map(|l| l.name.clone()).collect())
-                                .unwrap_or_default(),
-                            author: pr.user.map(|u| u.login),
-                            merged_at,
-                        })
-                    })
+                    .filter_map(gh_pr_to_github_pull_request)
                     .collect();
 
                 let is_empty = merged_prs.is_empty();
@@ -240,4 +216,20 @@ impl GitHubService for GitHubClient {
     fn create_pull_request(&self, current_directory: &Path, version: &str) -> Result<()> {
         create_pull_request(current_directory, version)
     }
+}
+
+fn gh_pr_to_github_pull_request(pr: PullRequest) -> Option<GitHubPullRequest> {
+    pr.merged_at.and_then(|merged_at| {
+        pr.html_url.map(|url| GitHubPullRequest {
+            title: pr.title.unwrap_or_default(),
+            number: pr.number,
+            url: url.to_string(),
+            labels: pr
+                .labels
+                .map(|labels| labels.iter().map(|l| l.name.clone()).collect())
+                .unwrap_or_default(),
+            author: pr.user.map(|u| u.login),
+            merged_at,
+        })
+    })
 }
