@@ -2,6 +2,8 @@ use std::fmt::Write as _;
 use std::sync::Arc;
 
 use anyhow::Result;
+use seal_changelog::DEFAULT_CHANGELOG_PATH;
+use seal_fs::FileResolver;
 use seal_github::GitHubService;
 use seal_project::ProjectWorkspace;
 
@@ -13,6 +15,7 @@ const MAX_PRS: usize = 100;
 pub async fn generate_changelog(
     dry_run: bool,
     printer: Printer,
+    overwrite: Option<bool>,
     max_prs: Option<usize>,
 ) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
@@ -27,7 +30,10 @@ pub async fn generate_changelog(
         ));
     };
 
-    let changelog_path = workspace.root().join("CHANGELOG.md");
+    let changelog_path = changelog_config
+        .changelog_path
+        .clone()
+        .unwrap_or(workspace.root().join(DEFAULT_CHANGELOG_PATH));
 
     #[cfg(feature = "integration-test")]
     let github_client: Arc<dyn GitHubService> = {
@@ -51,17 +57,23 @@ pub async fn generate_changelog(
     )
     .await?;
 
+    let file_resolver = FileResolver::new(workspace.root().clone());
+
     if !dry_run {
-        if changelog_path.exists() {
+        if changelog_path.exists() && !overwrite.unwrap_or(false) {
             anyhow::bail!(
-                "CHANGELOG.md already exists at `{}`. Remove it first if you want to regenerate it.",
-                changelog_path.display()
+                "Changelog already exists at `{}`. Remove it first if you want to regenerate it.",
+                file_resolver.relative_path(&changelog_path).display()
             );
         }
 
-        fs_err::write(changelog_path, changelog_content)?;
+        fs_err::write(&changelog_path, changelog_content)?;
 
-        writeln!(stdout, "CHANGELOG.md generated successfully.")?;
+        writeln!(
+            stdout,
+            "Changelog generated successfully at `{}`.",
+            file_resolver.relative_path(&changelog_path).display()
+        )?;
     } else {
         write!(stdout, "{changelog_content}")?;
     }

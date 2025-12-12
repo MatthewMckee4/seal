@@ -183,6 +183,7 @@ seal generate changelog [OPTIONS]
 <p>Defaults to 100.</p>
 </dd><dt id="seal-generate-changelog--no-progress"><a href="#seal-generate-changelog--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-generate-changelog--overwrite"><a href="#seal-generate-changelog--overwrite"><code>--overwrite</code></a></dt><dd><p>Overwrite the changelog file if it already exists</p>
 </dd><dt id="seal-generate-changelog--quiet"><a href="#seal-generate-changelog--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-generate-changelog--verbose"><a href="#seal-generate-changelog--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>

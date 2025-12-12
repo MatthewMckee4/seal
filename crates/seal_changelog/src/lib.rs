@@ -9,6 +9,8 @@ use seal_github::{GitHubPullRequest, GitHubService, filter_prs_by_date_range};
 
 use seal_project::ChangelogConfig;
 
+pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
+
 fn extract_version_from_release_name(name: Option<&String>) -> Option<String> {
     name.as_ref().map(|n| {
         if let Some(stripped) = n.strip_prefix('v') {
@@ -331,6 +333,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -396,6 +399,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -436,6 +440,7 @@ mod tests {
                 ChangelogHeading::new("Version {version} - Released".to_string()).unwrap(),
             ),
             include_contributors: Some(false),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -470,6 +475,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(false),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -514,6 +520,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -542,6 +549,7 @@ mod tests {
             section_labels: None,
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -622,6 +630,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(false),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
@@ -655,6 +664,7 @@ mod tests {
             section_labels: Some(section_labels),
             changelog_heading: None,
             include_contributors: Some(true),
+            ..Default::default()
         };
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();

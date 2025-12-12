@@ -303,7 +303,7 @@ impl<'de> Deserialize<'de> for BranchName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata, Default)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ChangelogConfig {
     /// Labels to ignore when generating changelog.
@@ -362,6 +362,17 @@ pub struct ChangelogConfig {
         "#
     )]
     pub include_contributors: Option<bool>,
+
+    /// Path to the changelog file. Defaults to `CHANGELOG.md`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "CHANGELOG.md",
+        value_type = "string",
+        example = r#"
+        changelog-path = "CHANGELOG.md"
+        "#
+    )]
+    pub changelog_path: Option<PathBuf>,
 }
 
 impl ChangelogConfig {

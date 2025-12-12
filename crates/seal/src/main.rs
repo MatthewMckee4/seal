@@ -103,9 +103,11 @@ async fn run(cli: Cli) -> Result<ExitStatus> {
         },
         Commands::Bump(bump_args) => commands::bump(&bump_args, printer).await,
         Commands::Generate(generate_ns) => match generate_ns.command {
-            GenerateCommand::Changelog { dry_run, max_prs } => {
-                commands::generate_changelog(dry_run, printer, max_prs).await
-            }
+            GenerateCommand::Changelog {
+                dry_run,
+                max_prs,
+                overwrite,
+            } => commands::generate_changelog(dry_run, printer, overwrite, max_prs).await,
         },
         Commands::Help(args) => commands::help(
             args.command.unwrap_or_default().as_slice(),

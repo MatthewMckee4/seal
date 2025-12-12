@@ -67,7 +67,7 @@ ignore-labels = ["internal"]
     ----- stdout -----
 
     ----- stderr -----
-    error: CHANGELOG.md already exists at `[TEMP]/CHANGELOG.md`. Remove it first if you want to regenerate it.
+    error: Changelog already exists at `CHANGELOG.md`. Remove it first if you want to regenerate it.
     ");
 }
 
@@ -123,7 +123,7 @@ ignore-labels = ["internal", "ci"]
     success: true
     exit_code: 0
     ----- stdout -----
-    CHANGELOG.md generated successfully.
+    Changelog generated successfully at `CHANGELOG.md`.
 
     ----- stderr -----
     ");
@@ -226,5 +226,116 @@ include-contributors = false
 
 
     ----- stderr -----
+    ");
+}
+
+#[test]
+fn generate_changelog_different_changelog_path() {
+    let context = TestContext::new();
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+
+[changelog]
+ignore-labels = ["internal", "ci"]
+changelog-path = "CHANGE_LOG.md"
+
+[changelog.section-labels]
+"Bug Fixes" = ["bug"]
+"New Features" = ["enhancement", "feature"]
+"Documentation" = ["documentation"]
+"#,
+    );
+
+    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Changelog generated successfully at `CHANGE_LOG.md`.
+
+    ----- stderr -----
+    ");
+
+    insta::assert_snapshot!(context.read_file("CHANGE_LOG.md"), @r"
+    ## 1.0.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+
+    ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#1](https://github.com/owner/repo/pull/1))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+    ");
+}
+
+#[test]
+fn generate_changelog_file_already_exists_with_overwrite() {
+    let context = TestContext::new();
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+
+[changelog]
+ignore-labels = ["internal", "ci"]
+
+[changelog.section-labels]
+"Bug Fixes" = ["bug"]
+"New Features" = ["enhancement", "feature"]
+"Documentation" = ["documentation"]
+"#,
+    );
+
+    context
+        .root
+        .child("CHANGELOG.md")
+        .write_str("# Existing changelog")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog").arg("--overwrite"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Changelog generated successfully at `CHANGELOG.md`.
+
+    ----- stderr -----
+    ");
+
+    insta::assert_snapshot!(context.read_file("CHANGELOG.md"), @r"
+    ## 1.0.0
+
+    ### Documentation
+
+    - Update documentation ([#2](https://github.com/owner/repo/pull/2))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+
+    ## 0.2.0
+
+    ### Documentation
+
+    - Update documentation ([#1](https://github.com/owner/repo/pull/1))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
     ");
 }

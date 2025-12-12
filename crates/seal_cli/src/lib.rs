@@ -197,5 +197,9 @@ pub enum GenerateCommand {
         /// Defaults to 100.
         #[arg(long)]
         max_prs: Option<usize>,
+
+        /// Overwrite the changelog file if it already exists
+        #[arg(long, default_missing_value = "true", num_args = 0..1)]
+        overwrite: Option<bool>,
     },
 }
