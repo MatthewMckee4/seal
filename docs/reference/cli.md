@@ -16,6 +16,7 @@ seal [OPTIONS] <COMMAND>
 <dt><a href="#seal-validate"><code>seal validate</code></a></dt><dd><p>Validate project configuration and structure</p></dd>
 <dt><a href="#seal-bump"><code>seal bump</code></a></dt><dd><p>Bump version and create release branch</p></dd>
 <dt><a href="#seal-generate"><code>seal generate</code></a></dt><dd><p>Generate project files</p></dd>
+<dt><a href="#seal-migrate"><code>seal migrate</code></a></dt><dd><p>Migrate configuration from other tools</p></dd>
 <dt><a href="#seal-help"><code>seal help</code></a></dt><dd><p>Display documentation for a command</p></dd>
 </dl>
 
@@ -187,6 +188,46 @@ seal generate changelog [OPTIONS]
 </dd><dt id="seal-generate-changelog--quiet"><a href="#seal-generate-changelog--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-generate-changelog--verbose"><a href="#seal-generate-changelog--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd></dl>
+
+## seal migrate
+
+Migrate configuration from other tools
+
+<h3 class="cli-reference">Usage</h3>
+
+```
+seal migrate [OPTIONS] <COMMAND>
+```
+
+<h3 class="cli-reference">Commands</h3>
+
+<dl class="cli-reference"><dt><a href="#seal-migrate-rooster"><code>seal migrate rooster</code></a></dt><dd><p>Migrate rooster configuration to seal</p></dd>
+</dl>
+
+### seal migrate rooster
+
+Migrate rooster configuration to seal
+
+Reads a pyproject.toml file and converts the [tool.rooster] configuration to seal.toml format. Unsupported features will be documented in warnings.
+
+<h3 class="cli-reference">Usage</h3>
+
+```
+seal migrate rooster [OPTIONS]
+```
+
+<h3 class="cli-reference">Options</h3>
+
+<dl class="cli-reference"><dt id="seal-migrate-rooster--help"><a href="#seal-migrate-rooster--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+</dd><dt id="seal-migrate-rooster--input"><a href="#seal-migrate-rooster--input"><code>--input</code></a> <i>input</i></dt><dd><p>Path to the pyproject.toml file containing [tool.rooster] configuration</p>
+</dd><dt id="seal-migrate-rooster--no-progress"><a href="#seal-migrate-rooster--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
+<p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-migrate-rooster--output"><a href="#seal-migrate-rooster--output"><code>--output</code></a> <i>output</i></dt><dd><p>Path to output seal.toml file</p>
+</dd><dt id="seal-migrate-rooster--overwrite"><a href="#seal-migrate-rooster--overwrite"><code>--overwrite</code></a></dt><dd><p>Overwrite the output file if it already exists</p>
+</dd><dt id="seal-migrate-rooster--quiet"><a href="#seal-migrate-rooster--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
+<p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
+</dd><dt id="seal-migrate-rooster--verbose"><a href="#seal-migrate-rooster--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
 </dd></dl>
 
 ## seal help

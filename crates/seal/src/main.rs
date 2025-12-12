@@ -3,7 +3,7 @@ use std::process::ExitCode;
 use anyhow::Result;
 use clap::Parser;
 use owo_colors::OwoColorize;
-use seal_cli::{Cli, Commands, GenerateCommand, SelfCommand, ValidateCommand};
+use seal_cli::{Cli, Commands, GenerateCommand, MigrateCommand, SelfCommand, ValidateCommand};
 
 mod commands;
 mod printer;
@@ -108,6 +108,13 @@ async fn run(cli: Cli) -> Result<ExitStatus> {
                 max_prs,
                 overwrite,
             } => commands::generate_changelog(dry_run, printer, overwrite, max_prs).await,
+        },
+        Commands::Migrate(migrate_ns) => match migrate_ns.command {
+            MigrateCommand::Rooster {
+                input,
+                output,
+                overwrite,
+            } => commands::migrate_rooster(input.as_deref(), output.as_deref(), overwrite, printer),
         },
         Commands::Help(args) => commands::help(
             args.command.unwrap_or_default().as_slice(),

@@ -18,6 +18,7 @@ seal_file_change = { path = "crates/seal_file_change" }
 seal_fs = { path = "crates/seal_fs" }
 seal_github = { path = "crates/seal_github" }
 seal_macros = { path = "crates/seal_macros" }
+seal_migrate = { path = "crates/seal_migrate" }
 seal_options_metadata = { path = "crates/seal_options_metadata" }
 seal_project = { path = "crates/seal_project" }
 seal_version = { path = "crates/seal_version" }

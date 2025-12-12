@@ -1323,12 +1323,14 @@ dependencies = [
  "seal_cli",
  "seal_fs",
  "seal_github",
+ "seal_migrate",
  "seal_project",
  "seal_version",
  "serde",
  "serde_json",
  "tempfile",
  "tokio",
+ "toml",
  "which",
 ]
 
@@ -1427,6 +1429,18 @@ dependencies = [
  "quote",
  "syn",
  "textwrap",
+]
+
+[[package]]
+name = "seal_migrate"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "insta",
+ "seal_project",
+ "serde",
+ "tempfile",
+ "toml",
 ]
 
 [[package]]

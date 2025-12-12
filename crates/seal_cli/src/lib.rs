@@ -85,6 +85,8 @@ pub enum Commands {
     Bump(BumpArgs),
     /// Generate project files.
     Generate(GenerateNamespace),
+    /// Migrate configuration from other tools.
+    Migrate(MigrateNamespace),
     /// Display documentation for a command.
     #[command(help_template = "\
 {about-with-newline}
@@ -199,6 +201,34 @@ pub enum GenerateCommand {
         max_prs: Option<usize>,
 
         /// Overwrite the changelog file if it already exists
+        #[arg(long, default_missing_value = "true", num_args = 0..1)]
+        overwrite: Option<bool>,
+    },
+}
+
+#[derive(Args)]
+pub struct MigrateNamespace {
+    #[command(subcommand)]
+    pub command: MigrateCommand,
+}
+
+#[derive(Subcommand)]
+pub enum MigrateCommand {
+    /// Migrate rooster configuration to seal
+    ///
+    /// Reads a pyproject.toml file and converts the [tool.rooster]
+    /// configuration to seal.toml format. Unsupported features will be documented
+    /// in warnings.
+    Rooster {
+        /// Path to the pyproject.toml file containing [tool.rooster] configuration
+        #[arg(long)]
+        input: Option<PathBuf>,
+
+        /// Path to output seal.toml file
+        #[arg(long)]
+        output: Option<PathBuf>,
+
+        /// Overwrite the output file if it already exists
         #[arg(long, default_missing_value = "true", num_args = 0..1)]
         overwrite: Option<bool>,
     },

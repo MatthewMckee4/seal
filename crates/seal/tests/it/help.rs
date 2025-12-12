@@ -18,6 +18,7 @@ fn help_command() {
       validate  Validate project configuration and structure
       bump      Bump version and create release branch
       generate  Generate project files
+      migrate   Migrate configuration from other tools
       help      Display documentation for a command
 
     Global options:
@@ -51,6 +52,7 @@ fn help_flag() {
       validate  Validate project configuration and structure
       bump      Bump version and create release branch
       generate  Generate project files
+      migrate   Migrate configuration from other tools
       help      Display documentation for a command
 
     Global options:
@@ -83,6 +85,7 @@ fn help_short_flag() {
       validate  Validate project configuration and structure
       bump      Bump version and create release branch
       generate  Generate project files
+      migrate   Migrate configuration from other tools
       help      Display documentation for a command
 
     Global options:
@@ -153,6 +156,7 @@ fn help_invalid_command() {
         validate
         bump
         generate
+        migrate
     ");
 }
 
@@ -232,6 +236,7 @@ fn help_command_no_pager() {
       validate  Validate project configuration and structure
       bump      Bump version and create release branch
       generate  Generate project files
+      migrate   Migrate configuration from other tools
       help      Display documentation for a command
 
     Global options:

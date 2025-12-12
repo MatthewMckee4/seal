@@ -10,5 +10,6 @@ mod bump;
 mod generate;
 
 mod help;
+mod migrate;
 mod self_version;
 mod validate;
