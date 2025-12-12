@@ -13,6 +13,10 @@ pub fn get_git_remote_url<P: AsRef<Path>>(current_directory: P) -> Result<String
         .trim()
         .to_string();
 
+    if url.is_empty() {
+        anyhow::bail!("No remote URL found");
+    }
+
     Ok(url)
 }
 
@@ -66,6 +70,8 @@ pub fn create_pull_request<P: AsRef<Path>>(current_directory: P, version: &str) 
 
 #[cfg(test)]
 mod tests {
+    use tempfile::TempDir;
+
     use super::*;
 
     #[test]
@@ -101,5 +107,68 @@ mod tests {
         assert!(parse_github_repo("https://example.com/owner/repo").is_err());
         assert!(parse_github_repo("https://github.com/owner/repo/other.git").is_err());
         assert!(parse_github_repo("not-a-url").is_err());
+    }
+
+    #[test]
+    fn test_get_git_remote_url() -> Result<()> {
+        let temp_dir = TempDir::new()?;
+        let repo_path = temp_dir.path();
+
+        Command::new("git")
+            .args(["init"])
+            .current_dir(repo_path)
+            .output()?;
+
+        Command::new("git")
+            .args([
+                "remote",
+                "add",
+                "origin",
+                "https://github.com/user/repo.git",
+            ])
+            .current_dir(repo_path)
+            .output()?;
+
+        let url = get_git_remote_url(repo_path)?;
+        assert_eq!(url, "https://github.com/user/repo.git");
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_get_git_remote_url_no_remote() {
+        let temp_dir = TempDir::new().unwrap();
+        let repo_path = temp_dir.path();
+
+        Command::new("git")
+            .args(["init"])
+            .current_dir(repo_path)
+            .output()
+            .unwrap();
+
+        let result = get_git_remote_url(repo_path);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_get_git_remote_url_not_a_repo() {
+        let temp_dir = TempDir::new().unwrap();
+
+        let result = get_git_remote_url(temp_dir.path());
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_push_branch_command_executes() {
+        let result = push_branch("/tmp/definitely-not-a-git-repo", "test-branch");
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_create_pull_request_command_executes() {
+        let result = create_pull_request("/tmp/definitely-not-a-git-repo", "1.0.0");
+
+        assert!(result.is_err());
     }
 }

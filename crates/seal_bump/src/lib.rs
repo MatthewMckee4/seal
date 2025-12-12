@@ -136,29 +136,6 @@ impl fmt::Display for VersionBump {
 pub fn calculate_new_version(current: &str, bump: &VersionBump) -> anyhow::Result<Version> {
     let mut current_version = Version::parse(current).context("Invalid current version")?;
 
-    if let VersionBump::Explicit(version) = bump {
-        let new_version = Version::parse(version)
-            .map_err(|_| VersionBumpError::MalformedVersion(version.clone()))?;
-
-        if new_version < current_version {
-            return Err(VersionBumpError::ExplicitVersionPrior {
-                current: current_version.to_string(),
-                new: new_version.to_string(),
-            })
-            .context("Invalid version bump");
-        }
-
-        if new_version == current_version {
-            return Err(VersionBumpError::ExplicitVersionSame {
-                current: current_version.to_string(),
-                new: new_version.to_string(),
-            })
-            .context("Invalid version bump");
-        }
-
-        return Ok(new_version);
-    }
-
     match bump {
         VersionBump::Major => {
             current_version.major += 1;
@@ -179,30 +156,50 @@ pub fn calculate_new_version(current: &str, bump: &VersionBump) -> anyhow::Resul
             current_version.major += 1;
             current_version.minor = 0;
             current_version.patch = 0;
-            current_version.pre = make_prerelease(*pr_type, 1)?;
+            current_version.pre = make_prerelease(*pr_type, 1);
         }
         VersionBump::MinorPreRelease(pr_type) => {
             current_version.minor += 1;
             current_version.patch = 0;
-            current_version.pre = make_prerelease(*pr_type, 1)?;
+            current_version.pre = make_prerelease(*pr_type, 1);
         }
         VersionBump::PatchPreRelease(pr_type) => {
             current_version.patch += 1;
-            current_version.pre = make_prerelease(*pr_type, 1)?;
+            current_version.pre = make_prerelease(*pr_type, 1);
         }
         VersionBump::PreRelease(pr_type) => {
             let next_number = extract_prerelease_number(&current_version.pre, *pr_type)?;
-            current_version.pre = make_prerelease(*pr_type, next_number)?;
+            current_version.pre = make_prerelease(*pr_type, next_number);
         }
-        VersionBump::Explicit(_) => unreachable!(),
+        VersionBump::Explicit(version) => {
+            let new_version = Version::parse(version)
+                .map_err(|_| VersionBumpError::MalformedVersion(version.clone()))?;
+
+            if new_version < current_version {
+                return Err(VersionBumpError::ExplicitVersionPrior {
+                    current: current_version.to_string(),
+                    new: new_version.to_string(),
+                })
+                .context("Invalid version bump");
+            }
+
+            if new_version == current_version {
+                return Err(VersionBumpError::ExplicitVersionSame {
+                    current: current_version.to_string(),
+                    new: new_version.to_string(),
+                })
+                .context("Invalid version bump");
+            }
+
+            return Ok(new_version);
+        }
     }
 
     Ok(current_version)
 }
 
-fn make_prerelease(pr_type: PreReleaseType, number: u64) -> anyhow::Result<Prerelease> {
-    let pr = Prerelease::new(&format!("{pr_type}.{number}"))?;
-    Ok(pr)
+fn make_prerelease(pr_type: PreReleaseType, number: u64) -> Prerelease {
+    Prerelease::new(&format!("{pr_type}.{number}")).expect("Pre release to be valid")
 }
 
 fn extract_prerelease_number(
@@ -571,5 +568,17 @@ mod tests {
                 .unwrap(),
             Version::parse("2.0.0-beta.1").unwrap()
         );
+    }
+
+    #[test]
+    fn test_calculate_version_invalid() {
+        let result =
+            calculate_new_version("1.2.3", &VersionBump::Explicit("1.1.1.1.1".to_string()));
+        assert!(result.is_err());
+        let error = result.unwrap_err();
+        assert!(matches!(
+            error.downcast_ref::<VersionBumpError>(),
+            Some(VersionBumpError::MalformedVersion(_))
+        ));
     }
 }

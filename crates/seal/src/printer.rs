@@ -16,6 +16,17 @@ pub(crate) enum Printer {
 
 impl Printer {
     /// Return the [`Stdout`] for this printer.
+    pub(crate) fn stdout_important(self) -> Stdout {
+        match self {
+            Self::Silent => Stdout::Disabled,
+            Self::Quiet => Stdout::Enabled,
+            Self::Default => Stdout::Enabled,
+            Self::Verbose => Stdout::Enabled,
+            Self::NoProgress => Stdout::Enabled,
+        }
+    }
+
+    /// Return the [`Stdout`] for this printer.
     pub(crate) fn stdout(self) -> Stdout {
         match self {
             Self::Silent => Stdout::Disabled,

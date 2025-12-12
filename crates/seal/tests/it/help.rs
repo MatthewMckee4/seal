@@ -21,11 +21,13 @@ fn help_command() {
       help      Display documentation for a command
 
     Global options:
-      -q, --quiet...     Use quiet output
-      -v, --verbose...   Use verbose output
-          --no-progress  Hide all progress outputs
-      -h, --help         Display the concise help for this command
-      -V, --version      Display the seal version
+      -q, --quiet...              Use quiet output
+      -v, --verbose...            Use verbose output
+          --no-progress           Hide all progress outputs
+          --color <COLOR_CHOICE>  Control the use of color in output [possible values: auto, always,
+                                  never]
+      -h, --help                  Display the concise help for this command
+      -V, --version               Display the seal version
 
     Use `seal help <command>` for more information on a specific command.
 
@@ -54,11 +56,13 @@ fn help_flag() {
       help      Display documentation for a command
 
     Global options:
-      -q, --quiet...     Use quiet output
-      -v, --verbose...   Use verbose output
-          --no-progress  Hide all progress outputs
-      -h, --help         Display the concise help for this command
-      -V, --version      Display the seal version
+      -q, --quiet...              Use quiet output
+      -v, --verbose...            Use verbose output
+          --no-progress           Hide all progress outputs
+          --color <COLOR_CHOICE>  Control the use of color in output [possible values: auto, always,
+                                  never]
+      -h, --help                  Display the concise help for this command
+      -V, --version               Display the seal version
 
     Use `seal help` for more details.
 
@@ -86,11 +90,13 @@ fn help_short_flag() {
       help      Display documentation for a command
 
     Global options:
-      -q, --quiet...     Use quiet output
-      -v, --verbose...   Use verbose output
-          --no-progress  Hide all progress outputs
-      -h, --help         Display the concise help for this command
-      -V, --version      Display the seal version
+      -q, --quiet...              Use quiet output
+      -v, --verbose...            Use verbose output
+          --no-progress           Hide all progress outputs
+          --color <COLOR_CHOICE>  Control the use of color in output [possible values: auto, always,
+                                  never]
+      -h, --help                  Display the concise help for this command
+      -V, --version               Display the seal version
 
     Use `seal help` for more details.
 
@@ -127,6 +133,17 @@ fn help_self_command() {
               Hide all progress outputs.
               
               For example, spinners or progress bars.
+
+          --color <COLOR_CHOICE>
+              Control the use of color in output.
+              
+              By default, seal will automatically detect support for colors when writing to a terminal.
+
+              Possible values:
+              - auto:   Enables colored output only when the output is going to a terminal or TTY with
+                support
+              - always: Enables colored output regardless of the detected environment
+              - never:  Disables colored output
 
       -h, --help
               Display the concise help for this command
@@ -207,6 +224,17 @@ fn help_self_version_command() {
               
               For example, spinners or progress bars.
 
+          --color <COLOR_CHOICE>
+              Control the use of color in output.
+              
+              By default, seal will automatically detect support for colors when writing to a terminal.
+
+              Possible values:
+              - auto:   Enables colored output only when the output is going to a terminal or TTY with
+                support
+              - always: Enables colored output regardless of the detected environment
+              - never:  Disables colored output
+
       -h, --help
               Display the concise help for this command
 
@@ -235,11 +263,48 @@ fn help_command_no_pager() {
       help      Display documentation for a command
 
     Global options:
-      -q, --quiet...     Use quiet output
-      -v, --verbose...   Use verbose output
-          --no-progress  Hide all progress outputs
-      -h, --help         Display the concise help for this command
-      -V, --version      Display the seal version
+      -q, --quiet...              Use quiet output
+      -v, --verbose...            Use verbose output
+          --no-progress           Hide all progress outputs
+          --color <COLOR_CHOICE>  Control the use of color in output [possible values: auto, always,
+                                  never]
+      -h, --help                  Display the concise help for this command
+      -V, --version               Display the seal version
+
+    Use `seal help <command>` for more information on a specific command.
+
+
+    ----- stderr -----
+    ");
+}
+
+#[test]
+fn help_command_no_color() {
+    let context = TestContext::new();
+
+    seal_snapshot!(context.help().arg("--no-color"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    An extremely fast release management tool.
+
+    Usage: seal [OPTIONS] <COMMAND>
+
+    Commands:
+      self      Manage the seal executable
+      validate  Validate project configuration and structure
+      bump      Bump version and create release branch
+      generate  Generate project files
+      help      Display documentation for a command
+
+    Global options:
+      -q, --quiet...              Use quiet output
+      -v, --verbose...            Use verbose output
+          --no-progress           Hide all progress outputs
+          --color <COLOR_CHOICE>  Control the use of color in output [possible values: auto, always,
+                                  never]
+      -h, --help                  Display the concise help for this command
+      -V, --version               Display the seal version
 
     Use `seal help <command>` for more information on a specific command.
 

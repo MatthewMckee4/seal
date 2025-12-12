@@ -23,23 +23,23 @@ impl ProjectWorkspace {
     /// Discover workspace from current directory
     pub fn discover() -> Result<Self> {
         let current_dir = std::env::current_dir()?;
-        Self::from_project_path(&current_dir)
+        let project = Self::from_project_path(&current_dir)?;
+
+        tracing::info!("Workspace discovered at {:?}", project.root);
+
+        Ok(project)
     }
 
     /// Load workspace from a specific config file path
     pub fn from_config_file(config_path: &Path) -> Result<Self> {
-        let config = Config::from_file(config_path)?;
         let root = config_path
             .parent()
-            .ok_or_else(|| ProjectError::ConfigFileNotReadable {
+            .ok_or_else(|| ProjectError::NoParentDirectory {
                 path: config_path.to_path_buf(),
-                source: std::io::Error::new(
-                    std::io::ErrorKind::NotFound,
-                    "config file has no parent directory",
-                ),
             })?
             .to_path_buf();
 
+        let config = Config::from_file(config_path)?;
         let members = Self::load_members(&root, &config)?;
 
         Ok(Self {
@@ -53,6 +53,7 @@ impl ProjectWorkspace {
     /// Load workspace from a project directory path
     pub fn from_project_path(project_path: &Path) -> Result<Self> {
         let seal_toml_path = project_path.join("seal.toml");
+
         let config = Config::from_file(&seal_toml_path)?;
 
         let members = Self::load_members(project_path, &config)?;
@@ -377,6 +378,21 @@ current-version = "1.0.0"
         assert!(matches!(
             err.downcast_ref::<ProjectError>(),
             Some(ProjectError::MemberPathNotFound { .. })
+        ));
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn test_root_config_file() {
+        let result = ProjectWorkspace::from_config_file(Path::new("/"));
+
+        assert!(result.is_err());
+
+        let err = result.unwrap_err();
+
+        assert!(matches!(
+            err.downcast_ref::<ProjectError>(),
+            Some(ProjectError::NoParentDirectory { .. })
         ));
     }
 }

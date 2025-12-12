@@ -1,6 +1,6 @@
 [package]
-name = "seal_cli"
-version = "0.0.0"
+name = "seal_logging"
+version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
 homepage.workspace = true
@@ -9,10 +9,10 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
-seal_version = { workspace = true }
-
-anstream = { workspace = true }
-clap = { workspace = true }
+jiff = { workspace = true }
+owo-colors = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
 
 [lints]
 workspace = true

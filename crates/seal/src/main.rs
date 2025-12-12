@@ -3,7 +3,9 @@ use std::process::ExitCode;
 use anyhow::Result;
 use clap::Parser;
 use owo_colors::OwoColorize;
-use seal_cli::{Cli, Commands, GenerateCommand, SelfCommand, ValidateCommand};
+use seal_cli::{Cli, ColorChoice, Commands, GenerateCommand, SelfCommand, ValidateCommand};
+use seal_logging::SealFormat;
+use tracing_subscriber::{EnvFilter, Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 mod commands;
 mod printer;
@@ -11,6 +13,43 @@ mod settings;
 mod version;
 
 use crate::{printer::Printer, settings::GlobalSettings};
+
+#[derive(Debug, Clone, Copy)]
+enum Level {
+    Default,
+    Verbose,
+    Debug,
+    Trace,
+    TraceAll,
+}
+
+fn setup_logging(level: Level, color: ColorChoice) {
+    let filter = match level {
+        Level::Default => EnvFilter::new("warn"),
+        Level::Verbose => EnvFilter::new("info"),
+        Level::Debug => EnvFilter::new("debug"),
+        Level::Trace => EnvFilter::new("seal=trace"),
+        Level::TraceAll => EnvFilter::new("trace"),
+    };
+
+    let (ansi, color_choice) =
+        match color.and_colorchoice(anstream::Stderr::choice(&std::io::stderr())) {
+            ColorChoice::Always => (true, anstream::ColorChoice::Always),
+            ColorChoice::Never => (false, anstream::ColorChoice::Never),
+            ColorChoice::Auto => unreachable!("anstream can't return auto as choice"),
+        };
+    let writer = std::sync::Mutex::new(anstream::AutoStream::new(std::io::stderr(), color_choice));
+
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::fmt::layer()
+                .event_format(SealFormat::default())
+                .with_writer(writer)
+                .with_ansi(ansi)
+                .with_filter(filter),
+        )
+        .init();
+}
 
 #[derive(Copy, Clone)]
 pub(crate) enum ExitStatus {
@@ -71,6 +110,17 @@ async fn main() -> ExitCode {
 async fn run(cli: Cli) -> Result<ExitStatus> {
     // Resolve the global settings.
     let globals = GlobalSettings::resolve(&cli.top_level.global_args);
+
+    // Setup logging based on verbosity level.
+    let log_level = match globals.verbose {
+        0 => Level::Default,
+        1 => Level::Verbose,
+        2 => Level::Debug,
+        3 => Level::Trace,
+        _ => Level::TraceAll,
+    };
+
+    setup_logging(log_level, globals.color);
 
     // Configure the `Printer`, which controls user-facing output in the CLI.
     let printer = if globals.quiet == 1 {

@@ -22,7 +22,7 @@ confirm = false
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -46,7 +46,7 @@ version-files = ["VERSION"]
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/custom.toml` is valid
+    Config file `custom.toml` is valid
 
     ----- stderr -----
     ");
@@ -61,7 +61,7 @@ fn validate_config_minimal() {
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -210,7 +210,7 @@ current-version = "1.0.0"
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -280,7 +280,7 @@ current-version = "1.0.0"
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -301,7 +301,7 @@ version-files = []
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -322,7 +322,7 @@ version-files = ["Cargo.toml", ""]
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -393,7 +393,7 @@ version-files = ["Cargo.toml", "pyproject.toml", "package.json", "VERSION"]
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
@@ -419,7 +419,7 @@ confirm = false
     success: true
     exit_code: 0
     ----- stdout -----
-    Config file `[TEMP]/seal.toml` is valid
+    Config file `seal.toml` is valid
 
     ----- stderr -----
     ");
