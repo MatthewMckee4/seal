@@ -1,5 +1,7 @@
 # Seal
 
+[![codecov](https://codecov.io/gh/MatthewMckee4/seal/graph/badge.svg?token=URQ3YZHYDK)](https://codecov.io/gh/MatthewMckee4/seal)
+
 An extremely fast release management tool, written in Rust.
 
 > [!WARNING]
