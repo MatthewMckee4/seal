@@ -18,6 +18,23 @@ fn validate_project_simple() {
 }
 
 #[test]
+#[cfg(unix)]
+fn validate_project_simple_verbose() {
+    let context = TestContext::new();
+    context.minimal_seal_toml("1.0.0");
+
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("project").arg("-v"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Project validation successful
+
+    ----- stderr -----
+    INFO Workspace discovered at "[TEMP]/"
+    "#);
+}
+
+#[test]
 fn validate_project_with_explicit_path() {
     let context = TestContext::new();
     context.minimal_seal_toml("2.0.0");
@@ -108,6 +125,56 @@ current-version = "0.2.0"
     ----- stdout -----
     Project validation successful
     Found 2 workspace member(s)
+
+    ----- stderr -----
+    ");
+}
+
+#[test]
+fn validate_project_with_members_quiet() {
+    let context = TestContext::new();
+
+    let pkg1_dir = context.root.child("packages/pkg1");
+    let pkg2_dir = context.root.child("packages/pkg2");
+    pkg1_dir.create_dir_all().unwrap();
+    pkg2_dir.create_dir_all().unwrap();
+
+    context.seal_toml(
+        r#"
+[members]
+pkg1 = "packages/pkg1"
+pkg2 = "packages/pkg2"
+
+[release]
+current-version = "1.0.0"
+"#,
+    );
+
+    pkg1_dir
+        .child("seal.toml")
+        .write_str(
+            r#"
+[release]
+current-version = "0.1.0"
+"#,
+        )
+        .unwrap();
+
+    pkg2_dir
+        .child("seal.toml")
+        .write_str(
+            r#"
+[release]
+current-version = "0.2.0"
+"#,
+        )
+        .unwrap();
+
+    seal_snapshot!(context.command().arg("validate").arg("project").arg("-q"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Project validation successful
 
     ----- stderr -----
     ");

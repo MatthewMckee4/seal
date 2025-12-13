@@ -46,7 +46,14 @@ seal self version [OPTIONS]
 
 <h3 class="cli-reference">Options</h3>
 
-<dl class="cli-reference"><dt id="seal-self-version--help"><a href="#seal-self-version--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+<dl class="cli-reference"><dt id="seal-self-version--color"><a href="#seal-self-version--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-self-version--help"><a href="#seal-self-version--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-self-version--no-progress"><a href="#seal-self-version--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
 </dd><dt id="seal-self-version--output-format"><a href="#seal-self-version--output-format"><code>--output-format</code></a> <i>output-format</i></dt><dt id="seal-self-version--quiet"><a href="#seal-self-version--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
@@ -85,7 +92,14 @@ seal validate config [OPTIONS]
 
 <h3 class="cli-reference">Options</h3>
 
-<dl class="cli-reference"><dt id="seal-validate-config--config-file"><a href="#seal-validate-config--config-file"><code>--config-file</code></a> <i>config-file</i></dt><dd><p>Path to the config file (seal.toml)</p>
+<dl class="cli-reference"><dt id="seal-validate-config--color"><a href="#seal-validate-config--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-validate-config--config-file"><a href="#seal-validate-config--config-file"><code>--config-file</code></a> <i>config-file</i></dt><dd><p>Path to the config file (seal.toml)</p>
 </dd><dt id="seal-validate-config--help"><a href="#seal-validate-config--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-validate-config--no-progress"><a href="#seal-validate-config--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
@@ -108,7 +122,14 @@ seal validate project [OPTIONS]
 
 <h3 class="cli-reference">Options</h3>
 
-<dl class="cli-reference"><dt id="seal-validate-project--help"><a href="#seal-validate-project--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+<dl class="cli-reference"><dt id="seal-validate-project--color"><a href="#seal-validate-project--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-validate-project--help"><a href="#seal-validate-project--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-validate-project--no-progress"><a href="#seal-validate-project--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
 </dd><dt id="seal-validate-project--project"><a href="#seal-validate-project--project"><code>--project</code></a>, <code>-p</code> <i>project</i></dt><dd><p>Path to the project directory</p>
@@ -134,7 +155,14 @@ seal bump [OPTIONS] <VERSION>
 
 <h3 class="cli-reference">Options</h3>
 
-<dl class="cli-reference"><dt id="seal-bump--dry-run"><a href="#seal-bump--dry-run"><code>--dry-run</code></a></dt><dd><p>Show what would be done without making any changes</p>
+<dl class="cli-reference"><dt id="seal-bump--color"><a href="#seal-bump--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-bump--dry-run"><a href="#seal-bump--dry-run"><code>--dry-run</code></a></dt><dd><p>Show what would be done without making any changes</p>
 </dd><dt id="seal-bump--help"><a href="#seal-bump--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-bump--no-changelog"><a href="#seal-bump--no-changelog"><code>--no-changelog</code></a></dt><dd><p>Skip generating or updating the changelog</p>
 </dd><dt id="seal-bump--no-progress"><a href="#seal-bump--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
@@ -175,7 +203,14 @@ seal generate changelog [OPTIONS]
 
 <h3 class="cli-reference">Options</h3>
 
-<dl class="cli-reference"><dt id="seal-generate-changelog--dry-run"><a href="#seal-generate-changelog--dry-run"><code>--dry-run</code></a></dt><dd><p>Perform a dry run without modifying files and print the result to stdout</p>
+<dl class="cli-reference"><dt id="seal-generate-changelog--color"><a href="#seal-generate-changelog--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-generate-changelog--dry-run"><a href="#seal-generate-changelog--dry-run"><code>--dry-run</code></a></dt><dd><p>Perform a dry run without modifying files and print the result to stdout</p>
 </dd><dt id="seal-generate-changelog--help"><a href="#seal-generate-changelog--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-generate-changelog--max-prs"><a href="#seal-generate-changelog--max-prs"><code>--max-prs</code></a> <i>max-prs</i></dt><dd><p>Maximum number of PRs to fetch.</p>
 <p>Be aware that this can be slow or can fail due to high number of requests if the number is too high.</p>
@@ -205,7 +240,14 @@ seal help [OPTIONS] [COMMAND]...
 
 <h3 class="cli-reference">Options</h3>
 
-<dl class="cli-reference"><dt id="seal-help--help"><a href="#seal-help--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+<dl class="cli-reference"><dt id="seal-help--color"><a href="#seal-help--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-help--help"><a href="#seal-help--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-help--no-pager"><a href="#seal-help--no-pager"><code>--no-pager</code></a></dt><dd><p>Disable pager when printing help</p>
 </dd><dt id="seal-help--no-progress"><a href="#seal-help--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>

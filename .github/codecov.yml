@@ -13,4 +13,5 @@ ignore:
   - "crates/seal_macros/**/*"
   - "crates/seal_options_metadata/**/*"
   - "crates/seal_dev/**/*"
+  - "crates/seal_logging/**/*"
   - "crates/seal_github/src/github/client.rs"

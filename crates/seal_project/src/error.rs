@@ -13,6 +13,9 @@ pub enum ProjectError {
         source: std::io::Error,
     },
 
+    #[error("No parent directory found for path: {path}")]
+    NoParentDirectory { path: PathBuf },
+
     #[error(transparent)]
     ConfigParseError(#[from] toml::de::Error),
 

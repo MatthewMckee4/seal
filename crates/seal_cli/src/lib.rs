@@ -12,6 +12,36 @@ pub enum VersionFormat {
     Json,
 }
 
+#[derive(Debug, Copy, Clone, clap::ValueEnum)]
+pub enum ColorChoice {
+    /// Enables colored output only when the output is going to a terminal or TTY with support.
+    Auto,
+
+    /// Enables colored output regardless of the detected environment.
+    Always,
+
+    /// Disables colored output.
+    Never,
+}
+
+impl ColorChoice {
+    /// Combine self (higher priority) with an [`anstream::ColorChoice`] (lower priority).
+    ///
+    /// This method allows prioritizing the user choice, while using the inferred choice for a
+    /// stream as default.
+    #[must_use]
+    pub fn and_colorchoice(self, next: anstream::ColorChoice) -> Self {
+        match self {
+            Self::Auto => match next {
+                anstream::ColorChoice::Auto => Self::Auto,
+                anstream::ColorChoice::Always | anstream::ColorChoice::AlwaysAnsi => Self::Always,
+                anstream::ColorChoice::Never => Self::Never,
+            },
+            Self::Always | Self::Never => self,
+        }
+    }
+}
+
 // Configures Clap v3-style help menu colors
 const STYLES: Styles = Styles::styled()
     .header(AnsiColor::Green.on_default().effects(Effects::BOLD))
@@ -72,6 +102,22 @@ pub struct GlobalArgs {
     /// For example, spinners or progress bars.
     #[arg(global = true, long, value_parser = clap::builder::BoolishValueParser::new())]
     pub no_progress: bool,
+
+    /// Disable colors.
+    #[arg(global = true, long, hide = true, conflicts_with = "color")]
+    pub no_color: bool,
+
+    /// Control the use of color in output.
+    ///
+    /// By default, seal will automatically detect support for colors when writing to a terminal.
+    #[arg(
+        global = true,
+        long,
+        value_enum,
+        conflicts_with = "no_color",
+        value_name = "COLOR_CHOICE"
+    )]
+    pub color: Option<ColorChoice>,
 }
 
 #[derive(Subcommand)]

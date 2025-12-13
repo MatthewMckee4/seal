@@ -1,4 +1,4 @@
-use seal_cli::GlobalArgs;
+use seal_cli::{ColorChoice, GlobalArgs};
 
 /// The resolved global settings to use for any invocation of the CLI.
 #[derive(Debug, Clone)]
@@ -6,6 +6,7 @@ pub(crate) struct GlobalSettings {
     pub(crate) quiet: u8,
     pub(crate) verbose: u8,
     pub(crate) no_progress: bool,
+    pub(crate) color: ColorChoice,
 }
 
 impl GlobalSettings {
@@ -15,6 +16,11 @@ impl GlobalSettings {
             quiet: args.quiet,
             verbose: args.verbose,
             no_progress: args.no_progress,
+            color: if args.no_color {
+                ColorChoice::Never
+            } else {
+                args.color.unwrap_or(ColorChoice::Auto)
+            },
         }
     }
 }

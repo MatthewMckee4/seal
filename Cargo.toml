@@ -17,6 +17,7 @@ seal_cli = { path = "crates/seal_cli" }
 seal_file_change = { path = "crates/seal_file_change" }
 seal_fs = { path = "crates/seal_fs" }
 seal_github = { path = "crates/seal_github" }
+seal_logging = { path = "crates/seal_logging" }
 seal_macros = { path = "crates/seal_macros" }
 seal_options_metadata = { path = "crates/seal_options_metadata" }
 seal_project = { path = "crates/seal_project" }
@@ -33,6 +34,7 @@ fs-err = { version = "3.0.0", features = ["tokio"] }
 glob = { version = "0.3.3" }
 insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
+jiff = { version = "0.2.0", features = ["serde"] }
 markdown = { version = "1.0.0-alpha.23" }
 octocrab = { version = "0.43" }
 owo-colors = { version = "4.1.0" }
@@ -50,6 +52,8 @@ textwrap = { version = "0.16.1" }
 thiserror = { version = "2.0" }
 tokio = { version = "1", features = ["rt", "macros"] }
 toml = { version = "0.9" }
+tracing = { version = "0.1.40" }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 which = { version = "8.0.0" }
 wiremock = { version = "0.6" }
 
