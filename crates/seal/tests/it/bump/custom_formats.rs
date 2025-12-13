@@ -143,8 +143,6 @@ search = "Version: {version}"
     ----- stdout -----
     Bumping version from 1.2.3 to 1.3.0
 
-    Preview of changes:
-    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: Version: 1.2.3
@@ -187,8 +185,6 @@ search = "#define VERSION \"{version}\""
     ----- stdout -----
     Bumping version from 3.0.5 to 3.0.6
 
-    Preview of changes:
-    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: #define VERSION "3.0.5"
@@ -322,8 +318,6 @@ branch-name = "release/{version}"
     ----- stdout -----
     Bumping version from 1.5.2 to 1.6.0
 
-    Preview of changes:
-    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: Version: 1.5.2
@@ -370,8 +364,6 @@ search = "VERSION={version}"
     ----- stdout -----
     Bumping version from 1.0.0 to 2.0.0
 
-    Preview of changes:
-    -------------------
 
     ----- stderr -----
     error: Search pattern not found in file. Expected: VERSION=1.0.0
@@ -915,8 +907,6 @@ version = \"0.0.1\"
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
-    Preview of changes:
-    -------------------
 
     ----- stderr -----
     error: Key `vversion` not found
@@ -972,8 +962,6 @@ vversion = \"0.0.1\"
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
-    Preview of changes:
-    -------------------
 
     ----- stderr -----
     error: Key `version` not found
@@ -1081,4 +1069,449 @@ version = \"0.0.1\"
     format = "toml"
     field = "project.version"
     "#);
+}
+
+#[test]
+fn bump_version_no_field_name_no_infer() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "package.toml"
+format = "toml"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("package.toml")
+        .write_str(
+            "[package]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+
+    ----- stderr -----
+    error: You did not specify a field for version file `package.toml`, and we could not infer it
+    ");
+
+    insta::assert_snapshot!(context.read_file("package.toml"), @r#"
+    [package]
+    name = "foo"
+    version = "0.0.1"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.1"
+
+    [[release.version-files]]
+    path = "package.toml"
+    format = "toml"
+    "#);
+}
+
+#[test]
+fn bump_version_no_field_name_infer_cargo() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "Cargo.toml"
+format = "toml"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("Cargo.toml")
+        .write_str(
+            "[package]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-v").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/Cargo.toml b/Cargo.toml
+    --- a/Cargo.toml
+    +++ b/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "foo"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+     path = "Cargo.toml"
+
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
+
+    Changes to be made:
+      - Update `Cargo.toml`
+      - Update `seal.toml`
+
+    Note: No branch or commit will be created (branch-name and commit-message not configured)
+
+    Proceed with these changes? (y/n):
+    Updating version files...
+    Successfully bumped to 0.0.2
+    Note: No git branch or commit was created
+
+    ----- stderr -----
+    INFO Workspace discovered at "[TEMP]/"
+    INFO Using default field 'package.version' for version file `Cargo.toml`
+    "#);
+
+    insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
+    [package]
+    name = "foo"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.2"
+
+    [[release.version-files]]
+    path = "Cargo.toml"
+    format = "toml"
+    "#);
+}
+
+#[test]
+fn bump_version_no_field_name_infer_pyproject() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "pyproject.toml"
+format = "toml"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("pyproject.toml")
+        .write_str(
+            "[project]
+name = \"foo\"
+version = \"0.0.1\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-v").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+    Preview of changes:
+    -------------------
+
+    diff --git a/pyproject.toml b/pyproject.toml
+    --- a/pyproject.toml
+    +++ b/pyproject.toml
+    @@ -1,4 +1,4 @@
+     [project]
+     name = "foo"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+
+    diff --git a/seal.toml b/seal.toml
+    --- a/seal.toml
+    +++ b/seal.toml
+    @@ -1,5 +1,5 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+     path = "pyproject.toml"
+
+    Skipping changelog update because no `[changelog]` section was found in the configuration.
+
+    Changes to be made:
+      - Update `pyproject.toml`
+      - Update `seal.toml`
+
+    Note: No branch or commit will be created (branch-name and commit-message not configured)
+
+    Proceed with these changes? (y/n):
+    Updating version files...
+    Successfully bumped to 0.0.2
+    Note: No git branch or commit was created
+
+    ----- stderr -----
+    INFO Workspace discovered at "[TEMP]/"
+    INFO Using default field 'project.version' for version file `pyproject.toml`
+    "#);
+
+    insta::assert_snapshot!(context.read_file("pyproject.toml"), @r#"
+    [project]
+    name = "foo"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.2"
+
+    [[release.version-files]]
+    path = "pyproject.toml"
+    format = "toml"
+    "#);
+}
+
+#[test]
+fn bump_version_different_version() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "0.0.1"
+
+[[release.version-files]]
+path = "pyproject.toml"
+format = "toml"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("pyproject.toml")
+        .write_str(
+            "[project]
+name = \"foo\"
+version = \"0.0.2\"
+        ",
+        )
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-v").write_stdin("y\n"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 0.0.1 to 0.0.2
+
+
+    ----- stderr -----
+    INFO Workspace discovered at "[TEMP]/"
+    INFO Using default field 'project.version' for version file `pyproject.toml`
+    error: Mismatched version in `pyproject.toml`, expected `0.0.1`, found `0.0.2`
+    "#);
+
+    insta::assert_snapshot!(context.read_file("pyproject.toml"), @r#"
+    [project]
+    name = "foo"
+    version = "0.0.2"
+    "#);
+
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "0.0.1"
+
+    [[release.version-files]]
+    path = "pyproject.toml"
+    format = "toml"
+    "#);
+}
+
+#[test]
+fn bump_glob_not_found_search() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+[[release.version-files]]
+path = "VERSION"
+search = "VERSION={version}"
+"#,
+        )
+        .init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.0.0 to 2.0.0
+
+
+    ----- stderr -----
+    error: No files found for path or glob `VERSION`
+    ");
+}
+
+#[test]
+fn bump_glob_not_found_simple() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+version-files = ["VERSION"]
+"#,
+        )
+        .init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.0.0 to 2.0.0
+
+
+    ----- stderr -----
+    error: No files found for path or glob `VERSION`
+    ");
+}
+
+#[test]
+fn bump_glob_not_found_just_path() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+[[release.version-files]]
+path = "VERSION"
+"#,
+        )
+        .init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.0.0 to 2.0.0
+
+
+    ----- stderr -----
+    error: No files found for path or glob `VERSION`
+    ");
+}
+
+#[test]
+fn bump_glob_not_found_text() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+[[release.version-files]]
+path = "VERSION"
+format = "text"
+"#,
+        )
+        .init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.0.0 to 2.0.0
+
+
+    ----- stderr -----
+    error: No files found for path or glob `VERSION`
+    ");
+}
+
+#[test]
+fn bump_text_version_not_found() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+[[release.version-files]]
+path = "VERSION"
+format = "text"
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("VERSION")
+        .write_str("# version")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.0.0 to 2.0.0
+
+
+    ----- stderr -----
+    error: Version `1.0.0` not found in file `VERSION`
+    ");
 }

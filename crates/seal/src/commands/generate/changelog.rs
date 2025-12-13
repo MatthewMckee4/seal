@@ -24,10 +24,10 @@ pub async fn generate_changelog(
     let config = workspace.config();
 
     let Some(changelog_config) = config.changelog.as_ref() else {
-        return Err(anyhow::anyhow!(
+        anyhow::bail!(
             "No changelog configuration found in discovered workspace at `{}`",
             workspace.root().display()
-        ));
+        );
     };
 
     let changelog_path = changelog_config

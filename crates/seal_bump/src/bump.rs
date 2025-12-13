@@ -7,6 +7,30 @@ use std::path::Path;
 
 use crate::Version;
 
+enum TomlType {
+    PyProject,
+    Cargo,
+}
+
+impl TomlType {
+    fn version_field(&self) -> &'static str {
+        match self {
+            Self::PyProject => "project.version",
+            Self::Cargo => "package.version",
+        }
+    }
+}
+
+fn toml_type(path: &Path) -> Option<TomlType> {
+    if path.ends_with("pyproject.toml") {
+        Some(TomlType::PyProject)
+    } else if path.ends_with("Cargo.toml") {
+        Some(TomlType::Cargo)
+    } else {
+        None
+    }
+}
+
 pub fn calculate_version_file_changes(
     root: &Path,
     version_files: &[seal_project::VersionFile],
@@ -33,16 +57,30 @@ pub fn calculate_version_file_changes(
                         VersionFileTextFormat::Toml => {
                             let toml: toml::Value = toml::from_str(&old_content)?;
 
-                            let field = field.clone().unwrap_or("package.version".to_string());
+                            let field = match field.clone() {
+                                Some(field) => field,
+                                None => match toml_type(&path) {
+                                    Some(toml_type) => {
+                                        tracing::info!(
+                                            "Using default field '{}' for version file `{}`",
+                                            toml_type.version_field(),
+                                            file_resolver.relative_path(&path).display()
+                                        );
+                                        toml_type.version_field().to_string()
+                                    }
+
+                                    None => {
+                                        anyhow::bail!(
+                                            "You did not specify a field for version file `{}`, and we could not infer it",
+                                            file_resolver.relative_path(&path).display()
+                                        );
+                                    }
+                                },
+                            };
 
                             let found_old_version = nested_toml_key(&toml, &field)?;
 
-                            let Some(last_key) = field.split('.').next_back() else {
-                                anyhow::bail!(
-                                    "Failed to replace version in {}",
-                                    file_resolver.relative_path(&path).display()
-                                )
-                            };
+                            let last_key = field.split('.').next_back().unwrap();
 
                             if found_old_version != current_version {
                                 anyhow::bail!(
@@ -50,7 +88,7 @@ pub fn calculate_version_file_changes(
                                     file_resolver.relative_path(&path).display(),
                                     current_version,
                                     found_old_version
-                                )
+                                );
                             }
 
                             old_content.replace(
