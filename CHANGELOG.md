@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.1-alpha.4
+
+### Bumping
+
+- Add more bump tests ([#49](https://github.com/MatthewMckee4/seal/pull/49))
+
+### CLI
+
+- Setup logging ([#48](https://github.com/MatthewMckee4/seal/pull/48))
+
+### Changelog 
+
+- Support generating new changelog ([#45](https://github.com/MatthewMckee4/seal/pull/45))
+
+### Documentation
+
+- Improve usage documentation ([#39](https://github.com/MatthewMckee4/seal/pull/39))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+
 ## 0.0.1-alpha.3
 
 ### Changelog
