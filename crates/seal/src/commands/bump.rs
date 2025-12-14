@@ -65,9 +65,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         writeln!(stdout)?;
     }
 
-    writeln!(stdout, "Preview of changes:")?;
-    writeln!(stdout, "-------------------")?;
-
     let file_resolver = FileResolver::new(workspace.root().clone());
 
     #[cfg(feature = "integration-test")]
@@ -92,6 +89,9 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         &new_version,
         &file_resolver,
     )?;
+
+    writeln!(stdout, "Preview of changes:")?;
+    writeln!(stdout, "-------------------")?;
 
     for change in &changes {
         change.display_diff(&mut stdout, &file_resolver)?;

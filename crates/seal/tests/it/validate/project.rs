@@ -18,7 +18,6 @@ fn validate_project_simple() {
 }
 
 #[test]
-#[cfg(unix)]
 fn validate_project_simple_verbose() {
     let context = TestContext::new();
     context.minimal_seal_toml("1.0.0");

@@ -90,11 +90,11 @@ current-version = "{version}"
     fn path_pattern(path: impl AsRef<Path>) -> String {
         format!(
             // Trim the trailing separator for cross-platform directories filters
-            r"{}\\?/?",
+            r"{}(\\|\/)*",
             regex::escape(&dunce::simplified(path.as_ref()).display().to_string())
                 // Make separators platform agnostic because on Windows we will display
                 // paths with Unix-style separators sometimes
-                .replace(r"\\", r"(\\|\/)")
+                .replace(r"\\", r"(\\|\/)+")
         )
     }
 
