@@ -10,7 +10,7 @@
 
 - Setup logging ([#48](https://github.com/MatthewMckee4/seal/pull/48))
 
-### Changelog 
+### Changelog
 
 - Support generating new changelog ([#45](https://github.com/MatthewMckee4/seal/pull/45))
 
