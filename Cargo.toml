@@ -36,7 +36,7 @@ insta = { version = "1.41", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
 jiff = { version = "0.2.0", features = ["serde"] }
 markdown = { version = "1.0.0-alpha.23" }
-octocrab = { version = "0.43" }
+octocrab = { version = "0.48" }
 owo-colors = { version = "4.1.0" }
 pretty_assertions = { version = "1.4.1" }
 proc-macro2 = { version = "1.0.86" }
