@@ -92,7 +92,7 @@ search = "APP_VERSION = '{version}'"
     Commands to be executed:
       git checkout -b release/2.6.0
       git add -A
-      git commit -m "Release 2.6.0"
+      git commit -m Release 2.6.0
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -258,7 +258,7 @@ search = "version={version}"
     Commands to be executed:
       git checkout -b release/2.0.0-beta.2
       git add -A
-      git commit -m "Release 2.0.0-beta.2"
+      git commit -m Release 2.0.0-beta.2
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -430,7 +430,7 @@ search = "ver={version}"
     Commands to be executed:
       git checkout -b release/1.1.0
       git add -A
-      git commit -m "Release 1.1.0"
+      git commit -m Release 1.1.0
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -501,7 +501,7 @@ search = "version={version}"
     Commands to be executed:
       git checkout -b release/2.0.0
       git add -A
-      git commit -m "Release 2.0.0"
+      git commit -m Release 2.0.0
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -572,7 +572,7 @@ search = "APP_VERSION={version}"
     Commands to be executed:
       git checkout -b release/1.0.0-alpha.2
       git add -A
-      git commit -m "Release 1.0.0-alpha.2"
+      git commit -m Release 1.0.0-alpha.2
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -650,7 +650,7 @@ search = "version `{version}`"
     Commands to be executed:
       git checkout -b release/0.6.0
       git add -A
-      git commit -m "Release 0.6.0"
+      git commit -m Release 0.6.0
 
     Proceed with these changes? (y/n):
     ----- stderr -----

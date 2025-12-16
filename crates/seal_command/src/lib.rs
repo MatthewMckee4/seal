@@ -49,7 +49,7 @@ impl CommandWrapper {
     }
 
     pub fn git_commit(message: &str) -> Self {
-        Self::new(vec!["git", "commit", "-m", &format!("\"{message}\"")])
+        Self::new(vec!["git", "commit", "-m", message])
     }
 
     pub fn create_branch(name: &str) -> Self {

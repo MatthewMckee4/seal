@@ -686,12 +686,12 @@ commit-message = "Release v{version}"
 
     Commands to be executed:
       git add -A
-      git commit -m "Release v1.2.4"
+      git commit -m Release v1.2.4
 
     Proceed with these changes? (y/n):
     Updating version files...
     Executing command: `git add -A`
-    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git commit -m Release v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -706,7 +706,7 @@ commit-message = "Release v{version}"
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"main");
-    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
 }
 
 #[test]
@@ -767,13 +767,13 @@ branch-name = "release/v{version}"
     Commands to be executed:
       git checkout -b release/v1.2.4
       git add -A
-      git commit -m "Release v1.2.4"
+      git commit -m Release v1.2.4
 
     Proceed with these changes? (y/n):
     Updating version files...
     Executing command: `git checkout -b release/v1.2.4`
     Executing command: `git add -A`
-    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git commit -m Release v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -789,7 +789,7 @@ branch-name = "release/v{version}"
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
 }
 
 #[test]
@@ -927,14 +927,14 @@ push = true
     Commands to be executed:
       git checkout -b release/v1.2.4
       git add -A
-      git commit -m "Release v1.2.4"
+      git commit -m Release v1.2.4
       git push origin release/v1.2.4
 
     Proceed with these changes? (y/n):
     Updating version files...
     Executing command: `git checkout -b release/v1.2.4`
     Executing command: `git add -A`
-    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git commit -m Release v1.2.4`
     Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
@@ -952,7 +952,7 @@ push = true
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
 }
 
 #[test]
@@ -1014,14 +1014,14 @@ push = true
     Commands to be executed:
       git checkout -b release/v1.2.4
       git add -A
-      git commit -m "Release v1.2.4"
+      git commit -m Release v1.2.4
       git push origin release/v1.2.4
 
     Proceed with these changes? (y/n):
     Updating version files...
     Executing command: `git checkout -b release/v1.2.4`
     Executing command: `git add -A`
-    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git commit -m Release v1.2.4`
     Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
@@ -1039,7 +1039,7 @@ push = true
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
 }
 
 #[test]
@@ -1102,13 +1102,13 @@ confirm = false
     Commands to be executed:
       git checkout -b release/v1.2.4
       git add -A
-      git commit -m "Release v1.2.4"
+      git commit -m Release v1.2.4
       git push origin release/v1.2.4
 
     Updating version files...
     Executing command: `git checkout -b release/v1.2.4`
     Executing command: `git add -A`
-    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git commit -m Release v1.2.4`
     Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
@@ -1127,7 +1127,7 @@ confirm = false
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
 }
 
 #[test]
