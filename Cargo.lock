@@ -1845,6 +1845,7 @@ dependencies = [
  "seal_bump",
  "seal_changelog",
  "seal_cli",
+ "seal_command",
  "seal_fs",
  "seal_github",
  "seal_logging",
@@ -1901,6 +1902,14 @@ dependencies = [
  "anstream",
  "clap",
  "seal_version",
+]
+
+[[package]]
+name = "seal_command"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "tracing",
 ]
 
 [[package]]

@@ -90,9 +90,9 @@ search = "APP_VERSION = '{version}'"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/2.6.0`
-      `git add -A`
-      `git commit -m "Release 2.6.0"`
+      git checkout -b release/2.6.0
+      git add -A
+      git commit -m "Release 2.6.0"
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -256,9 +256,9 @@ search = "version={version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/2.0.0-beta.2`
-      `git add -A`
-      `git commit -m "Release 2.0.0-beta.2"`
+      git checkout -b release/2.0.0-beta.2
+      git add -A
+      git commit -m "Release 2.0.0-beta.2"
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -428,9 +428,9 @@ search = "ver={version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/1.1.0`
-      `git add -A`
-      `git commit -m "Release 1.1.0"`
+      git checkout -b release/1.1.0
+      git add -A
+      git commit -m "Release 1.1.0"
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -499,9 +499,9 @@ search = "version={version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/2.0.0`
-      `git add -A`
-      `git commit -m "Release 2.0.0"`
+      git checkout -b release/2.0.0
+      git add -A
+      git commit -m "Release 2.0.0"
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -570,9 +570,9 @@ search = "APP_VERSION={version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/1.0.0-alpha.2`
-      `git add -A`
-      `git commit -m "Release 1.0.0-alpha.2"`
+      git checkout -b release/1.0.0-alpha.2
+      git add -A
+      git commit -m "Release 1.0.0-alpha.2"
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -648,9 +648,9 @@ search = "version `{version}`"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/0.6.0`
-      `git add -A`
-      `git commit -m "Release 0.6.0"`
+      git checkout -b release/0.6.0
+      git add -A
+      git commit -m "Release 0.6.0"
 
     Proceed with these changes? (y/n):
     ----- stderr -----
@@ -841,7 +841,6 @@ version = \"0.0.1\"
     Proceed with these changes? (y/n):
     Updating version files...
     Successfully bumped to 0.0.2
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -1050,7 +1049,6 @@ version = \"0.0.1\"
     Proceed with these changes? (y/n):
     Updating version files...
     Successfully bumped to 0.0.2
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -1193,7 +1191,6 @@ version = \"0.0.1\"
     Proceed with these changes? (y/n):
     Updating version files...
     Successfully bumped to 0.0.2
-    Note: No git branch or commit was created
 
     ----- stderr -----
     INFO Workspace discovered at "[TEMP]/"
@@ -1284,7 +1281,6 @@ version = \"0.0.1\"
     Proceed with these changes? (y/n):
     Updating version files...
     Successfully bumped to 0.0.2
-    Note: No git branch or commit was created
 
     ----- stderr -----
     INFO Workspace discovered at "[TEMP]/"

@@ -1,13 +1,8 @@
-use std::path::Path;
-
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use octocrab::{Octocrab, models::pulls::PullRequest};
 
-use crate::{
-    github::{GitHubError, GitHubPullRequest, GitHubRelease, GitHubService},
-    push_branch,
-};
+use crate::github::{GitHubError, GitHubPullRequest, GitHubRelease, GitHubService};
 
 #[derive(Debug)]
 pub struct GitHubClient {
@@ -206,10 +201,6 @@ impl GitHubService for GitHubClient {
             all_prs.truncate(max_prs);
             Ok(all_prs)
         })
-    }
-
-    fn push_branch(&self, current_directory: &Path, branch_name: &str) -> Result<()> {
-        push_branch(current_directory, branch_name)
     }
 }
 

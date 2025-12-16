@@ -216,7 +216,6 @@ current-version = "1.2.3"
     Changes to be made:
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -278,7 +277,6 @@ version-files = ["README.md"]
       - Update `README.md`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -347,7 +345,6 @@ version-files = ["README.md"]
     Proceed with these changes? (y/n):
     Updating version files...
     Successfully bumped to 1.2.4
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -456,7 +453,6 @@ current-version = "1.0.0"
     Proceed with these changes? (y/n):
     Updating version files...
     Successfully bumped to 1.0.1
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -543,7 +539,6 @@ ignore-contributors = ["ignored"]
     Updating version files...
     Updating changelog...
     Successfully bumped to 1.0.1
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -631,7 +626,6 @@ changelog-path = "CHANGE_LOG.md"
     Updating version files...
     Updating changelog...
     Successfully bumped to 1.0.1
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -691,14 +685,14 @@ commit-message = "Release v{version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git add -A`
-      `git commit -m "Release v1.2.4"`
+      git add -A
+      git commit -m "Release v1.2.4"
 
     Proceed with these changes? (y/n):
     Updating version files...
-    Committing changes...
+    Executing command: `git add -A`
+    Executing command: `git commit -m "Release v1.2.4"`
     Successfully bumped to 1.2.4
-    Note: No git branch was created
 
     ----- stderr -----
     "#);
@@ -712,7 +706,7 @@ commit-message = "Release v{version}"
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"main");
-    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
 }
 
 #[test]
@@ -771,14 +765,15 @@ branch-name = "release/v{version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/v1.2.4`
-      `git add -A`
-      `git commit -m "Release v1.2.4"`
+      git checkout -b release/v1.2.4
+      git add -A
+      git commit -m "Release v1.2.4"
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
     Updating version files...
-    Committing changes...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m "Release v1.2.4"`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -794,7 +789,7 @@ branch-name = "release/v{version}"
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
 }
 
 #[test]
@@ -851,13 +846,12 @@ branch-name = "release/v{version}"
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/v1.2.4`
+      git checkout -b release/v1.2.4
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
     Updating version files...
+    Executing command: `git checkout -b release/v1.2.4`
     Successfully bumped to 1.2.4
-    Note: No git commit was created
 
     ----- stderr -----
     "#);
@@ -931,16 +925,17 @@ push = true
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/v1.2.4`
-      `git add -A`
-      `git commit -m "Release v1.2.4"`
-      `git push -u origin release/v1.2.4`
+      git checkout -b release/v1.2.4
+      git add -A
+      git commit -m "Release v1.2.4"
+      git push origin release/v1.2.4
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
     Updating version files...
-    Committing changes...
-    Pushing branch to remote...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -957,7 +952,7 @@ push = true
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
 }
 
 #[test]
@@ -1017,16 +1012,17 @@ push = true
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/v1.2.4`
-      `git add -A`
-      `git commit -m "Release v1.2.4"`
-      `git push -u origin release/v1.2.4`
+      git checkout -b release/v1.2.4
+      git add -A
+      git commit -m "Release v1.2.4"
+      git push origin release/v1.2.4
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
     Updating version files...
-    Committing changes...
-    Pushing branch to remote...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -1043,7 +1039,7 @@ push = true
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
 }
 
 #[test]
@@ -1104,15 +1100,16 @@ confirm = false
       - Update `seal.toml`
 
     Commands to be executed:
-      `git checkout -b release/v1.2.4`
-      `git add -A`
-      `git commit -m "Release v1.2.4"`
-      `git push -u origin release/v1.2.4`
+      git checkout -b release/v1.2.4
+      git add -A
+      git commit -m "Release v1.2.4"
+      git push origin release/v1.2.4
 
-    Creating branch: release/v1.2.4
     Updating version files...
-    Committing changes...
-    Pushing branch to remote...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m "Release v1.2.4"`
+    Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -1130,7 +1127,7 @@ confirm = false
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
-    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @r#""Release v1.2.4""#);
 }
 
 #[test]
@@ -1184,7 +1181,6 @@ version-files = ["README.md"]
       - Update `README.md`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -1248,7 +1244,6 @@ version-files = ["README.md"]
       - Update `README.md`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -1312,7 +1307,6 @@ version-files = ["README.md"]
       - Update `README.md`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
