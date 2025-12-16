@@ -45,16 +45,6 @@ pub fn parse_github_repo(repo_url: &str) -> Result<(String, String)> {
     Ok((parts[0].to_string(), parts[1].to_string()))
 }
 
-pub fn push_branch<P: AsRef<Path>>(current_directory: P, branch_name: &str) -> Result<()> {
-    Command::new("git")
-        .args(["push", "-u", "origin", branch_name])
-        .current_dir(current_directory)
-        .output()
-        .context("Failed to execute git push")?;
-
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use tempfile::TempDir;
@@ -142,13 +132,6 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
 
         let result = get_git_remote_url(temp_dir.path());
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_push_branch_command_executes() {
-        let result = push_branch("/tmp/definitely-not-a-git-repo", "test-branch");
-
         assert!(result.is_err());
     }
 }

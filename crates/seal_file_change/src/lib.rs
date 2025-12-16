@@ -17,6 +17,10 @@ impl FileChanges {
         Ok(())
     }
 
+    pub fn extend(&mut self, other: Self) {
+        self.0.extend(other.0);
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &FileChange> {
         self.0.iter()
     }
@@ -85,11 +89,9 @@ impl FileChange {
                     ChangeTag::Equal => (" ", change.value().dimmed().to_string()),
                 };
 
-                if change.value().ends_with('\n') {
-                    write!(stdout, "{sign}{value}")?;
-                } else {
-                    writeln!(stdout, "{sign}{value}")?;
-                }
+                let trimmed_value = value.trim_end();
+
+                write!(stdout, "{sign}{trimmed_value}")?;
             }
         }
 

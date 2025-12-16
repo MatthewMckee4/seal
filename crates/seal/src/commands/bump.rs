@@ -58,11 +58,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let version_files = release_config.version_files.as_deref().unwrap_or(&[]);
 
     if version_files.is_empty() {
-        writeln!(
-            stdout,
-            "Warning: No version files configured - only seal.toml will be updated"
-        )?;
-        writeln!(stdout)?;
+        tracing::info!("Warning: No version files configured - only seal.toml will be updated");
     }
 
     let file_resolver = FileResolver::new(workspace.root().clone());
@@ -82,7 +78,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         Arc::new(GitHubClient::new(owner, repo)?)
     };
 
-    let file_changes = calculate_version_file_changes(
+    let mut file_changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
         current_version_string,
@@ -90,16 +86,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         &file_resolver,
     )?;
 
-    writeln!(stdout, "Preview of changes:")?;
-    writeln!(stdout, "-------------------")?;
-
-    for change in &file_changes {
-        change.display_diff(&mut stdout, &file_resolver)?;
-    }
-
-    writeln!(stdout)?;
-
-    let changelog_changes = if !args.no_changelog {
+    if !args.no_changelog {
         if let Some(changelog_config) = config.changelog.as_ref() {
             let changes = seal_changelog::prepare_changelog_changes(
                 workspace.root(),
@@ -110,27 +97,25 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             .await
             .context("Failed to prepare changelog")?;
 
-            for change in &changes {
-                change.display_diff(&mut stdout, &file_resolver)?;
-            }
-
-            Some(changes)
+            file_changes.extend(changes);
         } else {
-            writeln!(
-                stdout,
+            tracing::info!(
                 "Skipping changelog update because no `[changelog]` section was found in the configuration."
-            )?;
-            None
+            );
         }
     } else {
-        writeln!(
-            stdout,
-            "Skipping changelog update because `--no-changelog` was provided."
-        )?;
-        None
-    };
+        tracing::info!("Skipping changelog update because `--no-changelog` was provided.");
+    }
 
-    writeln!(stdout)?;
+    if printer.is_verbose() {
+        writeln!(stdout, "Preview of changes:")?;
+        writeln!(stdout, "-------------------")?;
+
+        for change in &file_changes {
+            change.display_diff(&mut stdout, &file_resolver)?;
+        }
+        writeln!(stdout)?;
+    }
 
     writeln!(stdout, "Changes to be made:")?;
 
@@ -140,16 +125,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             "  - Update `{}`",
             file_resolver.relative_path(change.path()).display()
         )?;
-    }
-
-    if let Some(ref changelog) = changelog_changes {
-        for change in changelog {
-            writeln!(
-                stdout,
-                "  - Update `{}`",
-                file_resolver.relative_path(change.path()).display()
-            )?;
-        }
     }
 
     writeln!(stdout)?;
@@ -172,47 +147,32 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     }
 
     if args.dry_run {
-        writeln!(stdout)?;
         writeln!(stdout, "Dry run complete. No changes made.")?;
         return Ok(ExitStatus::Success);
     }
 
     if !commands.is_empty() {
         writeln!(stdout, "Commands to be executed:")?;
-    }
 
-    for command in &commands {
-        writeln!(stdout, "  {}", command.as_string())?;
-    }
+        for command in &commands {
+            writeln!(stdout, "  `{}`", command.as_string())?;
+        }
 
-    let has_git_operations = branch_name.is_some() || commit_message.is_some();
-
-    if !has_git_operations {
-        writeln!(
-            stdout,
-            "Note: No branch or commit will be created (branch-name and commit-message not configured)"
-        )?;
+        writeln!(stdout)?;
     }
 
     if release_config.confirm {
-        writeln!(stdout)?;
         if !confirm_changes(&mut stdout)? {
             writeln!(printer.stderr())?;
             writeln!(printer.stderr(), "No changes applied.")?;
             return Ok(ExitStatus::Success);
         }
+        writeln!(stdout)?;
     }
 
-    writeln!(stdout)?;
-
-    writeln!(stdout, "Updating version files...")?;
+    writeln!(stdout, "Updating files...")?;
 
     file_changes.apply()?;
-
-    if let Some(changelog) = changelog_changes {
-        writeln!(stdout, "Updating changelog...")?;
-        changelog.apply()?;
-    }
 
     for command in &commands {
         command.execute(&mut stdout, workspace.root())?;

@@ -47,6 +47,16 @@ impl Printer {
             Self::NoProgress => Stderr::Enabled,
         }
     }
+
+    pub(crate) fn is_verbose(self) -> bool {
+        match self {
+            Self::Silent => false,
+            Self::Quiet => false,
+            Self::Default => false,
+            Self::Verbose => true,
+            Self::NoProgress => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

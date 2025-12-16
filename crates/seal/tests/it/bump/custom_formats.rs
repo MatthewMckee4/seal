@@ -44,45 +44,11 @@ search = "APP_VERSION = '{version}'"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.5.0 to 2.6.0
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/version.sh b/version.sh
-    --- a/version.sh
-    +++ b/version.sh
-    @@ -1,3 +1,3 @@
-     #!/bin/bash
-    -export VERSION="2.5.0"
-    +export VERSION="2.6.0"
-     export APP_NAME="MyApp"
-
-    diff --git a/config.py b/config.py
-    --- a/config.py
-    +++ b/config.py
-    @@ -1,3 +1,3 @@
-     # Configuration
-    -APP_VERSION = '2.5.0'
-    +APP_VERSION = '2.6.0'
-     DEBUG = False
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "2.5.0"
-    +current-version = "2.6.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-     
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `version.sh`
@@ -90,15 +56,15 @@ search = "APP_VERSION = '{version}'"
       - Update `seal.toml`
 
     Commands to be executed:
-      git checkout -b release/2.6.0
-      git add -A
-      git commit -m Release 2.6.0
+      `git checkout -b release/2.6.0`
+      `git add -A`
+      `git commit -m Release 2.6.0`
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("version.sh"), @r#"
     #!/bin/bash
@@ -222,49 +188,26 @@ search = "version={version}"
         .write_str("version=2.0.0-beta.1\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-beta.1 to 2.0.0-beta.2
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
-    @@ -1 +1 @@
-    -version=2.0.0-beta.1
-    +version=2.0.0-beta.2
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "2.0.0-beta.1"
-    +current-version = "2.0.0-beta.2"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-     
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
 
     Commands to be executed:
-      git checkout -b release/2.0.0-beta.2
-      git add -A
-      git commit -m Release 2.0.0-beta.2
+      `git checkout -b release/2.0.0-beta.2`
+      `git add -A`
+      `git commit -m Release 2.0.0-beta.2`
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-beta.1");
 }
@@ -394,49 +337,26 @@ search = "ver={version}"
         .write_str("ver=1.0.0\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.1.0
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
-    @@ -1 +1 @@
-    -ver=1.0.0
-    +ver=1.1.0
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.1.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-     
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
 
     Commands to be executed:
-      git checkout -b release/1.1.0
-      git add -A
-      git commit -m Release 1.1.0
+      `git checkout -b release/1.1.0`
+      `git add -A`
+      `git commit -m Release 1.1.0`
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"ver=1.0.0");
 }
@@ -465,49 +385,26 @@ search = "version={version}"
         .write_str("version=2.0.0-rc.3\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-rc.3 to 2.0.0
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/VERSION b/VERSION
-    --- a/VERSION
-    +++ b/VERSION
-    @@ -1 +1 @@
-    -version=2.0.0-rc.3
-    +version=2.0.0
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "2.0.0-rc.3"
-    +current-version = "2.0.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-     
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
 
     Commands to be executed:
-      git checkout -b release/2.0.0
-      git add -A
-      git commit -m Release 2.0.0
+      `git checkout -b release/2.0.0`
+      `git add -A`
+      `git commit -m Release 2.0.0`
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-rc.3");
 }
@@ -536,49 +433,26 @@ search = "APP_VERSION={version}"
         .write_str("APP_VERSION=1.0.0-alpha.1\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0-alpha.1 to 1.0.0-alpha.2
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/version.txt b/version.txt
-    --- a/version.txt
-    +++ b/version.txt
-    @@ -1 +1 @@
-    -APP_VERSION=1.0.0-alpha.1
-    +APP_VERSION=1.0.0-alpha.2
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.0.0-alpha.1"
-    +current-version = "1.0.0-alpha.2"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-     
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `version.txt`
       - Update `seal.toml`
 
     Commands to be executed:
-      git checkout -b release/1.0.0-alpha.2
-      git add -A
-      git commit -m Release 1.0.0-alpha.2
+      `git checkout -b release/1.0.0-alpha.2`
+      `git add -A`
+      `git commit -m Release 1.0.0-alpha.2`
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("version.txt"), @"APP_VERSION=1.0.0-alpha.1");
 }
@@ -611,52 +485,26 @@ search = "version `{version}`"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.5.0 to 0.6.0
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1,3 +1,3 @@
-     # My Project
-    -Current version `0.5.0` is stable.
-    -Install version `0.5.0` with npm.
-    +Current version `0.6.0` is stable.
-    +Install version `0.6.0` with npm.
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "0.5.0"
-    +current-version = "0.6.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-     
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
 
     Commands to be executed:
-      git checkout -b release/0.6.0
-      git add -A
-      git commit -m Release 0.6.0
+      `git checkout -b release/0.6.0`
+      `git add -A`
+      `git commit -m Release 0.6.0`
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("README.md"), @r"
     # My Project
@@ -686,46 +534,21 @@ path = "README.md"
         .write_str("# Tool(0.0.1)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
-    Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# Tool(0.0.1)
-    +# Tool(0.0.2)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-     path = "README.md"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
-
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
-
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Proceed with these changes? (y/n):
     ----- stderr -----
 
     No changes applied.
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
 }
@@ -778,57 +601,11 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
-
-    Preview of changes:
-    -------------------
-
-    diff --git a/crates/bar/Cargo.toml b/crates/bar/Cargo.toml
-    --- a/crates/bar/Cargo.toml
-    +++ b/crates/bar/Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "bar"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-
-    diff --git a/crates/baz/Cargo.toml b/crates/baz/Cargo.toml
-    --- a/crates/baz/Cargo.toml
-    +++ b/crates/baz/Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "baz"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-
-    diff --git a/crates/foo/Cargo.toml b/crates/foo/Cargo.toml
-    --- a/crates/foo/Cargo.toml
-    +++ b/crates/foo/Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "foo"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-     path = "**/Cargo.toml"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
 
     Changes to be made:
       - Update `crates/bar/Cargo.toml`
@@ -836,14 +613,12 @@ version = \"0.0.1\"
       - Update `crates/foo/Cargo.toml`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
+    Updating files...
     Successfully bumped to 0.0.2
 
     ----- stderr -----
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("crates/foo/Cargo.toml"), @r#"
     [package]
@@ -1009,49 +784,22 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
-    Preview of changes:
-    -------------------
-
-    diff --git a/pyproject.toml b/pyproject.toml
-    --- a/pyproject.toml
-    +++ b/pyproject.toml
-    @@ -1,3 +1,3 @@
-     [project]
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-     path = "pyproject.toml"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
-
     Changes to be made:
       - Update `pyproject.toml`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
+    Updating files...
     Successfully bumped to 0.0.2
 
     ----- stderr -----
-    "#);
+    ");
 
     insta::assert_snapshot!(context.read_file("pyproject.toml"), @r#"
     [project]
@@ -1168,7 +916,6 @@ version = \"0.0.1\"
     -version = "0.0.1"
     +version = "0.0.2"
              
-
     diff --git a/seal.toml b/seal.toml
     --- a/seal.toml
     +++ b/seal.toml
@@ -1180,21 +927,18 @@ version = \"0.0.1\"
      [[release.version-files]]
      path = "Cargo.toml"
 
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
-
     Changes to be made:
       - Update `Cargo.toml`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
+    Updating files...
     Successfully bumped to 0.0.2
 
     ----- stderr -----
     INFO Workspace discovered at "[TEMP]/"
     INFO Using default field 'package.version' for version file `Cargo.toml`
+    INFO Skipping changelog update because no `[changelog]` section was found in the configuration.
     "#);
 
     insta::assert_snapshot!(context.read_file("Cargo.toml"), @r#"
@@ -1258,7 +1002,6 @@ version = \"0.0.1\"
     -version = "0.0.1"
     +version = "0.0.2"
              
-
     diff --git a/seal.toml b/seal.toml
     --- a/seal.toml
     +++ b/seal.toml
@@ -1270,21 +1013,18 @@ version = \"0.0.1\"
      [[release.version-files]]
      path = "pyproject.toml"
 
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
-
     Changes to be made:
       - Update `pyproject.toml`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
+    Updating files...
     Successfully bumped to 0.0.2
 
     ----- stderr -----
     INFO Workspace discovered at "[TEMP]/"
     INFO Using default field 'project.version' for version file `pyproject.toml`
+    INFO Skipping changelog update because no `[changelog]` section was found in the configuration.
     "#);
 
     insta::assert_snapshot!(context.read_file("pyproject.toml"), @r#"
