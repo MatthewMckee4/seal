@@ -55,19 +55,6 @@ pub fn push_branch<P: AsRef<Path>>(current_directory: P, branch_name: &str) -> R
     Ok(())
 }
 
-pub fn create_pull_request<P: AsRef<Path>>(current_directory: P, version: &str) -> Result<()> {
-    let title = format!("Release v{version}");
-    let body = format!("Automated release for version {version}");
-
-    Command::new("gh")
-        .args(["pr", "create", "--title", &title, "--body", &body])
-        .current_dir(current_directory)
-        .output()
-        .context("Failed to execute gh pr create")?;
-
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use tempfile::TempDir;
@@ -161,13 +148,6 @@ mod tests {
     #[test]
     fn test_push_branch_command_executes() {
         let result = push_branch("/tmp/definitely-not-a-git-repo", "test-branch");
-
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_create_pull_request_command_executes() {
-        let result = create_pull_request("/tmp/definitely-not-a-git-repo", "1.0.0");
 
         assert!(result.is_err());
     }

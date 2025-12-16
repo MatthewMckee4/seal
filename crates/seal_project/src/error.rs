@@ -63,9 +63,6 @@ pub enum ConfigValidationError {
     #[error("release.push = true requires branch-name to be set")]
     PushRequiresBranchName,
 
-    #[error("release.create-pr = true requires both branch-name and push = true")]
-    CreatePrRequiresBranchAndPush,
-
     #[error("release.changelog.changelog-heading cannot be empty")]
     EmptyChangelogHeading,
 

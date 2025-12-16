@@ -153,7 +153,6 @@ version-files = ["test.txt"]
             "commit-message": null,
             "branch-name": null,
             "push": false,
-            "create-pr": false,
             "confirm": true
           },
           "changelog": null
@@ -190,7 +189,6 @@ version-files = ["Cargo.toml"]
             "commit-message": null,
             "branch-name": null,
             "push": false,
-            "create-pr": false,
             "confirm": true
           },
           "changelog": null
@@ -224,7 +222,6 @@ current-version = "3.0.0"
             "commit-message": null,
             "branch-name": null,
             "push": false,
-            "create-pr": false,
             "confirm": true
           },
           "changelog": null

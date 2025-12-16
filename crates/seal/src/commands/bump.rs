@@ -166,12 +166,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             if let Some(branch) = &branch_name {
                 writeln!(stdout, "  `git push -u origin {branch}`")?;
             }
-            if release_config.create_pr {
-                writeln!(
-                    stdout,
-                    "  `gh pr create --title \"Release v{new_version_string}\" --body \"Automated release for version {new_version_string}\"`"
-                )?;
-            }
         }
     } else {
         writeln!(
@@ -219,11 +213,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         if let Some(branch) = &branch_name {
             writeln!(stdout, "Pushing branch to remote...")?;
             github_client.push_branch(workspace.root(), branch)?;
-
-            if release_config.create_pr {
-                writeln!(stdout, "Creating pull request...")?;
-                github_client.create_pull_request(workspace.root(), &new_version_string)?;
-            }
         }
     }
 

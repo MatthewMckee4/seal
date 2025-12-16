@@ -974,7 +974,6 @@ version-files = ["README.md"]
 commit-message = "Release v{version}"
 branch-name = "release/v{version}"
 push = true
-create-pr = true
 "#,
     );
 
@@ -1022,14 +1021,12 @@ create-pr = true
       `git add -A`
       `git commit -m "Release v1.2.4"`
       `git push -u origin release/v1.2.4`
-      `gh pr create --title "Release v1.2.4" --body "Automated release for version 1.2.4"`
 
     Proceed with these changes? (y/n):
     Creating branch: release/v1.2.4
     Updating version files...
     Committing changes...
     Pushing branch to remote...
-    Creating pull request...
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -1043,7 +1040,6 @@ create-pr = true
     commit-message = "Release v{version}"
     branch-name = "release/v{version}"
     push = true
-    create-pr = true
     "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
@@ -1064,7 +1060,6 @@ version-files = ["README.md"]
 commit-message = "Release v{version}"
 branch-name = "release/v{version}"
 push = true
-create-pr = true
 confirm = false
 "#,
     );
@@ -1113,13 +1108,11 @@ confirm = false
       `git add -A`
       `git commit -m "Release v1.2.4"`
       `git push -u origin release/v1.2.4`
-      `gh pr create --title "Release v1.2.4" --body "Automated release for version 1.2.4"`
 
     Creating branch: release/v1.2.4
     Updating version files...
     Committing changes...
     Pushing branch to remote...
-    Creating pull request...
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -1133,7 +1126,6 @@ confirm = false
     commit-message = "Release v{version}"
     branch-name = "release/v{version}"
     push = true
-    create-pr = true
     confirm = false
     "#);
 
