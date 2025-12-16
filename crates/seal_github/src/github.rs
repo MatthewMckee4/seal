@@ -38,8 +38,6 @@ pub trait GitHubService: Send + Sync {
     >;
 
     fn push_branch(&self, current_directory: &Path, branch_name: &str) -> Result<()>;
-
-    fn create_pull_request(&self, current_directory: &Path, version: &str) -> Result<()>;
 }
 
 #[derive(Debug, Error)]

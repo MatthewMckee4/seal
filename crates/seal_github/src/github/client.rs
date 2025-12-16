@@ -5,7 +5,6 @@ use chrono::{DateTime, Utc};
 use octocrab::{Octocrab, models::pulls::PullRequest};
 
 use crate::{
-    create_pull_request,
     github::{GitHubError, GitHubPullRequest, GitHubRelease, GitHubService},
     push_branch,
 };
@@ -211,10 +210,6 @@ impl GitHubService for GitHubClient {
 
     fn push_branch(&self, current_directory: &Path, branch_name: &str) -> Result<()> {
         push_branch(current_directory, branch_name)
-    }
-
-    fn create_pull_request(&self, current_directory: &Path, version: &str) -> Result<()> {
-        create_pull_request(current_directory, version)
     }
 }
 

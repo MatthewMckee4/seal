@@ -2,7 +2,7 @@ mod github;
 
 mod helpers;
 
-pub use helpers::{create_pull_request, get_git_remote_url, parse_github_repo, push_branch};
+pub use helpers::{get_git_remote_url, parse_github_repo, push_branch};
 
 pub use github::{
     GitHubClient, GitHubError, GitHubPullRequest, GitHubRelease, GitHubService, MockGithubClient,

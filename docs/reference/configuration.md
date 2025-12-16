@@ -204,26 +204,6 @@ Whether to confirm the release changes with the user before proceeding.
 
 ---
 
-#### [`create-pr`](#release_create-pr)
-<span id="create-pr"></span>
-
-Whether to create a pull request for the release changes.
-
-**Default value**: `false`
-
-**Type**: `boolean`
-
-**Example usage**:
-
-=== "seal.toml"
-
-    ```toml
-    [release]
-    create-pr = true
-    ```
-
----
-
 #### [`current-version`](#release_current-version)
 <span id="current-version"></span>
 

@@ -147,8 +147,4 @@ impl GitHubService for MockGithubClient {
     fn push_branch(&self, _current_directory: &Path, _branch_name: &str) -> Result<()> {
         Ok(())
     }
-
-    fn create_pull_request(&self, _current_directory: &Path, _version: &str) -> Result<()> {
-        Ok(())
-    }
 }

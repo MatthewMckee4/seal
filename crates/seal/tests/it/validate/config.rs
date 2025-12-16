@@ -13,7 +13,6 @@ version-files = ["Cargo.toml", "README.md"]
 commit-message = "Release v{version}"
 branch-name = "release/v{version}"
 push = false
-create-pr = false
 confirm = false
 "#,
     );
@@ -349,7 +348,7 @@ unknown-field = "value"
       |
     3 | unknown-field = "value"
       | ^^^^^^^^^^^^^
-    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`
+    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`
     "#);
 }
 
@@ -410,7 +409,6 @@ version-files = ["Cargo.toml"]
 commit-message = "bump version to {version}"
 branch-name = "releases/{version}"
 push = false
-create-pr = false
 confirm = false
 "#,
     );

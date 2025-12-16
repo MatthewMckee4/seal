@@ -11,7 +11,6 @@ version-files = [
 commit-message = "Release v{version}"
 branch-name = "release/v{version}"
 push = true
-create-pr = true
 confirm = true
 
 [changelog.section-labels]

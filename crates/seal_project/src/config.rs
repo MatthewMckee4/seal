@@ -160,16 +160,6 @@ pub struct ReleaseConfig {
     )]
     pub push: bool,
 
-    /// Whether to create a pull request for the release changes.
-    #[serde(default = "default_create_pr")]
-    #[field(
-        default = "false",
-        value_type = "boolean",
-        example = r#"
-        create-pr = true"#
-    )]
-    pub create_pr: bool,
-
     /// Whether to confirm the release changes with the user before proceeding.
     #[serde(default = "default_confirm")]
     #[field(
@@ -185,10 +175,6 @@ fn default_push() -> bool {
     false
 }
 
-fn default_create_pr() -> bool {
-    false
-}
-
 fn default_confirm() -> bool {
     true
 }
@@ -197,10 +183,6 @@ impl ReleaseConfig {
     fn validate(&self) -> Result<(), ConfigValidationError> {
         if self.push && self.branch_name.is_none() {
             return Err(ConfigValidationError::PushRequiresBranchName);
-        }
-
-        if self.create_pr && (self.branch_name.is_none() || !self.push) {
-            return Err(ConfigValidationError::CreatePrRequiresBranchAndPush);
         }
 
         Ok(())
@@ -477,7 +459,6 @@ branch-name = "release-{version}"
             "commit-message": "release v{version}",
             "branch-name": "release-{version}",
             "push": false,
-            "create-pr": false,
             "confirm": true
           },
           "changelog": null
@@ -505,7 +486,6 @@ version-files = ["VERSION"]
             "commit-message": null,
             "branch-name": null,
             "push": false,
-            "create-pr": false,
             "confirm": true
           },
           "changelog": null
@@ -533,7 +513,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `create-pr`, `confirm`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -770,7 +750,6 @@ branch-name = ""
                 commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
                 push: true,
-                create_pr: true,
                 confirm: true,
             }),
             changelog: None,
@@ -790,7 +769,6 @@ branch-name = ""
             "commit-message": "Release v{version}",
             "branch-name": "release/v{version}",
             "push": true,
-            "create-pr": true,
             "confirm": true
           },
           "changelog": null
@@ -822,7 +800,6 @@ commit-message = "Release {version} with {version} tag"
                     ),
                     branch_name: None,
                     push: false,
-                    create_pr: false,
                     confirm: true,
                 },
             ),
@@ -891,7 +868,6 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     commit_message: None,
                     branch_name: None,
                     push: false,
-                    create_pr: false,
                     confirm: true,
                 },
             ),
@@ -921,7 +897,6 @@ version-files = []
                     commit_message: None,
                     branch_name: None,
                     push: false,
-                    create_pr: false,
                     confirm: true,
                 },
             ),
@@ -1019,54 +994,16 @@ push = true
     }
 
     #[test]
-    fn test_validation_create_pr_requires_branch_and_push() {
-        let toml = r#"
-[release]
-current-version = "1.0.0"
-create-pr = true
-"#;
-
-        let result = Config::from_toml_str(toml);
-        assert!(result.is_err());
-        assert_debug_snapshot!(result.unwrap_err(), @r#"
-        InvalidConfigurationFile(
-            CreatePrRequiresBranchAndPush,
-        )
-        "#);
-    }
-
-    #[test]
-    fn test_validation_create_pr_requires_push() {
-        let toml = r#"
-[release]
-current-version = "1.0.0"
-branch-name = "release/{version}"
-create-pr = true
-push = false
-"#;
-
-        let result = Config::from_toml_str(toml);
-        assert!(result.is_err());
-        assert_debug_snapshot!(result.unwrap_err(), @r#"
-        InvalidConfigurationFile(
-            CreatePrRequiresBranchAndPush,
-        )
-        "#);
-    }
-
-    #[test]
     fn test_validation_valid_with_branch_and_push() {
         let toml = r#"
 [release]
 current-version = "1.0.0"
 branch-name = "release/{version}"
 push = true
-create-pr = true
 "#;
 
         let config = Config::from_toml_str(toml).unwrap();
         assert!(config.release.as_ref().unwrap().push);
-        assert!(config.release.as_ref().unwrap().create_pr);
     }
 
     #[test]
