@@ -192,19 +192,28 @@ current-version = "1.2.3"
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,2 +1,2 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `seal.toml`
 
     Dry run complete. No changes made.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
     insta::assert_snapshot!(context.git_last_commit_message(), @"");
@@ -230,12 +239,30 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,3 +1,3 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -243,7 +270,7 @@ version-files = ["README.md"]
     Dry run complete. No changes made.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.3)");
 
@@ -271,12 +298,30 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,3 +1,3 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -286,7 +331,7 @@ version-files = ["README.md"]
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -322,19 +367,16 @@ ignore-labels = ["internal", "ci"]
     Bumping version from 1.0.0 to 1.0.1
 
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1"
      
      [changelog]
-     ignore-labels = ["internal", "ci"]
-
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `seal.toml`
 
@@ -360,12 +402,21 @@ current-version = "1.0.0"
 
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,2 +1,2 @@
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `seal.toml`
 
@@ -374,7 +425,7 @@ current-version = "1.0.0"
     Successfully bumped to 1.0.1
 
     ----- stderr -----
-    ");
+    "#);
 }
 
 #[test]
@@ -405,22 +456,18 @@ ignore-contributors = ["ignored"]
     Bumping version from 1.0.0 to 1.0.1
 
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
      [release]
     -current-version = "1.0.0"
     +current-version = "1.0.1"
      
      [changelog]
-     ignore-labels = ["internal", "ci"]
-
-    diff --git a/CHANGELOG.md b/CHANGELOG.md
-    --- a/CHANGELOG.md
-    +++ b/CHANGELOG.md
+    ───────────────────────────────────────────────────────────────────────────────
+    --- CHANGELOG.md
+    +++ CHANGELOG.md
     @@ -0,0 +1,22 @@
     +# Changelog
     +
@@ -444,7 +491,7 @@ ignore-contributors = ["ignored"]
     +- [@bob](https://github.com/bob)
     +- [@joe](https://github.com/joe)
     +
-
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGELOG.md`
@@ -481,12 +528,49 @@ changelog-path = "CHANGE_LOG.md"
 
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.0.1"
+     
+     [changelog]
+    ───────────────────────────────────────────────────────────────────────────────
+    --- CHANGE_LOG.md
+    +++ CHANGE_LOG.md
+    @@ -0,0 +1,22 @@
+    +# Changelog
+    +
+    +## 1.0.1
+    +
+    +### Bug Fixes
+    +
+    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
+    +
+    +### Documentation
+    +
+    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
+    +
+    +### New Features
+    +
+    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+    +
+    +### Contributors
+    +
+    +- [@alice](https://github.com/alice)
+    +- [@bob](https://github.com/bob)
+    +- [@joe](https://github.com/joe)
+    +
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGE_LOG.md`
@@ -496,7 +580,7 @@ changelog-path = "CHANGE_LOG.md"
     Successfully bumped to 1.0.1
 
     ----- stderr -----
-    ");
+    "#);
 }
 
 #[test]
@@ -520,12 +604,31 @@ commit-message = "Release v{version}"
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+     commit-message = "Release v{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -541,7 +644,7 @@ commit-message = "Release v{version}"
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -577,12 +680,31 @@ branch-name = "release/v{version}"
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+     commit-message = "Release v{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -600,7 +722,7 @@ branch-name = "release/v{version}"
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -636,12 +758,31 @@ branch-name = "release/v{version}"
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+     branch-name = "release/v{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -655,7 +796,7 @@ branch-name = "release/v{version}"
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -692,12 +833,31 @@ push = true
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+     commit-message = "Release v{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -717,7 +877,7 @@ push = true
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -756,12 +916,31 @@ push = true
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+     commit-message = "Release v{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -781,7 +960,7 @@ push = true
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -821,12 +1000,31 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.4)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.4"
+     version-files = ["README.md"]
+     commit-message = "Release v{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -845,7 +1043,7 @@ confirm = false
     Successfully bumped to 1.2.4
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
     insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
@@ -882,12 +1080,30 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.3-alpha.0
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3)
+    / No newline at end of file
+    +# My Package (1.2.3-alpha.0)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,3 +1,3 @@
+     [release]
+    -current-version = "1.2.3"
+    +current-version = "1.2.3-alpha.0"
+     version-files = ["README.md"]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -895,7 +1111,7 @@ version-files = ["README.md"]
     Dry run complete. No changes made.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.3)");
 
@@ -923,12 +1139,30 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3-alpha.0)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3-alpha.0 to 1.2.3-alpha.1
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3-alpha.0)
+    / No newline at end of file
+    +# My Package (1.2.3-alpha.1)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,3 +1,3 @@
+     [release]
+    -current-version = "1.2.3-alpha.0"
+    +current-version = "1.2.3-alpha.1"
+     version-files = ["README.md"]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -936,7 +1170,7 @@ version-files = ["README.md"]
     Dry run complete. No changes made.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.3-alpha.0)");
 
@@ -964,12 +1198,30 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3-alpha)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3-alpha to 1.2.3-alpha.1
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# My Package (1.2.3-alpha)
+    / No newline at end of file
+    +# My Package (1.2.3-alpha.1)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,3 +1,3 @@
+     [release]
+    -current-version = "1.2.3-alpha"
+    +current-version = "1.2.3-alpha.1"
+     version-files = ["README.md"]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -977,7 +1229,7 @@ version-files = ["README.md"]
     Dry run complete. No changes made.
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.3-alpha)");
 

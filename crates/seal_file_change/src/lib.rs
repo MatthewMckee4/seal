@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
-use owo_colors::OwoColorize;
 use seal_fs::FileResolver;
+use similar::TextDiff;
 use std::path::{Path, PathBuf};
 
 pub struct FileChanges(Vec<FileChange>);
@@ -61,39 +61,22 @@ impl FileChange {
         stdout: &mut impl std::fmt::Write,
         file_resolver: &FileResolver,
     ) -> Result<()> {
-        use similar::{ChangeTag, TextDiff};
+        let width = seal_terminal::terminal_width();
 
         let path_string = file_resolver
             .relative_path(&self.abslute_path)
             .display()
             .to_string();
 
-        writeln!(stdout)?;
-        writeln!(
-            stdout,
-            "{}",
-            format!("diff --git a/{path_string} b/{path_string}").bold()
-        )?;
-        writeln!(stdout, "{}", format!("--- a/{path_string}").blue())?;
-        writeln!(stdout, "{}", format!("+++ b/{path_string}").blue())?;
+        let diff = TextDiff::from_lines(&self.old_content, &self.new_content)
+            .unified_diff()
+            .header(&path_string, &path_string)
+            .context_radius(2)
+            .to_string();
 
-        let diff = TextDiff::from_lines(&self.old_content, &self.new_content);
+        write!(stdout, "{diff}")?;
 
-        for hunk in diff.unified_diff().iter_hunks() {
-            writeln!(stdout, "{}", hunk.header().yellow().bold())?;
-
-            for change in hunk.iter_changes() {
-                let (sign, value): (&str, String) = match change.tag() {
-                    ChangeTag::Delete => ("-", change.value().red().to_string()),
-                    ChangeTag::Insert => ("+", change.value().green().to_string()),
-                    ChangeTag::Equal => (" ", change.value().dimmed().to_string()),
-                };
-
-                let trimmed_value = value.trim_end();
-
-                write!(stdout, "{sign}{trimmed_value}")?;
-            }
-        }
+        writeln!(stdout, "────────────{:─^1$}", "", width.saturating_sub(13))?;
 
         Ok(())
     }

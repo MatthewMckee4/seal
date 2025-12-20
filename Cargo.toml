@@ -23,6 +23,7 @@ seal_macros = { path = "crates/seal_macros" }
 seal_options_metadata = { path = "crates/seal_options_metadata" }
 seal_project = { path = "crates/seal_project" }
 seal_version = { path = "crates/seal_version" }
+seal_terminal = { path = "crates/seal_terminal" }
 
 anstream = { version = "0.6.21" }
 anyhow = { version = "1.0.100" }
@@ -57,6 +58,7 @@ tracing = { version = "0.1.43" }
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 which = { version = "8.0.0" }
 wiremock = { version = "0.6" }
+console = { version = "0.15.4" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }

@@ -107,14 +107,13 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         tracing::info!("Skipping changelog update because `--no-changelog` was provided.");
     }
 
-    if printer.is_verbose() {
-        writeln!(stdout, "Preview of changes:")?;
-        writeln!(stdout, "-------------------")?;
+    writeln!(stdout, "Preview of changes:")?;
+    let width = seal_terminal::terminal_width();
 
-        for change in &file_changes {
-            change.display_diff(&mut stdout, &file_resolver)?;
-        }
-        writeln!(stdout)?;
+    writeln!(stdout, "────────────{:─^1$}", "", width.saturating_sub(13))?;
+
+    for change in &file_changes {
+        change.display_diff(&mut stdout, &file_resolver)?;
     }
 
     writeln!(stdout, "Changes to be made:")?;

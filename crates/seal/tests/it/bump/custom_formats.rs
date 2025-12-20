@@ -44,12 +44,39 @@ search = "APP_VERSION = '{version}'"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.5.0 to 2.6.0
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- version.sh
+    +++ version.sh
+    @@ -1,3 +1,3 @@
+     #!/bin/bash
+    -export VERSION="2.5.0"
+    +export VERSION="2.6.0"
+     export APP_NAME="MyApp"
+    ───────────────────────────────────────────────────────────────────────────────
+    --- config.py
+    +++ config.py
+    @@ -1,3 +1,3 @@
+     # Configuration
+    -APP_VERSION = '2.5.0'
+    +APP_VERSION = '2.6.0'
+     DEBUG = False
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "2.5.0"
+    +current-version = "2.6.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `version.sh`
       - Update `config.py`
@@ -64,7 +91,7 @@ search = "APP_VERSION = '{version}'"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("version.sh"), @r#"
     #!/bin/bash
@@ -188,12 +215,29 @@ search = "version={version}"
         .write_str("version=2.0.0-beta.1\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("beta"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-beta.1 to 2.0.0-beta.2
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- VERSION
+    +++ VERSION
+    @@ -1 +1 @@
+    -version=2.0.0-beta.1
+    +version=2.0.0-beta.2
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "2.0.0-beta.1"
+    +current-version = "2.0.0-beta.2"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
@@ -207,7 +251,7 @@ search = "version={version}"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-beta.1");
 }
@@ -337,12 +381,29 @@ search = "ver={version}"
         .write_str("ver=1.0.0\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.1.0
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- VERSION
+    +++ VERSION
+    @@ -1 +1 @@
+    -ver=1.0.0
+    +ver=1.1.0
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.0.0"
+    +current-version = "1.1.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
@@ -356,7 +417,7 @@ search = "ver={version}"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"ver=1.0.0");
 }
@@ -385,12 +446,29 @@ search = "version={version}"
         .write_str("version=2.0.0-rc.3\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("2.0.0"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 2.0.0-rc.3 to 2.0.0
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- VERSION
+    +++ VERSION
+    @@ -1 +1 @@
+    -version=2.0.0-rc.3
+    +version=2.0.0
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "2.0.0-rc.3"
+    +current-version = "2.0.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
@@ -404,7 +482,7 @@ search = "version={version}"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("VERSION"), @"version=2.0.0-rc.3");
 }
@@ -433,12 +511,29 @@ search = "APP_VERSION={version}"
         .write_str("APP_VERSION=1.0.0-alpha.1\n")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0-alpha.1 to 1.0.0-alpha.2
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- version.txt
+    +++ version.txt
+    @@ -1 +1 @@
+    -APP_VERSION=1.0.0-alpha.1
+    +APP_VERSION=1.0.0-alpha.2
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "1.0.0-alpha.1"
+    +current-version = "1.0.0-alpha.2"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `version.txt`
       - Update `seal.toml`
@@ -452,7 +547,7 @@ search = "APP_VERSION={version}"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("version.txt"), @"APP_VERSION=1.0.0-alpha.1");
 }
@@ -485,12 +580,32 @@ search = "version `{version}`"
         ))
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("minor"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.5.0 to 0.6.0
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1,3 +1,3 @@
+     # My Project
+    -Current version `0.5.0` is stable.
+    -Install version `0.5.0` with npm.
+    +Current version `0.6.0` is stable.
+    +Install version `0.6.0` with npm.
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "0.5.0"
+    +current-version = "0.6.0"
+     commit-message = "Release {version}"
+     branch-name = "release/{version}"
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -504,7 +619,7 @@ search = "version `{version}`"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @r"
     # My Project
@@ -534,12 +649,31 @@ path = "README.md"
         .write_str("# Tool(0.0.1)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- README.md
+    +++ README.md
+    @@ -1 +1 @@
+    -# Tool(0.0.1)
+    / No newline at end of file
+    +# Tool(0.0.2)
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -548,7 +682,7 @@ path = "README.md"
     ----- stderr -----
 
     No changes applied.
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# Tool(0.0.1)");
 }
@@ -601,12 +735,53 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- crates/bar/Cargo.toml
+    +++ crates/bar/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "bar"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- crates/baz/Cargo.toml
+    +++ crates/baz/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "baz"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- crates/foo/Cargo.toml
+    +++ crates/foo/Cargo.toml
+    @@ -1,4 +1,4 @@
+     [package]
+     name = "foo"
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `crates/bar/Cargo.toml`
       - Update `crates/baz/Cargo.toml`
@@ -618,7 +793,7 @@ version = \"0.0.1\"
     Successfully bumped to 0.0.2
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("crates/foo/Cargo.toml"), @r#"
     [package]
@@ -784,12 +959,32 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 0.0.1 to 0.0.2
 
+    Preview of changes:
+    ───────────────────────────────────────────────────────────────────────────────
+    --- pyproject.toml
+    +++ pyproject.toml
+    @@ -1,3 +1,3 @@
+     [project]
+    -version = "0.0.1"
+    +version = "0.0.2"
+             
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
+     [release]
+    -current-version = "0.0.1"
+    +current-version = "0.0.2"
+     
+     [[release.version-files]]
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `pyproject.toml`
       - Update `seal.toml`
@@ -799,7 +994,7 @@ version = \"0.0.1\"
     Successfully bumped to 0.0.2
 
     ----- stderr -----
-    ");
+    "#);
 
     insta::assert_snapshot!(context.read_file("pyproject.toml"), @r#"
     [project]
@@ -905,28 +1100,26 @@ version = \"0.0.1\"
     Bumping version from 0.0.1 to 0.0.2
 
     Preview of changes:
-    -------------------
-
-    diff --git a/Cargo.toml b/Cargo.toml
-    --- a/Cargo.toml
-    +++ b/Cargo.toml
+    ───────────────────────────────────────────────────────────────────────────────
+    --- Cargo.toml
+    +++ Cargo.toml
     @@ -1,4 +1,4 @@
      [package]
      name = "foo"
     -version = "0.0.1"
     +version = "0.0.2"
              
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
      [release]
     -current-version = "0.0.1"
     +current-version = "0.0.2"
      
      [[release.version-files]]
-     path = "Cargo.toml"
-
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `Cargo.toml`
       - Update `seal.toml`
@@ -991,28 +1184,26 @@ version = \"0.0.1\"
     Bumping version from 0.0.1 to 0.0.2
 
     Preview of changes:
-    -------------------
-
-    diff --git a/pyproject.toml b/pyproject.toml
-    --- a/pyproject.toml
-    +++ b/pyproject.toml
+    ───────────────────────────────────────────────────────────────────────────────
+    --- pyproject.toml
+    +++ pyproject.toml
     @@ -1,4 +1,4 @@
      [project]
      name = "foo"
     -version = "0.0.1"
     +version = "0.0.2"
              
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
+    / No newline at end of file
+    ───────────────────────────────────────────────────────────────────────────────
+    --- seal.toml
+    +++ seal.toml
+    @@ -1,4 +1,4 @@
      [release]
     -current-version = "0.0.1"
     +current-version = "0.0.2"
      
      [[release.version-files]]
-     path = "pyproject.toml"
-
+    ───────────────────────────────────────────────────────────────────────────────
     Changes to be made:
       - Update `pyproject.toml`
       - Update `seal.toml`

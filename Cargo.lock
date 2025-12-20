@@ -310,6 +310,7 @@ dependencies = [
  "encode_unicode",
  "libc",
  "once_cell",
+ "unicode-width",
  "windows-sys 0.59.0",
 ]
 
@@ -1850,6 +1851,7 @@ dependencies = [
  "seal_github",
  "seal_logging",
  "seal_project",
+ "seal_terminal",
  "seal_version",
  "serde",
  "serde_json",
@@ -1935,8 +1937,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "fs-err",
- "owo-colors",
  "seal_fs",
+ "seal_terminal",
  "similar",
 ]
 
@@ -1999,6 +2001,13 @@ dependencies = [
  "thiserror",
  "toml",
  "tracing",
+]
+
+[[package]]
+name = "seal_terminal"
+version = "0.1.0"
+dependencies = [
+ "console",
 ]
 
 [[package]]
