@@ -22,8 +22,8 @@ seal_logging = { path = "crates/seal_logging" }
 seal_macros = { path = "crates/seal_macros" }
 seal_options_metadata = { path = "crates/seal_options_metadata" }
 seal_project = { path = "crates/seal_project" }
-seal_version = { path = "crates/seal_version" }
 seal_terminal = { path = "crates/seal_terminal" }
+seal_version = { path = "crates/seal_version" }
 
 anstream = { version = "0.6.21" }
 anyhow = { version = "1.0.100" }
@@ -31,6 +31,7 @@ assert_cmd = { version = "2.1" }
 assert_fs = { version = "1.1" }
 chrono = { version = "0.4.42" }
 clap = { version = "4.5.53", features = ["derive", "env", "string", "wrap_help"] }
+console = { version = "0.15.4" }
 dunce = { version = "1.0.5" }
 fs-err = { version = "3.2.1", features = ["tokio"] }
 glob = { version = "0.3.3" }
@@ -58,7 +59,6 @@ tracing = { version = "0.1.43" }
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 which = { version = "8.0.0" }
 wiremock = { version = "0.6" }
-console = { version = "0.15.4" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }

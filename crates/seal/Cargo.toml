@@ -21,8 +21,8 @@ seal_fs = { workspace = true }
 seal_github = { workspace = true }
 seal_logging = { workspace = true }
 seal_project = { workspace = true }
-seal_version = { workspace = true }
 seal_terminal = { workspace = true }
+seal_version = { workspace = true }
 
 anstream = { workspace = true }
 anyhow = { workspace = true }
