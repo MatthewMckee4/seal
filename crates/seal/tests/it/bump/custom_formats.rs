@@ -52,31 +52,31 @@ search = "APP_VERSION = '{version}'"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- version.sh
-    +++ version.sh
-    @@ -1,3 +1,3 @@
-     #!/bin/bash
-    -export VERSION="2.5.0"
-    +export VERSION="2.6.0"
-     export APP_NAME="MyApp"
-    ───────────────────────────────────────────────────────────────────────────────
-    --- config.py
-    +++ config.py
-    @@ -1,3 +1,3 @@
-     # Configuration
-    -APP_VERSION = '2.5.0'
-    +APP_VERSION = '2.6.0'
-     DEBUG = False
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "2.5.0"
-    +current-version = "2.6.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: version.sh
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ #!/bin/bash
+        2       │-export VERSION="2.5.0"
+              2 │+export VERSION="2.6.0"
+        3     3 │ export APP_NAME="MyApp"
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: config.py
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ # Configuration
+        2       │-APP_VERSION = '2.5.0'
+              2 │+APP_VERSION = '2.6.0'
+        3     3 │ DEBUG = False
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "2.5.0"
+              2 │+current-version = "2.6.0"
+        3     3 │ commit-message = "Release {version}"
+        4     4 │ branch-name = "release/{version}"
+        5     5 │ 
+        6     6 │ [[release.version-files]]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `version.sh`
       - Update `config.py`
@@ -223,21 +223,22 @@ search = "version={version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- VERSION
-    +++ VERSION
-    @@ -1 +1 @@
-    -version=2.0.0-beta.1
-    +version=2.0.0-beta.2
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "2.0.0-beta.1"
-    +current-version = "2.0.0-beta.2"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: VERSION
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-version=2.0.0-beta.1
+              1 │+version=2.0.0-beta.2
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "2.0.0-beta.1"
+              2 │+current-version = "2.0.0-beta.2"
+        3     3 │ commit-message = "Release {version}"
+        4     4 │ branch-name = "release/{version}"
+        5     5 │ 
+        6     6 │ [[release.version-files]]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
@@ -389,21 +390,22 @@ search = "ver={version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- VERSION
-    +++ VERSION
-    @@ -1 +1 @@
-    -ver=1.0.0
-    +ver=1.1.0
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.1.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: VERSION
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-ver=1.0.0
+              1 │+ver=1.1.0
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.1.0"
+        3     3 │ commit-message = "Release {version}"
+        4     4 │ branch-name = "release/{version}"
+        5     5 │ 
+        6     6 │ [[release.version-files]]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
@@ -454,21 +456,22 @@ search = "version={version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- VERSION
-    +++ VERSION
-    @@ -1 +1 @@
-    -version=2.0.0-rc.3
-    +version=2.0.0
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "2.0.0-rc.3"
-    +current-version = "2.0.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: VERSION
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-version=2.0.0-rc.3
+              1 │+version=2.0.0
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "2.0.0-rc.3"
+              2 │+current-version = "2.0.0"
+        3     3 │ commit-message = "Release {version}"
+        4     4 │ branch-name = "release/{version}"
+        5     5 │ 
+        6     6 │ [[release.version-files]]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `VERSION`
       - Update `seal.toml`
@@ -519,21 +522,22 @@ search = "APP_VERSION={version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- version.txt
-    +++ version.txt
-    @@ -1 +1 @@
-    -APP_VERSION=1.0.0-alpha.1
-    +APP_VERSION=1.0.0-alpha.2
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.0.0-alpha.1"
-    +current-version = "1.0.0-alpha.2"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: version.txt
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-APP_VERSION=1.0.0-alpha.1
+              1 │+APP_VERSION=1.0.0-alpha.2
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0-alpha.1"
+              2 │+current-version = "1.0.0-alpha.2"
+        3     3 │ commit-message = "Release {version}"
+        4     4 │ branch-name = "release/{version}"
+        5     5 │ 
+        6     6 │ [[release.version-files]]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `version.txt`
       - Update `seal.toml`
@@ -588,24 +592,25 @@ search = "version `{version}`"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1,3 +1,3 @@
-     # My Project
-    -Current version `0.5.0` is stable.
-    -Install version `0.5.0` with npm.
-    +Current version `0.6.0` is stable.
-    +Install version `0.6.0` with npm.
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "0.5.0"
-    +current-version = "0.6.0"
-     commit-message = "Release {version}"
-     branch-name = "release/{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ # My Project
+        2       │-Current version `0.5.0` is stable.
+        3       │-Install version `0.5.0` with npm.
+              2 │+Current version `0.6.0` is stable.
+              3 │+Install version `0.6.0` with npm.
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "0.5.0"
+              2 │+current-version = "0.6.0"
+        3     3 │ commit-message = "Release {version}"
+        4     4 │ branch-name = "release/{version}"
+        5     5 │ 
+        6     6 │ [[release.version-files]]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -657,23 +662,21 @@ path = "README.md"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# Tool(0.0.1)
-    / No newline at end of file
-    +# Tool(0.0.2)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# Tool(0.0.1)
+              1 │+# Tool(0.0.2)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "0.0.1"
+              2 │+current-version = "0.0.2"
+        3     3 │ 
+        4     4 │ [[release.version-files]]
+        5     5 │ path = "README.md"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -743,45 +746,40 @@ version = \"0.0.1\"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- crates/bar/Cargo.toml
-    +++ crates/bar/Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "bar"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- crates/baz/Cargo.toml
-    +++ crates/baz/Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "baz"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- crates/foo/Cargo.toml
-    +++ crates/foo/Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "foo"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: crates/bar/Cargo.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [package]
+        2     2 │ name = "bar"
+        3       │-version = "0.0.1"
+              3 │+version = "0.0.2"
+        4     4 │         
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: crates/baz/Cargo.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [package]
+        2     2 │ name = "baz"
+        3       │-version = "0.0.1"
+              3 │+version = "0.0.2"
+        4     4 │         
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: crates/foo/Cargo.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [package]
+        2     2 │ name = "foo"
+        3       │-version = "0.0.1"
+              3 │+version = "0.0.2"
+        4     4 │         
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "0.0.1"
+              2 │+current-version = "0.0.2"
+        3     3 │ 
+        4     4 │ [[release.version-files]]
+        5     5 │ path = "**/Cargo.toml"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `crates/bar/Cargo.toml`
       - Update `crates/baz/Cargo.toml`
@@ -967,24 +965,24 @@ version = \"0.0.1\"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- pyproject.toml
-    +++ pyproject.toml
-    @@ -1,3 +1,3 @@
-     [project]
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: pyproject.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [project]
+        2       │-version = "0.0.1"
+              2 │+version = "0.0.2"
+        3     3 │         
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "0.0.1"
+              2 │+current-version = "0.0.2"
+        3     3 │ 
+        4     4 │ [[release.version-files]]
+        5     5 │ path = "pyproject.toml"
+        6     6 │ format = "toml"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `pyproject.toml`
       - Update `seal.toml`
@@ -1101,25 +1099,25 @@ version = \"0.0.1\"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- Cargo.toml
-    +++ Cargo.toml
-    @@ -1,4 +1,4 @@
-     [package]
-     name = "foo"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: Cargo.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [package]
+        2     2 │ name = "foo"
+        3       │-version = "0.0.1"
+              3 │+version = "0.0.2"
+        4     4 │         
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "0.0.1"
+              2 │+current-version = "0.0.2"
+        3     3 │ 
+        4     4 │ [[release.version-files]]
+        5     5 │ path = "Cargo.toml"
+        6     6 │ format = "toml"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `Cargo.toml`
       - Update `seal.toml`
@@ -1185,25 +1183,25 @@ version = \"0.0.1\"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- pyproject.toml
-    +++ pyproject.toml
-    @@ -1,4 +1,4 @@
-     [project]
-     name = "foo"
-    -version = "0.0.1"
-    +version = "0.0.2"
-             
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "0.0.1"
-    +current-version = "0.0.2"
-     
-     [[release.version-files]]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: pyproject.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [project]
+        2     2 │ name = "foo"
+        3       │-version = "0.0.1"
+              3 │+version = "0.0.2"
+        4     4 │         
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "0.0.1"
+              2 │+current-version = "0.0.2"
+        3     3 │ 
+        4     4 │ [[release.version-files]]
+        5     5 │ path = "pyproject.toml"
+        6     6 │ format = "toml"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `pyproject.toml`
       - Update `seal.toml`

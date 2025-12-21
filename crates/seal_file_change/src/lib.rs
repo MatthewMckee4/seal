@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
+use console::style;
 use seal_fs::FileResolver;
-use similar::TextDiff;
+use similar::{Algorithm, ChangeTag, TextDiff};
 use std::path::{Path, PathBuf};
 
 pub struct FileChanges(Vec<FileChange>);
@@ -68,15 +69,75 @@ impl FileChange {
             .display()
             .to_string();
 
-        let diff = TextDiff::from_lines(&self.old_content, &self.new_content)
-            .unified_diff()
-            .header(&path_string, &path_string)
-            .context_radius(2)
-            .to_string();
+        writeln!(stdout, "Source: {path_string}")?;
 
-        write!(stdout, "{diff}")?;
+        let diff = TextDiff::configure()
+            .algorithm(Algorithm::Patience)
+            .diff_lines(&self.old_content, &self.new_content);
 
-        writeln!(stdout, "────────────{:─^1$}", "", width.saturating_sub(13))?;
+        // The following diff output is very similar to what `insta` uses.
+
+        writeln!(stdout, "────────────┬{:─^1$}", "", width.saturating_sub(13))?;
+
+        for (idx, group) in diff.grouped_ops(4).iter().enumerate() {
+            if idx > 0 {
+                writeln!(stdout, "┈┈┈┈┈┈┈┈┈┈┈┈┼{:┈^1$}", "", width.saturating_sub(13))?;
+            }
+            for op in group {
+                for change in diff.iter_inline_changes(op) {
+                    match change.tag() {
+                        ChangeTag::Insert => {
+                            write!(
+                                stdout,
+                                "{:>5} {:>5} │{}",
+                                "",
+                                style(change.new_index().unwrap() + 1).cyan().dim().bold(),
+                                style("+").green(),
+                            )?;
+                            for &(emphasized, change) in change.values() {
+                                if emphasized {
+                                    write!(stdout, "{}", style(change).green().underlined())?;
+                                } else {
+                                    write!(stdout, "{}", style(change).green())?;
+                                }
+                            }
+                        }
+                        ChangeTag::Delete => {
+                            write!(
+                                stdout,
+                                "{:>5} {:>5} │{}",
+                                style(change.old_index().unwrap() + 1).cyan().dim(),
+                                "",
+                                style("-").red(),
+                            )?;
+                            for &(emphasized, change) in change.values() {
+                                if emphasized {
+                                    write!(stdout, "{}", style(change).red().underlined())?;
+                                } else {
+                                    write!(stdout, "{}", style(change).red())?;
+                                }
+                            }
+                        }
+                        ChangeTag::Equal => {
+                            write!(
+                                stdout,
+                                "{:>5} {:>5} │ ",
+                                style(change.old_index().unwrap() + 1).cyan().dim(),
+                                style(change.new_index().unwrap() + 1).cyan().dim().bold(),
+                            )?;
+                            for &(_, change) in change.values() {
+                                write!(stdout, "{}", style(change).dim())?;
+                            }
+                        }
+                    }
+                    if change.missing_newline() {
+                        writeln!(stdout)?;
+                    }
+                }
+            }
+        }
+
+        writeln!(stdout, "────────────┴{:─^1$}", "", width.saturating_sub(13))?;
 
         Ok(())
     }

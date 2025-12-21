@@ -200,13 +200,13 @@ current-version = "1.2.3"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,2 +1,2 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `seal.toml`
 
@@ -247,22 +247,19 @@ version-files = ["README.md"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -306,22 +303,19 @@ version-files = ["README.md"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -368,15 +362,16 @@ ignore-labels = ["internal", "ci"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-     
-     [changelog]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+        3     3 │ 
+        4     4 │ [changelog]
+        5     5 │ ignore-labels = ["internal", "ci"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `seal.toml`
 
@@ -410,13 +405,13 @@ current-version = "1.0.0"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,2 +1,2 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `seal.toml`
 
@@ -457,41 +452,42 @@ ignore-contributors = ["ignored"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-     
-     [changelog]
-    ───────────────────────────────────────────────────────────────────────────────
-    --- CHANGELOG.md
-    +++ CHANGELOG.md
-    @@ -0,0 +1,22 @@
-    +# Changelog
-    +
-    +## 1.0.1
-    +
-    +### Bug Fixes
-    +
-    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
-    +
-    +### Documentation
-    +
-    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
-    +
-    +### New Features
-    +
-    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
-    +
-    +### Contributors
-    +
-    +- [@alice](https://github.com/alice)
-    +- [@bob](https://github.com/bob)
-    +- [@joe](https://github.com/joe)
-    +
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+        3     3 │ 
+        4     4 │ [changelog]
+        5     5 │ ignore-labels = ["internal", "ci"]
+        6     6 │ ignore-contributors = ["ignored"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: CHANGELOG.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+              1 │+# Changelog
+              2 │+
+              3 │+## 1.0.1
+              4 │+
+              5 │+### Bug Fixes
+              6 │+
+              7 │+- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
+              8 │+
+              9 │+### Documentation
+             10 │+
+             11 │+- Update documentation ([#4](https://github.com/owner/repo/pull/4))
+             12 │+
+             13 │+### New Features
+             14 │+
+             15 │+- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+             16 │+
+             17 │+### Contributors
+             18 │+
+             19 │+- [@alice](https://github.com/alice)
+             20 │+- [@bob](https://github.com/bob)
+             21 │+- [@joe](https://github.com/joe)
+             22 │+
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGELOG.md`
@@ -536,41 +532,42 @@ changelog-path = "CHANGE_LOG.md"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-     
-     [changelog]
-    ───────────────────────────────────────────────────────────────────────────────
-    --- CHANGE_LOG.md
-    +++ CHANGE_LOG.md
-    @@ -0,0 +1,22 @@
-    +# Changelog
-    +
-    +## 1.0.1
-    +
-    +### Bug Fixes
-    +
-    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
-    +
-    +### Documentation
-    +
-    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
-    +
-    +### New Features
-    +
-    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
-    +
-    +### Contributors
-    +
-    +- [@alice](https://github.com/alice)
-    +- [@bob](https://github.com/bob)
-    +- [@joe](https://github.com/joe)
-    +
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+        3     3 │ 
+        4     4 │ [changelog]
+        5     5 │ ignore-labels = ["internal", "ci"]
+        6     6 │ ignore-contributors = ["ignored"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: CHANGE_LOG.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+              1 │+# Changelog
+              2 │+
+              3 │+## 1.0.1
+              4 │+
+              5 │+### Bug Fixes
+              6 │+
+              7 │+- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
+              8 │+
+              9 │+### Documentation
+             10 │+
+             11 │+- Update documentation ([#4](https://github.com/owner/repo/pull/4))
+             12 │+
+             13 │+### New Features
+             14 │+
+             15 │+- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+             16 │+
+             17 │+### Contributors
+             18 │+
+             19 │+- [@alice](https://github.com/alice)
+             20 │+- [@bob](https://github.com/bob)
+             21 │+- [@joe](https://github.com/joe)
+             22 │+
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGE_LOG.md`
@@ -612,23 +609,20 @@ commit-message = "Release v{version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -688,23 +682,21 @@ branch-name = "release/v{version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -766,23 +758,20 @@ branch-name = "release/v{version}"
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     branch-name = "release/v{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ branch-name = "release/v{version}"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -841,23 +830,22 @@ push = true
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -924,23 +912,22 @@ push = true
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -1008,23 +995,22 @@ confirm = false
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.4)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -1088,22 +1074,19 @@ version-files = ["README.md"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    / No newline at end of file
-    +# My Package (1.2.3-alpha.0)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.3-alpha.0"
-     version-files = ["README.md"]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.3-alpha.0)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.3-alpha.0"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -1147,22 +1130,19 @@ version-files = ["README.md"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3-alpha.0)
-    / No newline at end of file
-    +# My Package (1.2.3-alpha.1)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3-alpha.0"
-    +current-version = "1.2.3-alpha.1"
-     version-files = ["README.md"]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3-alpha.0)
+              1 │+# My Package (1.2.3-alpha.1)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3-alpha.0"
+              2 │+current-version = "1.2.3-alpha.1"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
@@ -1206,22 +1186,19 @@ version-files = ["README.md"]
 
     Preview of changes:
     ───────────────────────────────────────────────────────────────────────────────
-    --- README.md
-    +++ README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3-alpha)
-    / No newline at end of file
-    +# My Package (1.2.3-alpha.1)
-    / No newline at end of file
-    ───────────────────────────────────────────────────────────────────────────────
-    --- seal.toml
-    +++ seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3-alpha"
-    +current-version = "1.2.3-alpha.1"
-     version-files = ["README.md"]
-    ───────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3-alpha)
+              1 │+# My Package (1.2.3-alpha.1)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3-alpha"
+              2 │+current-version = "1.2.3-alpha.1"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`

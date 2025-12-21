@@ -1936,6 +1936,7 @@ name = "seal_file_change"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "console",
  "fs-err",
  "seal_fs",
  "seal_terminal",

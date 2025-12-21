@@ -13,6 +13,7 @@ seal_fs = { workspace = true }
 seal_terminal = { workspace = true }
 
 anyhow = { workspace = true }
+console = { workspace = true }
 fs-err = { workspace = true }
 similar = { workspace = true }
 

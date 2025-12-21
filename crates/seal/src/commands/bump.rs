@@ -116,6 +116,8 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         change.display_diff(&mut stdout, &file_resolver)?;
     }
 
+    writeln!(stdout)?;
+
     writeln!(stdout, "Changes to be made:")?;
 
     for change in &file_changes {
