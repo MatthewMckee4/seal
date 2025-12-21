@@ -76,45 +76,7 @@ When you run `seal bump patch`, you will see the following output.
 ```text
 Bumping version from 0.0.1 to 0.0.2
 
-Preview of changes:
--------------------
-
-diff --git a/my_app/__init__.py b/my_app/__init__.py
---- a/my_app/__init__.py
-+++ b/my_app/__init__.py
-@@ -1 +1 @@
--__version__ = "0.0.1"
-+__version__ = "0.0.2"
-
-diff --git a/pyproject.toml b/pyproject.toml
---- a/pyproject.toml
-+++ b/pyproject.toml
-@@ -1,5 +1,5 @@
- [project]
- name = "my_app"
--version = "0.0.1"
-+version = "0.0.2"
- description = "My App"
- requires-python = ">=3.13"
-
-diff --git a/seal.toml b/seal.toml
---- a/seal.toml
-+++ b/seal.toml
-@@ -1,5 +1,5 @@
- [release]
--current-version = "0.0.1"
-+current-version = "0.0.2"
-
- version-files = [
-     { path = "my_app/__init__.py", search = "__version__ = \"{version}\"" },
-Skipping changelog update because no `[changelog]` section was found in the configuration.
-
-Changes to be made:
-  - Update `/my_app/__init__.py`
-  - Update `/pyproject.toml`
-  - Update `/seal.toml`
-
-Note: No branch or commit will be created (branch-name and commit-message not configured)
+...
 
 Proceed with these changes? (y/n):
 ```
