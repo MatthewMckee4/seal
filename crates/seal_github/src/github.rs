@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use thiserror::Error;
@@ -36,8 +34,6 @@ pub trait GitHubService: Send + Sync {
     ) -> std::pin::Pin<
         Box<dyn std::future::Future<Output = Result<Vec<GitHubPullRequest>>> + Send + '_>,
     >;
-
-    fn push_branch(&self, current_directory: &Path, branch_name: &str) -> Result<()>;
 }
 
 #[derive(Debug, Error)]

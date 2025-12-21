@@ -14,6 +14,7 @@ license = "MIT"
 seal_bump = { path = "crates/seal_bump" }
 seal_changelog = { path = "crates/seal_changelog" }
 seal_cli = { path = "crates/seal_cli" }
+seal_command = { path = "crates/seal_command" }
 seal_file_change = { path = "crates/seal_file_change" }
 seal_fs = { path = "crates/seal_fs" }
 seal_github = { path = "crates/seal_github" }
@@ -21,6 +22,7 @@ seal_logging = { path = "crates/seal_logging" }
 seal_macros = { path = "crates/seal_macros" }
 seal_options_metadata = { path = "crates/seal_options_metadata" }
 seal_project = { path = "crates/seal_project" }
+seal_terminal = { path = "crates/seal_terminal" }
 seal_version = { path = "crates/seal_version" }
 
 anstream = { version = "0.6.21" }
@@ -29,6 +31,7 @@ assert_cmd = { version = "2.1" }
 assert_fs = { version = "1.1" }
 chrono = { version = "0.4.42" }
 clap = { version = "4.5.53", features = ["derive", "env", "string", "wrap_help"] }
+console = { version = "0.15.4" }
 dunce = { version = "1.0.5" }
 fs-err = { version = "3.2.1", features = ["tokio"] }
 glob = { version = "0.3.3" }
@@ -45,7 +48,7 @@ regex = { version = "1.12.2" }
 semver = { version = "1.0" }
 serde = { version = "1.0.228", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
-similar = { version = "2.7" }
+similar = { version = "2.7", features = ["inline"] }
 syn = { version = "2.0.111" }
 tempfile = { version = "3.23" }
 textwrap = { version = "0.16.2" }

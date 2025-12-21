@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use anyhow::Result;
 use chrono::{DateTime, TimeZone, Utc};
 
@@ -142,9 +140,5 @@ impl GitHubService for MockGithubClient {
             }
             Ok(prs)
         })
-    }
-
-    fn push_branch(&self, _current_directory: &Path, _branch_name: &str) -> Result<()> {
-        Ok(())
     }
 }

@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
-use owo_colors::OwoColorize;
+use console::style;
 use seal_fs::FileResolver;
+use similar::{Algorithm, ChangeTag, TextDiff};
 use std::path::{Path, PathBuf};
 
 pub struct FileChanges(Vec<FileChange>);
@@ -15,6 +16,10 @@ impl FileChanges {
             change.apply()?;
         }
         Ok(())
+    }
+
+    pub fn extend(&mut self, other: Self) {
+        self.0.extend(other.0);
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &FileChange> {
@@ -57,41 +62,82 @@ impl FileChange {
         stdout: &mut impl std::fmt::Write,
         file_resolver: &FileResolver,
     ) -> Result<()> {
-        use similar::{ChangeTag, TextDiff};
+        let width = seal_terminal::terminal_width();
 
         let path_string = file_resolver
             .relative_path(&self.abslute_path)
             .display()
             .to_string();
 
-        writeln!(stdout)?;
-        writeln!(
-            stdout,
-            "{}",
-            format!("diff --git a/{path_string} b/{path_string}").bold()
-        )?;
-        writeln!(stdout, "{}", format!("--- a/{path_string}").blue())?;
-        writeln!(stdout, "{}", format!("+++ b/{path_string}").blue())?;
+        writeln!(stdout, "Source: {path_string}")?;
 
-        let diff = TextDiff::from_lines(&self.old_content, &self.new_content);
+        let diff = TextDiff::configure()
+            .algorithm(Algorithm::Patience)
+            .diff_lines(&self.old_content, &self.new_content);
 
-        for hunk in diff.unified_diff().iter_hunks() {
-            writeln!(stdout, "{}", hunk.header().yellow().bold())?;
+        // The following diff output is very similar to what `insta` uses.
 
-            for change in hunk.iter_changes() {
-                let (sign, value): (&str, String) = match change.tag() {
-                    ChangeTag::Delete => ("-", change.value().red().to_string()),
-                    ChangeTag::Insert => ("+", change.value().green().to_string()),
-                    ChangeTag::Equal => (" ", change.value().dimmed().to_string()),
-                };
+        writeln!(stdout, "────────────┬{:─^1$}", "", width.saturating_sub(13))?;
 
-                if change.value().ends_with('\n') {
-                    write!(stdout, "{sign}{value}")?;
-                } else {
-                    writeln!(stdout, "{sign}{value}")?;
+        for (idx, group) in diff.grouped_ops(4).iter().enumerate() {
+            if idx > 0 {
+                writeln!(stdout, "┈┈┈┈┈┈┈┈┈┈┈┈┼{:┈^1$}", "", width.saturating_sub(13))?;
+            }
+            for op in group {
+                for change in diff.iter_inline_changes(op) {
+                    match change.tag() {
+                        ChangeTag::Insert => {
+                            write!(
+                                stdout,
+                                "{:>5} {:>5} │{}",
+                                "",
+                                style(change.new_index().unwrap() + 1).cyan().dim().bold(),
+                                style("+").green(),
+                            )?;
+                            for &(emphasized, change) in change.values() {
+                                if emphasized {
+                                    write!(stdout, "{}", style(change).green().underlined())?;
+                                } else {
+                                    write!(stdout, "{}", style(change).green())?;
+                                }
+                            }
+                        }
+                        ChangeTag::Delete => {
+                            write!(
+                                stdout,
+                                "{:>5} {:>5} │{}",
+                                style(change.old_index().unwrap() + 1).cyan().dim(),
+                                "",
+                                style("-").red(),
+                            )?;
+                            for &(emphasized, change) in change.values() {
+                                if emphasized {
+                                    write!(stdout, "{}", style(change).red().underlined())?;
+                                } else {
+                                    write!(stdout, "{}", style(change).red())?;
+                                }
+                            }
+                        }
+                        ChangeTag::Equal => {
+                            write!(
+                                stdout,
+                                "{:>5} {:>5} │ ",
+                                style(change.old_index().unwrap() + 1).cyan().dim(),
+                                style(change.new_index().unwrap() + 1).cyan().dim().bold(),
+                            )?;
+                            for &(_, change) in change.values() {
+                                write!(stdout, "{}", style(change).dim())?;
+                            }
+                        }
+                    }
+                    if change.missing_newline() {
+                        writeln!(stdout)?;
+                    }
                 }
             }
         }
+
+        writeln!(stdout, "────────────┴{:─^1$}", "", width.saturating_sub(13))?;
 
         Ok(())
     }

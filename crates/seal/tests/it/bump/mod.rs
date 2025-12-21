@@ -198,25 +198,17 @@ current-version = "1.2.3"
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
-    Warning: No version files configured - only seal.toml will be updated
-
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,2 +1,2 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `seal.toml`
-
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -254,31 +246,23 @@ version-files = ["README.md"]
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
-
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -318,36 +302,27 @@ version-files = ["README.md"]
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
+    Updating files...
     Successfully bumped to 1.2.4
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -379,37 +354,32 @@ ignore-labels = ["internal", "ci"]
 
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--no-changelog"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--no-changelog").arg("-v"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1
 
-    Warning: No version files configured - only seal.toml will be updated
-
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-     
-     [changelog]
-     ignore-labels = ["internal", "ci"]
-
-    Skipping changelog update because `--no-changelog` was provided.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+        3     3 │ 
+        4     4 │ [changelog]
+        5     5 │ ignore-labels = ["internal", "ci"]
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
     ----- stderr -----
+    INFO Workspace discovered at "[TEMP]/"
+    INFO Warning: No version files configured - only seal.toml will be updated
+    INFO Skipping changelog update because `--no-changelog` was provided.
 
     No changes applied.
     "#);
@@ -433,30 +403,21 @@ current-version = "1.0.0"
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1
 
-    Warning: No version files configured - only seal.toml will be updated
-
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,2 +1,2 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `seal.toml`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
+    Updating files...
     Successfully bumped to 1.0.1
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -483,69 +444,61 @@ ignore-contributors = ["ignored"]
 
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-v").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1
 
-    Warning: No version files configured - only seal.toml will be updated
-
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-     
-     [changelog]
-     ignore-labels = ["internal", "ci"]
-
-
-    diff --git a/CHANGELOG.md b/CHANGELOG.md
-    --- a/CHANGELOG.md
-    +++ b/CHANGELOG.md
-    @@ -0,0 +1,22 @@
-    +# Changelog
-    +
-    +## 1.0.1
-    +
-    +### Bug Fixes
-    +
-    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
-    +
-    +### Documentation
-    +
-    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
-    +
-    +### New Features
-    +
-    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
-    +
-    +### Contributors
-    +
-    +- [@alice](https://github.com/alice)
-    +- [@bob](https://github.com/bob)
-    +- [@joe](https://github.com/joe)
-    +
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+        3     3 │ 
+        4     4 │ [changelog]
+        5     5 │ ignore-labels = ["internal", "ci"]
+        6     6 │ ignore-contributors = ["ignored"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: CHANGELOG.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+              1 │+# Changelog
+              2 │+
+              3 │+## 1.0.1
+              4 │+
+              5 │+### Bug Fixes
+              6 │+
+              7 │+- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
+              8 │+
+              9 │+### Documentation
+             10 │+
+             11 │+- Update documentation ([#4](https://github.com/owner/repo/pull/4))
+             12 │+
+             13 │+### New Features
+             14 │+
+             15 │+- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+             16 │+
+             17 │+### Contributors
+             18 │+
+             19 │+- [@alice](https://github.com/alice)
+             20 │+- [@bob](https://github.com/bob)
+             21 │+- [@joe](https://github.com/joe)
+             22 │+
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGELOG.md`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
-    Updating changelog...
+    Updating files...
     Successfully bumped to 1.0.1
-    Note: No git branch or commit was created
 
     ----- stderr -----
+    INFO Workspace discovered at "[TEMP]/"
+    INFO Warning: No version files configured - only seal.toml will be updated
     "#);
 }
 
@@ -577,61 +530,51 @@ changelog-path = "CHANGE_LOG.md"
     ----- stdout -----
     Bumping version from 1.0.0 to 1.0.1
 
-    Warning: No version files configured - only seal.toml will be updated
-
     Preview of changes:
-    -------------------
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.0.0"
-    +current-version = "1.0.1"
-     
-     [changelog]
-     ignore-labels = ["internal", "ci"]
-
-
-    diff --git a/CHANGE_LOG.md b/CHANGE_LOG.md
-    --- a/CHANGE_LOG.md
-    +++ b/CHANGE_LOG.md
-    @@ -0,0 +1,22 @@
-    +# Changelog
-    +
-    +## 1.0.1
-    +
-    +### Bug Fixes
-    +
-    +- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
-    +
-    +### Documentation
-    +
-    +- Update documentation ([#4](https://github.com/owner/repo/pull/4))
-    +
-    +### New Features
-    +
-    +- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
-    +
-    +### Contributors
-    +
-    +- [@alice](https://github.com/alice)
-    +- [@bob](https://github.com/bob)
-    +- [@joe](https://github.com/joe)
-    +
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.0.0"
+              2 │+current-version = "1.0.1"
+        3     3 │ 
+        4     4 │ [changelog]
+        5     5 │ ignore-labels = ["internal", "ci"]
+        6     6 │ ignore-contributors = ["ignored"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: CHANGE_LOG.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+              1 │+# Changelog
+              2 │+
+              3 │+## 1.0.1
+              4 │+
+              5 │+### Bug Fixes
+              6 │+
+              7 │+- Fix critical bug in module Y ([#5](https://github.com/owner/repo/pull/5))
+              8 │+
+              9 │+### Documentation
+             10 │+
+             11 │+- Update documentation ([#4](https://github.com/owner/repo/pull/4))
+             12 │+
+             13 │+### New Features
+             14 │+
+             15 │+- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+             16 │+
+             17 │+### Contributors
+             18 │+
+             19 │+- [@alice](https://github.com/alice)
+             20 │+- [@bob](https://github.com/bob)
+             21 │+- [@joe](https://github.com/joe)
+             22 │+
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `seal.toml`
       - Update `CHANGE_LOG.md`
 
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
-
     Proceed with these changes? (y/n):
-    Updating version files...
-    Updating changelog...
+    Updating files...
     Successfully bumped to 1.0.1
-    Note: No git branch or commit was created
 
     ----- stderr -----
     "#);
@@ -665,26 +608,20 @@ commit-message = "Release v{version}"
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
@@ -692,13 +629,13 @@ commit-message = "Release v{version}"
 
     Commands to be executed:
       `git add -A`
-      `git commit -m "Release v1.2.4"`
+      `git commit -m Release v1.2.4`
 
     Proceed with these changes? (y/n):
-    Updating version files...
-    Committing changes...
+    Updating files...
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
     Successfully bumped to 1.2.4
-    Note: No git branch was created
 
     ----- stderr -----
     "#);
@@ -744,27 +681,21 @@ branch-name = "release/v{version}"
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-     branch-name = "release/v{version}"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
@@ -773,12 +704,13 @@ branch-name = "release/v{version}"
     Commands to be executed:
       `git checkout -b release/v1.2.4`
       `git add -A`
-      `git commit -m "Release v1.2.4"`
+      `git commit -m Release v1.2.4`
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
-    Updating version files...
-    Committing changes...
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -825,26 +757,20 @@ branch-name = "release/v{version}"
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,4 +1,4 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     branch-name = "release/v{version}"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ branch-name = "release/v{version}"
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
@@ -854,10 +780,9 @@ branch-name = "release/v{version}"
       `git checkout -b release/v1.2.4`
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
-    Updating version files...
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
     Successfully bumped to 1.2.4
-    Note: No git commit was created
 
     ----- stderr -----
     "#);
@@ -904,27 +829,22 @@ push = true
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-     branch-name = "release/v{version}"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
@@ -933,14 +853,15 @@ push = true
     Commands to be executed:
       `git checkout -b release/v1.2.4`
       `git add -A`
-      `git commit -m "Release v1.2.4"`
-      `git push -u origin release/v1.2.4`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
-    Updating version files...
-    Committing changes...
-    Pushing branch to remote...
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -990,27 +911,22 @@ push = true
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-     branch-name = "release/v{version}"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
@@ -1019,14 +935,15 @@ push = true
     Commands to be executed:
       `git checkout -b release/v1.2.4`
       `git add -A`
-      `git commit -m "Release v1.2.4"`
-      `git push -u origin release/v1.2.4`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
 
     Proceed with these changes? (y/n):
-    Creating branch: release/v1.2.4
-    Updating version files...
-    Committing changes...
-    Pushing branch to remote...
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -1077,27 +994,22 @@ confirm = false
     Bumping version from 1.2.3 to 1.2.4
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.4)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,5 +1,5 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.4"
-     version-files = ["README.md"]
-     commit-message = "Release v{version}"
-     branch-name = "release/v{version}"
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
@@ -1106,13 +1018,14 @@ confirm = false
     Commands to be executed:
       `git checkout -b release/v1.2.4`
       `git add -A`
-      `git commit -m "Release v1.2.4"`
-      `git push -u origin release/v1.2.4`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
 
-    Creating branch: release/v1.2.4
-    Updating version files...
-    Committing changes...
-    Pushing branch to remote...
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Executing command: `git push origin release/v1.2.4`
     Successfully bumped to 1.2.4
 
     ----- stderr -----
@@ -1160,31 +1073,23 @@ version-files = ["README.md"]
     Bumping version from 1.2.3 to 1.2.3-alpha.0
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3)
-    +# My Package (1.2.3-alpha.0)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3"
-    +current-version = "1.2.3-alpha.0"
-     version-files = ["README.md"]
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.3-alpha.0)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.3-alpha.0"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
-
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -1224,31 +1129,23 @@ version-files = ["README.md"]
     Bumping version from 1.2.3-alpha.0 to 1.2.3-alpha.1
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3-alpha.0)
-    +# My Package (1.2.3-alpha.1)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3-alpha.0"
-    +current-version = "1.2.3-alpha.1"
-     version-files = ["README.md"]
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3-alpha.0)
+              1 │+# My Package (1.2.3-alpha.1)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3-alpha.0"
+              2 │+current-version = "1.2.3-alpha.1"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
-
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 
@@ -1288,31 +1185,23 @@ version-files = ["README.md"]
     Bumping version from 1.2.3-alpha to 1.2.3-alpha.1
 
     Preview of changes:
-    -------------------
-
-    diff --git a/README.md b/README.md
-    --- a/README.md
-    +++ b/README.md
-    @@ -1 +1 @@
-    -# My Package (1.2.3-alpha)
-    +# My Package (1.2.3-alpha.1)
-
-    diff --git a/seal.toml b/seal.toml
-    --- a/seal.toml
-    +++ b/seal.toml
-    @@ -1,3 +1,3 @@
-     [release]
-    -current-version = "1.2.3-alpha"
-    +current-version = "1.2.3-alpha.1"
-     version-files = ["README.md"]
-
-    Skipping changelog update because no `[changelog]` section was found in the configuration.
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3-alpha)
+              1 │+# My Package (1.2.3-alpha.1)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3-alpha"
+              2 │+current-version = "1.2.3-alpha.1"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
 
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
-
-    Note: No branch or commit will be created (branch-name and commit-message not configured)
 
     Dry run complete. No changes made.
 

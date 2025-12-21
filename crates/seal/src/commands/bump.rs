@@ -1,10 +1,10 @@
 use std::fmt::Write as _;
 use std::io;
-use std::process::Command;
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
+use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
 use seal_github::GitHubService;
 use seal_project::ProjectWorkspace;
@@ -58,11 +58,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let version_files = release_config.version_files.as_deref().unwrap_or(&[]);
 
     if version_files.is_empty() {
-        writeln!(
-            stdout,
-            "Warning: No version files configured - only seal.toml will be updated"
-        )?;
-        writeln!(stdout)?;
+        tracing::info!("Warning: No version files configured - only seal.toml will be updated");
     }
 
     let file_resolver = FileResolver::new(workspace.root().clone());
@@ -82,7 +78,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         Arc::new(GitHubClient::new(owner, repo)?)
     };
 
-    let changes = calculate_version_file_changes(
+    let mut file_changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
         current_version_string,
@@ -90,16 +86,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         &file_resolver,
     )?;
 
-    writeln!(stdout, "Preview of changes:")?;
-    writeln!(stdout, "-------------------")?;
-
-    for change in &changes {
-        change.display_diff(&mut stdout, &file_resolver)?;
-    }
-
-    writeln!(stdout)?;
-
-    let changelog_changes = if !args.no_changelog {
+    if !args.no_changelog {
         if let Some(changelog_config) = config.changelog.as_ref() {
             let changes = seal_changelog::prepare_changelog_changes(
                 workspace.root(),
@@ -110,121 +97,89 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             .await
             .context("Failed to prepare changelog")?;
 
-            for change in &changes {
-                change.display_diff(&mut stdout, &file_resolver)?;
-            }
-            Some(changes)
+            file_changes.extend(changes);
         } else {
-            writeln!(
-                stdout,
+            tracing::info!(
                 "Skipping changelog update because no `[changelog]` section was found in the configuration."
-            )?;
-            None
+            );
         }
     } else {
-        writeln!(
-            stdout,
-            "Skipping changelog update because `--no-changelog` was provided."
-        )?;
-        None
-    };
+        tracing::info!("Skipping changelog update because `--no-changelog` was provided.");
+    }
+
+    writeln!(stdout, "Preview of changes:")?;
+    let width = seal_terminal::terminal_width();
+
+    writeln!(stdout, "─────────────{:─^1$}", "", width.saturating_sub(13))?;
+
+    for change in &file_changes {
+        change.display_diff(&mut stdout, &file_resolver)?;
+    }
 
     writeln!(stdout)?;
 
-    let has_git_operations = branch_name.is_some() || commit_message.is_some();
-
     writeln!(stdout, "Changes to be made:")?;
-    for change in &changes {
+
+    for change in &file_changes {
         writeln!(
             stdout,
             "  - Update `{}`",
             file_resolver.relative_path(change.path()).display()
         )?;
     }
-    if let Some(ref changelog) = changelog_changes {
-        for change in changelog {
-            writeln!(
-                stdout,
-                "  - Update `{}`",
-                file_resolver.relative_path(change.path()).display()
-            )?;
-        }
-    }
+
     writeln!(stdout)?;
 
-    if has_git_operations {
-        writeln!(stdout, "Commands to be executed:")?;
-        if let Some(branch) = &branch_name {
-            writeln!(stdout, "  `git checkout -b {branch}`")?;
-        }
+    let mut commands = Vec::new();
 
-        if let Some(message) = &commit_message {
-            writeln!(stdout, "  `git add -A`")?;
-            writeln!(stdout, "  `git commit -m \"{message}\"`")?;
+    if let Some(branch) = &branch_name {
+        commands.push(CommandWrapper::create_branch(branch));
+    }
+
+    if let Some(message) = &commit_message {
+        commands.push(CommandWrapper::git_add_all());
+        commands.push(CommandWrapper::git_commit(message));
+    }
+
+    if release_config.push {
+        if let Some(branch) = &branch_name {
+            commands.push(CommandWrapper::git_push_branch(branch));
         }
-        if release_config.push {
-            if let Some(branch) = &branch_name {
-                writeln!(stdout, "  `git push -u origin {branch}`")?;
-            }
-        }
-    } else {
-        writeln!(
-            stdout,
-            "Note: No branch or commit will be created (branch-name and commit-message not configured)"
-        )?;
     }
 
     if args.dry_run {
-        writeln!(stdout)?;
         writeln!(stdout, "Dry run complete. No changes made.")?;
         return Ok(ExitStatus::Success);
     }
 
-    if release_config.confirm {
+    if !commands.is_empty() {
+        writeln!(stdout, "Commands to be executed:")?;
+
+        for command in &commands {
+            writeln!(stdout, "  `{}`", command.as_string())?;
+        }
+
         writeln!(stdout)?;
+    }
+
+    if release_config.confirm {
         if !confirm_changes(&mut stdout)? {
             writeln!(printer.stderr())?;
             writeln!(printer.stderr(), "No changes applied.")?;
             return Ok(ExitStatus::Success);
         }
+        writeln!(stdout)?;
     }
 
-    writeln!(stdout)?;
+    writeln!(stdout, "Updating files...")?;
 
-    if let Some(branch) = &branch_name {
-        writeln!(stdout, "Creating branch: {branch}")?;
-        create_git_branch(branch)?;
-    }
+    file_changes.apply()?;
 
-    writeln!(stdout, "Updating version files...")?;
-    changes.apply()?;
-
-    if let Some(changelog) = changelog_changes {
-        writeln!(stdout, "Updating changelog...")?;
-        changelog.apply()?;
-    }
-
-    if let Some(message) = &commit_message {
-        writeln!(stdout, "Committing changes...")?;
-        commit_changes(message)?;
-    }
-
-    if release_config.push {
-        if let Some(branch) = &branch_name {
-            writeln!(stdout, "Pushing branch to remote...")?;
-            github_client.push_branch(workspace.root(), branch)?;
-        }
+    for command in &commands {
+        command.execute(&mut stdout, workspace.root())?;
     }
 
     writeln!(stdout, "Successfully bumped to {new_version_string}")?;
-
-    if branch_name.is_none() && commit_message.is_none() {
-        writeln!(stdout, "Note: No git branch or commit was created")?;
-    } else if branch_name.is_none() {
-        writeln!(stdout, "Note: No git branch was created")?;
-    } else if commit_message.is_none() {
-        writeln!(stdout, "Note: No git commit was created")?;
-    }
 
     Ok(ExitStatus::Success)
 }
@@ -239,27 +194,4 @@ fn confirm_changes(stdout: &mut impl std::fmt::Write) -> Result<bool> {
 
     let answer = input.trim().to_lowercase();
     Ok(answer == "y" || answer == "yes")
-}
-
-fn create_git_branch(branch_name: &str) -> Result<()> {
-    Command::new("git")
-        .args(["checkout", "-b", branch_name])
-        .output()
-        .context("Failed to execute git checkout")?;
-
-    Ok(())
-}
-
-fn commit_changes(message: &str) -> Result<()> {
-    Command::new("git")
-        .args(["add", "-A"])
-        .output()
-        .context("Failed to execute git add")?;
-
-    Command::new("git")
-        .args(["commit", "-m", message])
-        .output()
-        .context("Failed to execute git commit")?;
-
-    Ok(())
 }
