@@ -292,8 +292,6 @@ pub static INSTA_FILTERS: &[(&str, &str)] = &[
     ),
     // Strip ANSI color codes (match ESC character using character class)
     (r"[\x1b]\[[0-9;]*m", ""),
-    // Strip horizontal lines, in ci, we can have different sized terminals, so it is best to ignore them
-    (r"^(\s*)─+$", "$1[HORIZONTAL LINE]"),
 ];
 
 /// Get the function name for snapshot naming.
