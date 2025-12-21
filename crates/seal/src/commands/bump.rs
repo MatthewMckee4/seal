@@ -110,7 +110,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Preview of changes:")?;
     let width = seal_terminal::terminal_width();
 
-    writeln!(stdout, "────────────{:─^1$}", "", width.saturating_sub(13))?;
+    writeln!(stdout, "─────────────{:─^1$}", "", width.saturating_sub(13))?;
 
     for change in &file_changes {
         change.display_diff(&mut stdout, &file_resolver)?;
