@@ -3,11 +3,12 @@ use std::fmt::Write;
 use std::path::Path;
 use std::sync::Arc;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use seal_file_change::{FileChange, FileChanges};
 use seal_github::{GitHubPullRequest, GitHubService, filter_prs_by_date_range};
 
 use seal_project::ChangelogConfig;
+use semver::Version;
 
 pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
 
@@ -310,17 +311,10 @@ pub fn parse_latest_changelog_section(changelog_content: &str) -> Result<Changel
     Ok(ChangelogSection { version, body })
 }
 
-pub fn is_prerelease(version: &str) -> bool {
-    let lower = version.to_lowercase();
-    lower.contains("-alpha")
-        || lower.contains("-beta")
-        || lower.contains("-rc")
-        || lower.contains("-pre")
-}
-
 pub fn create_release_body(changelog_content: &str) -> Result<ReleaseBody> {
     let section = parse_latest_changelog_section(changelog_content)?;
-    let prerelease = is_prerelease(&section.version);
+    let version = Version::parse(&section.version).context("Invalid current version")?;
+    let prerelease = !version.pre.is_empty();
 
     Ok(ReleaseBody {
         title: section.version,
@@ -741,40 +735,6 @@ mod tests {
         let section = parse_latest_changelog_section(changelog).unwrap();
         assert_eq!(section.version, "2.0.0-beta.1");
         assert_eq!(section.body, "### Changes\n\n- Breaking change");
-    }
-
-    #[test]
-    fn test_is_prerelease_alpha() {
-        assert!(is_prerelease("1.0.0-alpha.1"));
-        assert!(is_prerelease("1.0.0-ALPHA"));
-        assert!(is_prerelease("2.0.0-alpha"));
-    }
-
-    #[test]
-    fn test_is_prerelease_beta() {
-        assert!(is_prerelease("1.0.0-beta.1"));
-        assert!(is_prerelease("1.0.0-BETA"));
-        assert!(is_prerelease("2.0.0-beta"));
-    }
-
-    #[test]
-    fn test_is_prerelease_rc() {
-        assert!(is_prerelease("1.0.0-rc.1"));
-        assert!(is_prerelease("1.0.0-RC"));
-        assert!(is_prerelease("2.0.0-rc"));
-    }
-
-    #[test]
-    fn test_is_prerelease_pre() {
-        assert!(is_prerelease("1.0.0-pre.1"));
-        assert!(is_prerelease("1.0.0-PRE"));
-    }
-
-    #[test]
-    fn test_is_prerelease_stable() {
-        assert!(!is_prerelease("1.0.0"));
-        assert!(!is_prerelease("2.3.4"));
-        assert!(!is_prerelease("10.0.0"));
     }
 
     #[test]
