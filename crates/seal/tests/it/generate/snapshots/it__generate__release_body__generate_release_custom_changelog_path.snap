@@ -1,0 +1,9 @@
+---
+source: crates/seal/tests/it/generate/release_body.rs
+expression: formatted
+---
+{
+  "body": "### Features\n\n- Custom path feature",
+  "prerelease": false,
+  "title": "1.0.0"
+}

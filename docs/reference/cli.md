@@ -185,6 +185,7 @@ seal generate [OPTIONS] <COMMAND>
 <h3 class="cli-reference">Commands</h3>
 
 <dl class="cli-reference"><dt><a href="#seal-generate-changelog"><code>seal generate changelog</code></a></dt><dd><p>Generate changelog</p></dd>
+<dt><a href="#seal-generate-release"><code>seal generate release</code></a></dt><dd><p>Generate release body JSON from latest changelog section</p></dd>
 </dl>
 
 ### seal generate changelog
@@ -222,6 +223,33 @@ seal generate changelog [OPTIONS]
 </dd><dt id="seal-generate-changelog--quiet"><a href="#seal-generate-changelog--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-generate-changelog--verbose"><a href="#seal-generate-changelog--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd></dl>
+
+### seal generate release
+
+Generate release body JSON from latest changelog section
+
+<h3 class="cli-reference">Usage</h3>
+
+```
+seal generate release [OPTIONS]
+```
+
+<h3 class="cli-reference">Options</h3>
+
+<dl class="cli-reference"><dt id="seal-generate-release--color"><a href="#seal-generate-release--color"><code>--color</code></a> <i>color-choice</i></dt><dd><p>Control the use of color in output.</p>
+<p>By default, seal will automatically detect support for colors when writing to a terminal.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
+<li><code>always</code>:  Enables colored output regardless of the detected environment</li>
+<li><code>never</code>:  Disables colored output</li>
+</ul></dd><dt id="seal-generate-release--help"><a href="#seal-generate-release--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
+</dd><dt id="seal-generate-release--no-progress"><a href="#seal-generate-release--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
+<p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-generate-release--quiet"><a href="#seal-generate-release--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
+<p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
+</dd><dt id="seal-generate-release--verbose"><a href="#seal-generate-release--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
 </dd></dl>
 
 ## seal help

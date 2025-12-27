@@ -271,6 +271,64 @@ pub async fn generate_full_changelog(
     Ok(output)
 }
 
+#[derive(Debug, Clone)]
+pub struct ChangelogSection {
+    pub version: String,
+    pub body: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ReleaseBody {
+    pub title: String,
+    pub body: String,
+    pub prerelease: bool,
+}
+
+pub fn parse_latest_changelog_section(changelog_content: &str) -> Result<ChangelogSection> {
+    let lines: Vec<&str> = changelog_content.lines().collect();
+
+    let section_start = lines
+        .iter()
+        .position(|line| line.starts_with("## "))
+        .ok_or_else(|| anyhow::anyhow!("No version sections found in changelog"))?;
+
+    let version = lines[section_start]
+        .strip_prefix("## ")
+        .unwrap()
+        .trim()
+        .to_string();
+
+    let section_end = lines[section_start + 1..]
+        .iter()
+        .position(|line| line.starts_with("## "))
+        .map(|pos| section_start + 1 + pos)
+        .unwrap_or(lines.len());
+
+    let body_lines = &lines[section_start + 1..section_end];
+    let body = body_lines.join("\n").trim().to_string();
+
+    Ok(ChangelogSection { version, body })
+}
+
+pub fn is_prerelease(version: &str) -> bool {
+    let lower = version.to_lowercase();
+    lower.contains("-alpha")
+        || lower.contains("-beta")
+        || lower.contains("-rc")
+        || lower.contains("-pre")
+}
+
+pub fn create_release_body(changelog_content: &str) -> Result<ReleaseBody> {
+    let section = parse_latest_changelog_section(changelog_content)?;
+    let prerelease = is_prerelease(&section.version);
+
+    Ok(ReleaseBody {
+        title: section.version,
+        body: section.body,
+        prerelease,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -624,5 +682,138 @@ mod tests {
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
 
         insta::assert_snapshot!(result, @"## 1.0.0");
+    }
+
+    #[test]
+    fn test_parse_latest_changelog_section() {
+        let changelog = r"# Changelog
+
+## 1.0.0
+
+### Features
+
+- Added feature ([#1](url))
+
+### Contributors
+
+- [@alice](https://github.com/alice)
+
+## 0.9.0
+
+### Bug Fixes
+
+- Fixed bug
+";
+
+        let section = parse_latest_changelog_section(changelog).unwrap();
+        assert_eq!(section.version, "1.0.0");
+        assert_eq!(
+            section.body,
+            "### Features\n\n- Added feature ([#1](url))\n\n### Contributors\n\n- [@alice](https://github.com/alice)"
+        );
+    }
+
+    #[test]
+    fn test_parse_latest_changelog_section_no_sections() {
+        let changelog = "# Changelog\n\nSome text but no version sections.";
+
+        let result = parse_latest_changelog_section(changelog);
+        assert!(result.is_err());
+        assert!(
+            result
+                .unwrap_err()
+                .to_string()
+                .contains("No version sections found")
+        );
+    }
+
+    #[test]
+    fn test_parse_latest_changelog_section_single_version() {
+        let changelog = r"# Changelog
+
+## 2.0.0-beta.1
+
+### Changes
+
+- Breaking change
+";
+
+        let section = parse_latest_changelog_section(changelog).unwrap();
+        assert_eq!(section.version, "2.0.0-beta.1");
+        assert_eq!(section.body, "### Changes\n\n- Breaking change");
+    }
+
+    #[test]
+    fn test_is_prerelease_alpha() {
+        assert!(is_prerelease("1.0.0-alpha.1"));
+        assert!(is_prerelease("1.0.0-ALPHA"));
+        assert!(is_prerelease("2.0.0-alpha"));
+    }
+
+    #[test]
+    fn test_is_prerelease_beta() {
+        assert!(is_prerelease("1.0.0-beta.1"));
+        assert!(is_prerelease("1.0.0-BETA"));
+        assert!(is_prerelease("2.0.0-beta"));
+    }
+
+    #[test]
+    fn test_is_prerelease_rc() {
+        assert!(is_prerelease("1.0.0-rc.1"));
+        assert!(is_prerelease("1.0.0-RC"));
+        assert!(is_prerelease("2.0.0-rc"));
+    }
+
+    #[test]
+    fn test_is_prerelease_pre() {
+        assert!(is_prerelease("1.0.0-pre.1"));
+        assert!(is_prerelease("1.0.0-PRE"));
+    }
+
+    #[test]
+    fn test_is_prerelease_stable() {
+        assert!(!is_prerelease("1.0.0"));
+        assert!(!is_prerelease("2.3.4"));
+        assert!(!is_prerelease("10.0.0"));
+    }
+
+    #[test]
+    fn test_create_release_body_stable() {
+        let changelog = r"# Changelog
+
+## 1.0.0
+
+### Features
+
+- Added feature
+
+## 0.9.0
+
+### Bug Fixes
+
+- Fixed bug
+";
+
+        let release_body = create_release_body(changelog).unwrap();
+        assert_eq!(release_body.title, "1.0.0");
+        assert_eq!(release_body.body, "### Features\n\n- Added feature");
+        assert!(!release_body.prerelease);
+    }
+
+    #[test]
+    fn test_create_release_body_prerelease() {
+        let changelog = r"# Changelog
+
+## 2.0.0-alpha.1
+
+### Breaking Changes
+
+- API changed
+";
+
+        let release_body = create_release_body(changelog).unwrap();
+        assert_eq!(release_body.title, "2.0.0-alpha.1");
+        assert_eq!(release_body.body, "### Breaking Changes\n\n- API changed");
+        assert!(release_body.prerelease);
     }
 }
