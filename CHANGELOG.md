@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.1-alpha.5
+
+### Bumping
+
+- Update to bump command output ([#55](https://github.com/MatthewMckee4/seal/pull/55))
+- Remove create PR ([#54](https://github.com/MatthewMckee4/seal/pull/54))
+
+### Documentation
+
+- Update bump documentation ([#57](https://github.com/MatthewMckee4/seal/pull/57))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+
 ## 0.0.1-alpha.4
 
 ### Bumping
