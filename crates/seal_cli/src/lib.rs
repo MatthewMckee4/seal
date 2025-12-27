@@ -248,4 +248,6 @@ pub enum GenerateCommand {
         #[arg(long, default_missing_value = "true", num_args = 0..1)]
         overwrite: Option<bool>,
     },
+    /// Generate release body JSON from latest changelog section
+    Release,
 }

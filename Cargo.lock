@@ -1891,6 +1891,7 @@ dependencies = [
  "seal_file_change",
  "seal_github",
  "seal_project",
+ "semver",
  "serde",
  "serde_json",
  "tempfile",

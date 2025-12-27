@@ -1,0 +1,9 @@
+---
+source: crates/seal/tests/it/generate/release_body.rs
+expression: formatted
+---
+{
+  "body": "### Features\n\n- Feature A ([#5](url))\n- Feature B ([#6](url))\n\n### Bug Fixes\n\n- Bug fix ([#7](url))\n\n### Contributors\n\n- [@alice](https://github.com/alice)\n- [@bob](https://github.com/bob)\n- [@charlie](https://github.com/charlie)",
+  "prerelease": false,
+  "title": "1.2.3"
+}

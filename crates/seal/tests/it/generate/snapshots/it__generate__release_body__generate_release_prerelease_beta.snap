@@ -1,0 +1,9 @@
+---
+source: crates/seal/tests/it/generate/release_body.rs
+expression: formatted
+---
+{
+  "body": "### Improvements\n\n- Performance improvements",
+  "prerelease": true,
+  "title": "1.5.0-beta.2"
+}
