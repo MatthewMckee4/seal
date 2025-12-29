@@ -35,7 +35,7 @@ console = { version = "0.15.4" }
 dunce = { version = "1.0.5" }
 fs-err = { version = "3.2.1", features = ["tokio"] }
 glob = { version = "0.3.3" }
-insta = { version = "1.44", features = ["filters", "json"] }
+insta = { version = "1.45", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
 jiff = { version = "0.2.16", features = ["serde"] }
 markdown = { version = "1.0.0" }
