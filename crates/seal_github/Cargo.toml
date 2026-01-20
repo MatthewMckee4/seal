@@ -15,9 +15,7 @@ octocrab = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-insta = { workspace = true }
 tempfile = { workspace = true }
-tokio = { workspace = true }
 
 [lints]
 workspace = true

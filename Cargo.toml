@@ -58,7 +58,6 @@ toml = { version = "0.9" }
 tracing = { version = "0.1.44" }
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 which = { version = "8.0.0" }
-wiremock = { version = "0.6" }
 
 [workspace.lints.clippy]
 pedantic = { level = "warn", priority = -2 }

@@ -16,9 +16,7 @@ seal_project = { workspace = true }
 anyhow = { workspace = true }
 fs-err = { workspace = true }
 glob = { workspace = true }
-owo-colors = { workspace = true }
 semver = { workspace = true }
-similar = { workspace = true }
 thiserror = { workspace = true }
 toml = { workspace = true }
 tracing = { workspace = true }

@@ -1873,12 +1873,10 @@ dependencies = [
  "anyhow",
  "fs-err",
  "glob",
- "owo-colors",
  "seal_file_change",
  "seal_fs",
  "seal_project",
  "semver",
- "similar",
  "thiserror",
  "toml",
  "tracing",
@@ -1897,9 +1895,7 @@ dependencies = [
  "seal_project",
  "semver",
  "serde",
- "serde_json",
  "tempfile",
- "tokio",
 ]
 
 [[package]]
@@ -1916,7 +1912,6 @@ name = "seal_command"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "tracing",
 ]
 
 [[package]]
@@ -1958,11 +1953,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
- "insta",
  "octocrab",
  "tempfile",
  "thiserror",
- "tokio",
 ]
 
 [[package]]
