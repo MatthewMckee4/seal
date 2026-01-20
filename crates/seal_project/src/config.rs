@@ -205,7 +205,7 @@ pub struct ReleaseConfig {
     pub on_pre_commit_failure: PreCommitFailure,
 }
 
-#[allow(clippy::trivially_copy_pass_by_ref)]
+#[expect(clippy::trivially_copy_pass_by_ref)]
 fn is_default_pre_commit_failure(value: &PreCommitFailure) -> bool {
     *value == PreCommitFailure::Abort
 }
