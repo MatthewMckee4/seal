@@ -138,6 +138,14 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     if let Some(message) = &commit_message {
         commands.push(CommandWrapper::git_add_all());
+
+        if let Some(pre_commit_cmds) = release_config.pre_commit_commands.as_ref() {
+            for cmd in pre_commit_cmds {
+                commands.push(CommandWrapper::custom(cmd));
+            }
+            commands.push(CommandWrapper::git_add_all());
+        }
+
         commands.push(CommandWrapper::git_commit(message));
     }
 

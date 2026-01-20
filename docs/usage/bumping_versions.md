@@ -82,3 +82,25 @@ Proceed with these changes? (y/n):
 ```
 
 Once you proceed with `y`, the changes will be applied.
+
+## Pre-Commit Commands
+
+You can configure commands to run before committing using the `pre-commit-commands` option.
+These commands run after `git add -A` stages your version changes, allowing you to run
+formatters, linters, or other tools. A second `git add -A` runs after the pre-commit
+commands to stage any changes they make.
+
+```toml title="seal.toml"
+[release]
+current-version = "0.0.1"
+commit-message = "Release {version}"
+pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
+```
+
+When you run `seal bump patch`, the command sequence will be:
+
+1. `git add -A` (stage version file changes)
+1. `cargo fmt` (format code)
+1. `npm run lint:fix` (fix lint issues)
+1. `git add -A` (stage any changes from pre-commit commands)
+1. `git commit -m "Release 0.0.2"`

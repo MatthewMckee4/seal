@@ -169,6 +169,18 @@ pub struct ReleaseConfig {
     confirm = true"#
     )]
     pub confirm: bool,
+
+    /// Commands to run before committing. These run after `git add -A` and before `git commit`.
+    /// A second `git add -A` is run after these commands to stage any changes they make.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "[]",
+        value_type = "list",
+        example = r#"
+        pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
+    "#
+    )]
+    pub pre_commit_commands: Option<Vec<String>>,
 }
 
 fn default_push() -> bool {
@@ -513,7 +525,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -751,6 +763,7 @@ branch-name = ""
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
                 push: true,
                 confirm: true,
+                pre_commit_commands: None,
             }),
             changelog: None,
         };
@@ -801,6 +814,7 @@ commit-message = "Release {version} with {version} tag"
                     branch_name: None,
                     push: false,
                     confirm: true,
+                    pre_commit_commands: None,
                 },
             ),
             changelog: None,
@@ -869,6 +883,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     branch_name: None,
                     push: false,
                     confirm: true,
+                    pre_commit_commands: None,
                 },
             ),
             changelog: None,
@@ -898,6 +913,7 @@ version-files = []
                     branch_name: None,
                     push: false,
                     confirm: true,
+                    pre_commit_commands: None,
                 },
             ),
             changelog: None,

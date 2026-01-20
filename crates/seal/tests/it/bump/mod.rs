@@ -1248,3 +1248,206 @@ version-files = ["README.md"]
     insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
     insta::assert_snapshot!(context.git_last_commit_message(), @"");
 }
+
+#[test]
+fn bump_with_pre_commit_commands_dry_run() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+pre-commit-commands = ["touch pre-commit-ran.txt", "echo done"]
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ pre-commit-commands = ["touch pre-commit-ran.txt", "echo done"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Dry run complete. No changes made.
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"");
+}
+
+#[test]
+fn bump_with_pre_commit_commands_execute() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+pre-commit-commands = ["touch pre-commit-ran.txt"]
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ pre-commit-commands = ["touch pre-commit-ran.txt"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git add -A`
+      `touch pre-commit-ran.txt`
+      `git add -A`
+      `git commit -m Release v1.2.4`
+
+    Proceed with these changes? (y/n):
+    Updating files...
+    Executing command: `git add -A`
+    Executing command: `touch pre-commit-ran.txt`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Successfully bumped to 1.2.4
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
+    assert!(context.root.join("pre-commit-ran.txt").exists());
+    insta::assert_snapshot!(context.git_current_branch(), @"main");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
+fn bump_with_pre_commit_commands_no_confirm() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+pre-commit-commands = ["touch pre-commit-ran.txt"]
+confirm = false
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ pre-commit-commands = ["touch pre-commit-ran.txt"]
+        6     6 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git add -A`
+      `touch pre-commit-ran.txt`
+      `git add -A`
+      `git commit -m Release v1.2.4`
+
+    Updating files...
+    Executing command: `git add -A`
+    Executing command: `touch pre-commit-ran.txt`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Successfully bumped to 1.2.4
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
+    assert!(context.root.join("pre-commit-ran.txt").exists());
+    insta::assert_snapshot!(context.git_current_branch(), @"main");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}

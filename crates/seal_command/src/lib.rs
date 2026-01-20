@@ -59,4 +59,14 @@ impl CommandWrapper {
     pub fn git_push_branch(branch_name: &str) -> Self {
         Self::new(vec!["git", "push", "origin", branch_name])
     }
+
+    /// Create a custom command from a shell command string.
+    ///
+    /// The command string is split on whitespace. For complex commands with
+    /// quoted arguments, consider using `new` directly with a properly
+    /// constructed argument vector.
+    pub fn custom(command: &str) -> Self {
+        let parts: Vec<&str> = command.split_whitespace().collect();
+        Self::new(parts)
+    }
 }
