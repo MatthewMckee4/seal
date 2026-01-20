@@ -27,11 +27,9 @@ seal_version = { workspace = true }
 anstream = { workspace = true }
 anyhow = { workspace = true }
 clap = { workspace = true }
-dunce = { workspace = true }
 fs-err = { workspace = true }
 itertools = { workspace = true }
 owo-colors = { workspace = true }
-regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tokio = { version = "1", features = ["rt", "macros"] }
@@ -42,7 +40,9 @@ which = { workspace = true }
 [dev-dependencies]
 assert_cmd = { workspace = true }
 assert_fs = { workspace = true }
+dunce = { workspace = true }
 insta = { workspace = true, features = ["filters", "json"] }
+regex = { workspace = true }
 tempfile = { workspace = true }
 
 [lints]

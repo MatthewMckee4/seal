@@ -192,7 +192,7 @@ fn help_invalid_command_nearest() {
 fn help_self_version_command() {
     let context = TestContext::new();
 
-    seal_snapshot!(context.command().arg("help").arg("self").arg("version"), @r"
+    seal_snapshot!(context.command().arg("help").arg("self").arg("version"), @"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -207,7 +207,9 @@ fn help_self_version_command() {
           --output-format <OUTPUT_FORMAT>
               Possible values:
               - text: Display the version as plain text
-              - json: Display the version as JSON[default: text]
+              - json: Display the version as JSON
+              
+              [default: text]
 
     Global options:
       -q, --quiet...
