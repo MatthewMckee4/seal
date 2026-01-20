@@ -1,5 +1,13 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use std::{path::Path, process::Command};
+
+/// Result of executing a command.
+#[derive(Debug)]
+pub struct CommandResult {
+    pub success: bool,
+    pub exit_code: Option<i32>,
+    pub stderr: String,
+}
 
 pub struct CommandWrapper {
     /// The command to execute.
@@ -26,22 +34,51 @@ impl CommandWrapper {
         self.command_with_args.join(" ")
     }
 
-    /// Execute the command.
+    /// Execute the command and return an error if it fails.
     pub fn execute(
         &self,
         stdout: &mut dyn std::fmt::Write,
         current_directory: &Path,
     ) -> Result<()> {
+        let result = self.execute_with_result(stdout, current_directory)?;
+        if !result.success {
+            let exit_info = result
+                .exit_code
+                .map(|code| format!(" (exit code {code})"))
+                .unwrap_or_default();
+            let stderr_info = if result.stderr.is_empty() {
+                String::new()
+            } else {
+                format!("\n{}", result.stderr.trim())
+            };
+            bail!(
+                "Command `{}` failed{exit_info}{stderr_info}",
+                self.as_string()
+            );
+        }
+        Ok(())
+    }
+
+    /// Execute the command and return the result without failing on non-zero exit.
+    pub fn execute_with_result(
+        &self,
+        stdout: &mut dyn std::fmt::Write,
+        current_directory: &Path,
+    ) -> Result<CommandResult> {
         let command_str = self.as_string();
         writeln!(stdout, "Executing command: `{command_str}`")?;
 
-        Command::new(&self.command_with_args[0])
+        let output = Command::new(&self.command_with_args[0])
             .args(&self.command_with_args[1..])
             .current_dir(current_directory)
             .output()
-            .context("Failed to execute `{command_str}`")?;
+            .with_context(|| format!("Failed to execute `{command_str}`"))?;
 
-        Ok(())
+        Ok(CommandResult {
+            success: output.status.success(),
+            exit_code: output.status.code(),
+            stderr: String::from_utf8_lossy(&output.stderr).to_string(),
+        })
     }
 
     pub fn git_add_all() -> Self {

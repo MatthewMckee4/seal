@@ -224,6 +224,30 @@ The current version of the project.
 
 ---
 
+#### [`on-pre-commit-failure`](#release_on-pre-commit-failure)
+<span id="on-pre-commit-failure"></span>
+
+Behavior when a pre-commit command fails.
+
+**Default value**: `abort`
+
+**Type**: `string`
+
+**Possible values**:
+- `abort` - Stop the release process if any pre-commit command fails
+- `continue` - Continue with the release even if pre-commit commands fail (logs warnings)
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release]
+    on-pre-commit-failure = "continue"
+    ```
+
+---
+
 #### [`pre-commit-commands`](#release_pre-commit-commands)
 <span id="pre-commit-commands"></span>
 

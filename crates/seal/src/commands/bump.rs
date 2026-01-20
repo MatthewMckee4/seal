@@ -7,12 +7,18 @@ use seal_bump::{VersionBump, calculate_version_file_changes};
 use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
 use seal_github::GitHubService;
-use seal_project::ProjectWorkspace;
+use seal_project::{PreCommitFailure, ProjectWorkspace};
 
 use seal_cli::BumpArgs;
 
 use crate::ExitStatus;
 use crate::printer::Printer;
+
+/// A command with metadata about whether it's a pre-commit command.
+struct TaggedCommand {
+    command: CommandWrapper,
+    is_pre_commit: bool,
+}
 
 pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
@@ -130,28 +136,46 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     writeln!(stdout)?;
 
-    let mut commands = Vec::new();
+    let mut commands: Vec<TaggedCommand> = Vec::new();
 
     if let Some(branch) = &branch_name {
-        commands.push(CommandWrapper::create_branch(branch));
+        commands.push(TaggedCommand {
+            command: CommandWrapper::create_branch(branch),
+            is_pre_commit: false,
+        });
     }
 
     if let Some(message) = &commit_message {
-        commands.push(CommandWrapper::git_add_all());
+        commands.push(TaggedCommand {
+            command: CommandWrapper::git_add_all(),
+            is_pre_commit: false,
+        });
 
         if let Some(pre_commit_cmds) = release_config.pre_commit_commands.as_ref() {
             for cmd in pre_commit_cmds {
-                commands.push(CommandWrapper::custom(cmd));
+                commands.push(TaggedCommand {
+                    command: CommandWrapper::custom(cmd),
+                    is_pre_commit: true,
+                });
             }
-            commands.push(CommandWrapper::git_add_all());
+            commands.push(TaggedCommand {
+                command: CommandWrapper::git_add_all(),
+                is_pre_commit: false,
+            });
         }
 
-        commands.push(CommandWrapper::git_commit(message));
+        commands.push(TaggedCommand {
+            command: CommandWrapper::git_commit(message),
+            is_pre_commit: false,
+        });
     }
 
     if release_config.push {
         if let Some(branch) = &branch_name {
-            commands.push(CommandWrapper::git_push_branch(branch));
+            commands.push(TaggedCommand {
+                command: CommandWrapper::git_push_branch(branch),
+                is_pre_commit: false,
+            });
         }
     }
 
@@ -163,8 +187,8 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     if !commands.is_empty() {
         writeln!(stdout, "Commands to be executed:")?;
 
-        for command in &commands {
-            writeln!(stdout, "  `{}`", command.as_string())?;
+        for tagged in &commands {
+            writeln!(stdout, "  `{}`", tagged.command.as_string())?;
         }
 
         writeln!(stdout)?;
@@ -183,8 +207,27 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     file_changes.apply()?;
 
-    for command in &commands {
-        command.execute(&mut stdout, workspace.root())?;
+    let on_failure = release_config.on_pre_commit_failure;
+
+    for tagged in &commands {
+        if tagged.is_pre_commit && on_failure == PreCommitFailure::Continue {
+            let result = tagged
+                .command
+                .execute_with_result(&mut stdout, workspace.root())?;
+            if !result.success {
+                let exit_info = result
+                    .exit_code
+                    .map(|code| format!(" (exit code {code})"))
+                    .unwrap_or_default();
+                writeln!(
+                    stdout,
+                    "Warning: Command `{}` failed{exit_info}, continuing...",
+                    tagged.command.as_string()
+                )?;
+            }
+        } else {
+            tagged.command.execute(&mut stdout, workspace.root())?;
+        }
     }
 
     writeln!(stdout, "Successfully bumped to {new_version_string}")?;

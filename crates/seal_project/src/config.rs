@@ -93,6 +93,17 @@ pub enum VersionFileTextFormat {
     Text,
 }
 
+/// Behavior when a pre-commit command fails.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum PreCommitFailure {
+    /// Abort the release process if any pre-commit command fails.
+    #[default]
+    Abort,
+    /// Continue with the release even if pre-commit commands fail (log warnings).
+    Continue,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
@@ -181,6 +192,22 @@ pub struct ReleaseConfig {
     "#
     )]
     pub pre_commit_commands: Option<Vec<String>>,
+
+    /// Behavior when a pre-commit command fails.
+    #[serde(default, skip_serializing_if = "is_default_pre_commit_failure")]
+    #[field(
+        default = "abort",
+        value_type = "string",
+        example = r#"
+        on-pre-commit-failure = "abort"  # or "continue"
+    "#
+    )]
+    pub on_pre_commit_failure: PreCommitFailure,
+}
+
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn is_default_pre_commit_failure(value: &PreCommitFailure) -> bool {
+    *value == PreCommitFailure::Abort
 }
 
 fn default_push() -> bool {
@@ -525,7 +552,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -764,6 +791,7 @@ branch-name = ""
                 push: true,
                 confirm: true,
                 pre_commit_commands: None,
+                on_pre_commit_failure: PreCommitFailure::default(),
             }),
             changelog: None,
         };
@@ -815,6 +843,7 @@ commit-message = "Release {version} with {version} tag"
                     push: false,
                     confirm: true,
                     pre_commit_commands: None,
+                    on_pre_commit_failure: Abort,
                 },
             ),
             changelog: None,
@@ -884,6 +913,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     push: false,
                     confirm: true,
                     pre_commit_commands: None,
+                    on_pre_commit_failure: Abort,
                 },
             ),
             changelog: None,
@@ -914,6 +944,7 @@ version-files = []
                     push: false,
                     confirm: true,
                     pre_commit_commands: None,
+                    on_pre_commit_failure: Abort,
                 },
             ),
             changelog: None,
