@@ -29,33 +29,33 @@ anstream = { version = "0.6.21" }
 anyhow = { version = "1.0.100" }
 assert_cmd = { version = "2.1" }
 assert_fs = { version = "1.1" }
-chrono = { version = "0.4.42" }
-clap = { version = "4.5.53", features = ["derive", "env", "string", "wrap_help"] }
-console = { version = "0.15.4" }
+chrono = { version = "0.4.43" }
+clap = { version = "4.5.54", features = ["derive", "env", "string", "wrap_help"] }
+console = { version = "0.15.11" }
 dunce = { version = "1.0.5" }
-fs-err = { version = "3.2.1", features = ["tokio"] }
+fs-err = { version = "3.2.2", features = ["tokio"] }
 glob = { version = "0.3.3" }
-insta = { version = "1.44", features = ["filters", "json"] }
+insta = { version = "1.46", features = ["filters", "json"] }
 itertools = { version = "0.14.0" }
-jiff = { version = "0.2.16", features = ["serde"] }
+jiff = { version = "0.2.18", features = ["serde"] }
 markdown = { version = "1.0.0" }
 octocrab = { version = "0.48" }
 owo-colors = { version = "4.2.3" }
 pretty_assertions = { version = "1.4.1" }
-proc-macro2 = { version = "1.0.103" }
-quote = { version = "1.0.42" }
+proc-macro2 = { version = "1.0.105" }
+quote = { version = "1.0.43" }
 regex = { version = "1.12.2" }
 semver = { version = "1.0" }
 serde = { version = "1.0.228", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
 similar = { version = "2.7", features = ["inline"] }
-syn = { version = "2.0.111" }
-tempfile = { version = "3.23" }
+syn = { version = "2.0.114" }
+tempfile = { version = "3.24" }
 textwrap = { version = "0.16.2" }
 thiserror = { version = "2.0" }
 tokio = { version = "1", features = ["rt", "macros"] }
 toml = { version = "0.9" }
-tracing = { version = "0.1.43" }
+tracing = { version = "0.1.44" }
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 which = { version = "8.0.0" }
 wiremock = { version = "0.6" }
