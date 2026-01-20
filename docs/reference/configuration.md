@@ -224,6 +224,27 @@ The current version of the project.
 
 ---
 
+#### [`pre-commit-commands`](#release_pre-commit-commands)
+<span id="pre-commit-commands"></span>
+
+Commands to run before committing. These run after `git add -A` and before `git commit`.
+A second `git add -A` is run after these commands to stage any changes they make.
+
+**Default value**: `[]`
+
+**Type**: `list`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release]
+    pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
+    ```
+
+---
+
 #### [`push`](#release_push)
 <span id="push"></span>
 
