@@ -104,3 +104,18 @@ When you run `seal bump patch`, the command sequence will be:
 1. `npm run lint:fix` (fix lint issues)
 1. `git add -A` (stage any changes from pre-commit commands)
 1. `git commit -m "Release 0.0.2"`
+
+### Failure Handling
+
+By default, if any pre-commit command fails (exits with non-zero status), the release
+process will abort. You can change this behavior with `on-pre-commit-failure`:
+
+```toml title="seal.toml"
+[release]
+current-version = "0.0.1"
+commit-message = "Release {version}"
+pre-commit-commands = ["cargo fmt --check", "cargo clippy"]
+on-pre-commit-failure = "continue"  # or "abort" (default)
+```
+
+With `continue`, failing commands will log a warning but the release will proceed.

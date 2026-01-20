@@ -224,6 +224,26 @@ The current version of the project.
 
 ---
 
+#### [`on-pre-commit-failure`](#release_on-pre-commit-failure)
+<span id="on-pre-commit-failure"></span>
+
+Behavior when a pre-commit command fails.
+
+**Default value**: `abort`
+
+**Type**: `string`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release]
+    on-pre-commit-failure = "abort"  # or "continue"
+    ```
+
+---
+
 #### [`pre-commit-commands`](#release_pre-commit-commands)
 <span id="pre-commit-commands"></span>
 
