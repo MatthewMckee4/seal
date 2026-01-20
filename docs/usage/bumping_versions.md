@@ -100,7 +100,7 @@ pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
 When you run `seal bump patch`, the command sequence will be:
 
 1. `git add -A` (stage version file changes)
-2. `cargo fmt` (format code)
-3. `npm run lint:fix` (fix lint issues)
-4. `git add -A` (stage any changes from pre-commit commands)
-5. `git commit -m "Release 0.0.2"`
+1. `cargo fmt` (format code)
+1. `npm run lint:fix` (fix lint issues)
+1. `git add -A` (stage any changes from pre-commit commands)
+1. `git commit -m "Release 0.0.2"`
