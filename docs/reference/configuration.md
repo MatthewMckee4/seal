@@ -233,17 +233,13 @@ Behavior when a pre-commit command fails.
 
 **Type**: `string`
 
-**Possible values**:
-- `abort` - Stop the release process if any pre-commit command fails
-- `continue` - Continue with the release even if pre-commit commands fail (logs warnings)
-
 **Example usage**:
 
 === "seal.toml"
 
     ```toml
     [release]
-    on-pre-commit-failure = "continue"
+    on-pre-commit-failure = "abort"  # or "continue"
     ```
 
 ---
