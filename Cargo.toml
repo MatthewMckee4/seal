@@ -30,7 +30,7 @@ anyhow = { version = "1.0.100" }
 assert_cmd = { version = "2.1" }
 assert_fs = { version = "1.1" }
 chrono = { version = "0.4.43" }
-clap = { version = "4.5.54", features = ["derive", "env", "string", "wrap_help"] }
+clap = { version = "4.5.59", features = ["derive", "env", "string", "wrap_help"] }
 console = { version = "0.15.11" }
 dunce = { version = "1.0.5" }
 fs-err = { version = "3.2.2", features = ["tokio"] }
