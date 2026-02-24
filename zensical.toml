@@ -1,10 +1,10 @@
 [project]
 site_name = "Seal"
-site_url = "https://matthewmckee4.github.io/seal"
+site_url = "https://karva-dev.github.io/seal"
 site_description = "A Release management tool, written in Rust"
 site_author = "Matthew McKee"
-repo_url = "https://github.com/MatthewMckee4/seal"
-repo_name = "MatthewMckee4/seal"
+repo_url = "https://github.com/karva-dev/seal"
+repo_name = "karva-dev/seal"
 
 docs_dir = "docs"
 site_dir = "site"
