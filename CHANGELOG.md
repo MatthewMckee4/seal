@@ -4,12 +4,12 @@
 
 ### Bumping
 
-- Update to bump command output ([#55](https://github.com/MatthewMckee4/seal/pull/55))
-- Remove create PR ([#54](https://github.com/MatthewMckee4/seal/pull/54))
+- Update to bump command output ([#55](https://github.com/karva-dev/seal/pull/55))
+- Remove create PR ([#54](https://github.com/karva-dev/seal/pull/54))
 
 ### Documentation
 
-- Update bump documentation ([#57](https://github.com/MatthewMckee4/seal/pull/57))
+- Update bump documentation ([#57](https://github.com/karva-dev/seal/pull/57))
 
 ### Contributors
 
@@ -19,19 +19,19 @@
 
 ### Bumping
 
-- Add more bump tests ([#49](https://github.com/MatthewMckee4/seal/pull/49))
+- Add more bump tests ([#49](https://github.com/karva-dev/seal/pull/49))
 
 ### CLI
 
-- Setup logging ([#48](https://github.com/MatthewMckee4/seal/pull/48))
+- Setup logging ([#48](https://github.com/karva-dev/seal/pull/48))
 
 ### Changelog
 
-- Support generating new changelog ([#45](https://github.com/MatthewMckee4/seal/pull/45))
+- Support generating new changelog ([#45](https://github.com/karva-dev/seal/pull/45))
 
 ### Documentation
 
-- Improve usage documentation ([#39](https://github.com/MatthewMckee4/seal/pull/39))
+- Improve usage documentation ([#39](https://github.com/karva-dev/seal/pull/39))
 
 ### Contributors
 
@@ -41,8 +41,8 @@
 
 ### Changelog
 
-- Support ignoring contributors in changelog ([#34](https://github.com/MatthewMckee4/seal/pull/34))
-- Changelog support ([#32](https://github.com/MatthewMckee4/seal/pull/32))
+- Support ignoring contributors in changelog ([#34](https://github.com/karva-dev/seal/pull/34))
+- Changelog support ([#32](https://github.com/karva-dev/seal/pull/32))
 
 ### Contributors
 
@@ -62,7 +62,7 @@
 
 ### Core Features
 
-- support `seal bump` command ([#7](https://github.com/matthewmckee4/seal/pull/7))
+- support `seal bump` command ([#7](https://github.com/karva-dev/seal/pull/7))
 
 ### Contributors
 
