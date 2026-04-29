@@ -3,11 +3,11 @@
 ## Finding ways to help
 
 We label issues that would be good for a first time contributor as
-[`good first issue`](https://github.com/karva-dev/seal/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
+[`good first issue`](https://github.com/MatthewMckee4/seal/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
 These usually do not require significant experience with code base.
 
 We label issues that we think are a good opportunity for subsequent contributions as
-[`help wanted`](https://github.com/karva-dev/seal/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
+[`help wanted`](https://github.com/MatthewMckee4/seal/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
 These require varying levels of experience.
 
 ## Setup
@@ -74,6 +74,6 @@ Then accept the changes.
 Then fix any issues there may be.
 
 After merging the pull request, run the
-[release workflow](https://github.com/karva-dev/seal/actions/workflows/release.yml) with the version
+[release workflow](https://github.com/MatthewMckee4/seal/actions/workflows/release.yml) with the version
 tag. **Do not include a leading `v`**. The release will automatically be created on GitHub after
 everything else publishes.

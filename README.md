@@ -1,6 +1,6 @@
 # Seal
 
-[![codecov](https://codecov.io/gh/karva-dev/seal/graph/badge.svg?token=URQ3YZHYDK)](https://codecov.io/gh/karva-dev/seal)
+[![codecov](https://codecov.io/gh/MatthewMckee4/seal/graph/badge.svg?token=URQ3YZHYDK)](https://codecov.io/gh/MatthewMckee4/seal)
 
 An extremely fast release management tool, written in Rust.
 
@@ -25,19 +25,19 @@ Install uv with our standalone installers:
 
 ```shell
 # On macOS and Linux.
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/karva-dev/seal/releases/download/0.0.1-alpha.5/seal-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.5/seal-installer.sh | sh
 ```
 
 ```shell
 # On Windows.
-powershell -ExecutionPolicy Bypass -c "irm https://github.com/karva-dev/seal/releases/download/0.0.1-alpha.5/seal-installer.ps1 | iex"
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.5/seal-installer.ps1 | iex"
 ```
 
 We do not (yet) have support for installation from other sources, like PyPI or cargo.
 
 ## Documentation
 
-seal's documentation is available at [karva-dev.github.io/seal](https://karva-dev.github.io/seal/)
+seal's documentation is available at [matthewmckee4.github.io/seal](https://matthewmckee4.github.io/seal/)
 
 ## Acknowledgements
 
@@ -49,5 +49,5 @@ Particularly, the projects [uv](https://github.com/astral-sh/uv) and [ruff](http
 
 Seal is licensed under the MIT License.
 
-We also include the [uv MIT license](https://github.com/karva-dev/seal/blob/main/licenses/astral.LICENSE-MIT), as we often
+We also include the [uv MIT license](https://github.com/MatthewMckee4/seal/blob/main/licenses/astral.LICENSE-MIT), as we often
 take inspiration or code snippets from the [uv](https://github.com/astral-sh/uv) repository.
