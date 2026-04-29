@@ -43,7 +43,7 @@ octocrab = { version = "0.48" }
 owo-colors = { version = "4.2.3" }
 pretty_assertions = { version = "1.4.1" }
 proc-macro2 = { version = "1.0.105" }
-quote = { version = "1.0.43" }
+quote = { version = "1.0.44" }
 regex = { version = "1.12.2" }
 semver = { version = "1.0" }
 serde = { version = "1.0.228", features = ["derive", "rc"] }
