@@ -1,121 +1,115 @@
 # Bumping Versions
 
-## Example
+Seal updates `release.current-version` and every configured version file in one operation. It shows
+the complete diff before writing anything.
 
-Here, we see a very small example of how to bump versions using seal.
+## Basic Version File
 
-Below is a very basic configuration file for bumping versions.
+Given this configuration:
 
-```text title="seal.toml"
+```toml title="seal.toml"
 [release]
 current-version = "0.0.1"
-
-version-files = [
-    "README.md",
-]
+version-files = ["README.md"]
 ```
 
-If you had a `README.md` file like this:
+And a `README.md` containing:
 
 ```markdown
 # My Project (0.0.1)
 ```
 
-With this setup, you can bump the version by running:
+Preview and apply a patch release with:
 
-```shell
+```console
+seal bump patch --dry-run
 seal bump patch
 ```
 
-Which will update your `README.md` file to:
+Seal replaces `0.0.1` with `0.0.2` in `README.md` and updates `current-version` in `seal.toml`.
 
-```markdown
-# My Project (0.0.2)
-```
+## Structured and Targeted Replacements
 
-And update your `seal.toml` file to:
+Use a TOML field when only one value should change, and a search template for a precise text
+replacement:
 
-```toml
-[release]
-current-version = "0.0.2"
-
-version-files = [
-    "README.md",
-]
-```
-
-## Other Version Files
-
-If we were working in a Python project like this:
-
-```python title="my_app/__init__.py"
-__version__ = "0.0.1"
-```
-
-```toml title="pyproject.toml"
-[project]
-name = "my_app"
+```toml title="Cargo.toml"
+[package]
+name = "my-app"
 version = "0.0.1"
-description = "My App"
-requires-python = ">=3.13"
-dependencies = []
+```
+
+```rust title="src/version.rs"
+pub const VERSION: &str = "0.0.1";
 ```
 
 ```toml title="seal.toml"
 [release]
 current-version = "0.0.1"
-
 version-files = [
-    { path = "my_app/__init__.py", search = "__version__ = \"{version}\"" },
-    { path = "pyproject.toml", field = "project.version", format = "toml" },
+    { path = "Cargo.toml", field = "package.version", format = "toml" },
+    { path = "src/version.rs", search = "pub const VERSION: &str = \"{version}\";" },
 ]
 ```
 
-When you run `seal bump patch`, you will see the following output.
+Paths may be glob patterns. The
+[configuration reference](../reference/configuration.md#release_version-files) documents every
+supported version-file form.
 
-```text
-Bumping version from 0.0.1 to 0.0.2
+## Version Arguments
 
-...
+Seal accepts stable increments, pre-release increments, and explicit semantic versions:
 
-Proceed with these changes? (y/n):
+```console
+seal bump major
+seal bump minor
+seal bump patch
+seal bump alpha
+seal bump minor-beta
+seal bump 2.0.0-rc.1
 ```
 
-Once you proceed with `y`, the changes will be applied.
+An explicit version must be newer than `current-version`.
+
+## Release Branches and Commits
+
+Configure branch and commit templates to run the Git workflow after files are updated:
+
+```toml title="seal.toml"
+[release]
+current-version = "0.0.1"
+version-files = ["README.md"]
+branch-name = "release/v{version}"
+commit-message = "Release v{version}"
+push = true
+```
+
+Both templates must contain `{version}`. `push = true` requires `branch-name`.
 
 ## Pre-Commit Commands
 
-You can configure commands to run before committing using the `pre-commit-commands` option.
-These commands run after `git add -A` stages your version changes, allowing you to run
-formatters, linters, or other tools. A second `git add -A` runs after the pre-commit
-commands to stage any changes they make.
+Use `pre-commit-commands` to run formatters or validation after Seal stages version changes and
+before it creates the release commit:
 
 ```toml title="seal.toml"
 [release]
 current-version = "0.0.1"
 commit-message = "Release {version}"
-pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
+pre-commit-commands = [
+    "cargo fmt --check",
+    "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+]
 ```
 
-When you run `seal bump patch`, the command sequence will be:
+Seal stages changes again after the commands, so files updated by a formatter are included in the
+release commit.
 
-1. `git add -A` (stage version file changes)
-1. `cargo fmt` (format code)
-1. `npm run lint:fix` (fix lint issues)
-1. `git add -A` (stage any changes from pre-commit commands)
-1. `git commit -m "Release 0.0.2"`
-
-### Failure Handling
-
-By default, if any pre-commit command fails (exits with non-zero status), the release
-process will abort. You can change this behavior with `on-pre-commit-failure`:
+By default, a failing command aborts the release. To log the failure and continue instead:
 
 ```toml title="seal.toml"
 [release]
 current-version = "0.0.1"
 commit-message = "Release {version}"
-pre-commit-commands = ["cargo fmt --check", "cargo clippy"]
-on-pre-commit-failure = "continue"  # or "abort" (default)
+pre-commit-commands = ["cargo fmt --check"]
+on-pre-commit-failure = "continue"
 ```
-
-With `continue`, failing commands will log a warning but the release will proceed.

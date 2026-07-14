@@ -2,52 +2,91 @@
 
 [![codecov](https://codecov.io/gh/MatthewMckee4/seal/graph/badge.svg?token=URQ3YZHYDK)](https://codecov.io/gh/MatthewMckee4/seal)
 
-An extremely fast release management tool, written in Rust.
+Seal is a release-management tool, written in Rust. It keeps version updates, changelog generation,
+release branches, commits, and release notes in one CLI.
 
 > [!WARNING]
 >
-> Seal is not yet ready for production use.
->
-> You may run into bugs, missing features, and other issues.
+> Seal is in alpha and is not yet ready for production use. Expect missing features and breaking
+> changes.
 
-## What is Seal?
+## Features
 
-Seal is a release management tool that can be used to automate version updating.
-
-There are other tools out there for version bumping and changelog generation and management,
-but often tools only support one of these.
-
-Seal aims to provide a unified solution for both version bumping and changelog management.
+- Update versions in plain-text files, TOML fields, and files selected by glob patterns.
+- Preview every file change before applying it, or use `--dry-run` in automation.
+- Create release branches and commits, run pre-commit commands, and push the result.
+- Build changelogs from merged GitHub pull requests, grouped by labels.
+- Produce JSON release metadata from the latest changelog section.
 
 ## Installation
 
-Install uv with our standalone installers:
+Install Seal with the standalone installer for your platform:
 
-```shell
-# On macOS and Linux.
+```sh
+# macOS and Linux
 curl --proto '=https' --tlsv1.2 -LsSf https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.5/seal-installer.sh | sh
 ```
 
-```shell
-# On Windows.
+```powershell
+# Windows
 powershell -ExecutionPolicy Bypass -c "irm https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.5/seal-installer.ps1 | iex"
 ```
 
-We do not (yet) have support for installation from other sources, like PyPI or cargo.
+Prebuilt archives and checksums are available from the
+[GitHub Releases](https://github.com/MatthewMckee4/seal/releases). Seal is not currently
+published to crates.io or other package registries.
+
+## Getting Started
+
+Create `seal.toml` in your project root:
+
+```toml
+[release]
+current-version = "0.1.0"
+version-files = [
+    { path = "Cargo.toml", format = "toml", field = "package.version" },
+]
+```
+
+Validate the configuration and preview a patch release:
+
+```console
+seal validate config
+seal bump patch --dry-run
+```
+
+Run `seal bump patch` to review and apply the changes. See the
+[getting-started guide](https://matthewmckee4.github.io/seal/get-started/quick-start/) for branch,
+commit, and push configuration.
 
 ## Documentation
 
-seal's documentation is available at [matthewmckee4.github.io/seal](https://matthewmckee4.github.io/seal/)
+The full documentation is available at
+[matthewmckee4.github.io/seal](https://matthewmckee4.github.io/seal/).
+
+## Contributing
+
+Contributions are welcome. See
+[CONTRIBUTING.md](https://github.com/MatthewMckee4/seal/blob/main/CONTRIBUTING.md) for setup and
+development instructions.
+
+## Support
+
+Use [GitHub issues](https://github.com/MatthewMckee4/seal/issues) for bug reports and feature
+requests.
+
+Report security issues privately; see
+[SECURITY.md](https://github.com/MatthewMckee4/seal/blob/main/SECURITY.md).
 
 ## Acknowledgements
 
-I'd like to thank the [Astral team](https://github.com/astral-sh) for all of their contributions to the Rust ecosystem.
-
-Particularly, the projects [uv](https://github.com/astral-sh/uv) and [ruff](https://github.com/astral-sh/ruff).
+Seal takes inspiration from the Rust tooling built by the
+[Astral team](https://github.com/astral-sh), particularly
+[uv](https://github.com/astral-sh/uv) and [Ruff](https://github.com/astral-sh/ruff).
 
 ## License
 
-Seal is licensed under the MIT License.
-
-We also include the [uv MIT license](https://github.com/MatthewMckee4/seal/blob/main/licenses/astral.LICENSE-MIT), as we often
-take inspiration or code snippets from the [uv](https://github.com/astral-sh/uv) repository.
+Seal is licensed under the [MIT License](https://github.com/MatthewMckee4/seal/blob/main/LICENSE).
+The repository also includes Astral's
+[MIT license](https://github.com/MatthewMckee4/seal/blob/main/licenses/astral.LICENSE-MIT) because
+some implementation ideas and snippets are derived from `uv`.

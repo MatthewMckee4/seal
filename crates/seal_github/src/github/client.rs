@@ -57,7 +57,7 @@ impl GitHubService for GitHubClient {
                         name: r.name.clone(),
                     })
                 })
-                .ok_or(GitHubError::NoReleasesFound {
+                .ok_or_else(|| GitHubError::NoReleasesFound {
                     owner: self.owner.clone(),
                     repo: self.repo.clone(),
                 })?)
@@ -99,7 +99,7 @@ impl GitHubService for GitHubClient {
                 page += 1;
             }
 
-            all_releases.sort_by(|a, b| a.created_at.cmp(&b.created_at));
+            all_releases.sort_by_key(|release| release.created_at);
 
             Ok(all_releases)
         })

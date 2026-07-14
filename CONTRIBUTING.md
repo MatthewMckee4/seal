@@ -1,79 +1,146 @@
-# Contributing
+# Contributing to Seal
 
-## Finding ways to help
+Contributions of all kinds are welcome. Open an
+[issue](https://github.com/MatthewMckee4/seal/issues/new) for bugs, feature ideas, or documentation
+improvements.
 
-We label issues that would be good for a first time contributor as
+Small fixes can go straight to a pull request. For larger changes, open or comment on an issue
+first so the intended behavior is clear before implementation starts.
+
+Issues suitable for a first contribution are labelled
 [`good first issue`](https://github.com/MatthewMckee4/seal/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
-These usually do not require significant experience with code base.
-
-We label issues that we think are a good opportunity for subsequent contributions as
+Issues where help is especially useful are labelled
 [`help wanted`](https://github.com/MatthewMckee4/seal/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
-These require varying levels of experience.
 
-## Setup
+## Architecture
 
-[Rust](https://rustup.rs/) is required to build and work on the project.
+Seal is a Cargo workspace. The `seal` binary parses CLI arguments, resolves project configuration,
+and delegates version, changelog, GitHub, and file operations to focused library crates.
 
-## Testing
+The executable and core domain crates are:
 
-For running tests, we recommend [nextest](https://nexte.st/).
+- `seal` — CLI entry point, command handlers, global settings, and user-facing output.
+- `seal_cli` — shared Clap argument and command definitions.
+- `seal_project` — `seal.toml` parsing, validation, project discovery, and workspace members.
+- `seal_bump` — semantic-version calculation and version-file updates.
+- `seal_changelog` — changelog generation, updates, and release-body metadata.
+- `seal_github` — GitHub API access and repository remote parsing.
+- `seal_file_change` — file-change previews, diffs, and application.
+- `seal_command` — Git and configured subprocess execution.
 
-If test fail due to mismatch in the reference documentation, run: `cargo run -p seal_dev generate-all`.
+Supporting crates are:
 
-### Snapshot testing
+- `seal_fs` — paths relative to the project root.
+- `seal_logging` — tracing output formatting.
+- `seal_terminal` — terminal sizing.
+- `seal_version` — the released CLI version.
+- `seal_options_metadata` and `seal_macros` — metadata used to generate the configuration reference.
+- `seal_dev` — developer commands that generate the CLI and configuration references.
 
-we use [insta](https://insta.rs/) for snapshot testing. It's recommended (but not necessary) to use
-`cargo-insta` for a better snapshot review experience. See the
-[installation guide](https://insta.rs/docs/cli/) for more information.
+Command handlers should send normal output through the `Printer` abstraction in
+`crates/seal/src/printer.rs`. Use `tracing` for diagnostics controlled by `-v`; do not print
+directly from handlers.
 
-In tests, you can use `seal_snapshot!` macro to simplify creating snapshots for seal commands. For
-example:
+## Prerequisites
 
-```rust
-#[test]
-fn self_version() {
-    let context = TestContext::new();
+Install Rust with [rustup](https://rustup.rs/). Rustup will use the repository's pinned toolchain.
 
-    seal_snapshot!(context.command().arg("self").arg("version"), @r"
-    success: true
-    exit_code: 0
-    ----- stdout -----
-    seal [VERSION]
+[nextest](https://nexte.st/) is recommended for the test suite:
 
-    ----- stderr -----
-    ");
-}
+```sh
+cargo install cargo-nextest --locked
 ```
 
-To run and review a specific snapshot test:
+You can optionally install [prek](https://prek.j178.dev/) to run repository checks before each
+commit:
 
-```shell
-cargo test --package <package> --test <test> -- <test_name> -- --exact
+```sh
+uv tool install prek
+prek install
+```
+
+Build the workspace from the repository root:
+
+```sh
+cargo build --workspace
+```
+
+## Development
+
+Run the development CLI with Cargo:
+
+```sh
+cargo run -p seal -- --help
+cargo run -p seal -- self version
+```
+
+Run the full test suite with nextest:
+
+```sh
+cargo nextest run --all-features
+```
+
+Use `cargo test` if nextest is unavailable. Pass arguments directly for focused iteration:
+
+```sh
+cargo nextest run -p seal
+```
+
+CLI integration tests live under
+`crates/seal/tests/it/` and use the `seal_snapshot!` helper.
+
+After updating snapshots, review the changes before accepting them. For the interactive review
+workflow, install [`cargo-insta`](https://insta.rs/docs/cli/), run the relevant test, then run:
+
+```sh
 cargo insta review
+```
+
+Before opening a pull request, run the relevant tests and the full validation sweep:
+
+```sh
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+uvx prek run -a
 ```
 
 ## Documentation
 
-To prepare and run the documentation locally, run:
+Seal uses [Zensical](https://zensical.org/) for its documentation site. Prepare the generated home
+page and build the site with:
 
-```shell
-uv run -s scripts/prepare_docs.py
-uv run --isolated --with-requirements docs/requirements.txt zensical serve
+```sh
+uv run --script scripts/prepare_docs.py
+uv run --isolated --with-requirements docs/requirements.txt zensical build
 ```
 
-## Releasing a new version
+Use `zensical serve` instead of `zensical build` in the second command for a local development
+server.
 
-Funnily enough, we use `seal` to release a new version. To do so, run:
+The CLI and configuration reference pages are generated. After changing CLI arguments,
+configuration fields, defaults, or their source documentation, run:
 
-```shell
-cargo run bump <version>
+```sh
+cargo dev generate-all
 ```
 
-Then accept the changes.
+Do not edit `docs/reference/cli.md` or `docs/reference/configuration.md` by hand.
 
-Then fix any issues there may be.
+## Release Process
 
-After merging the pull request, run the
-[release workflow](https://github.com/MatthewMckee4/seal/actions/workflows/release.yml) with the version
-tag. **Do not include a leading `v`**. The release will automatically be created on GitHub after
-everything else publishes.
+Releases are automated and are only performed by maintainers. Use Seal itself to prepare one:
+
+```sh
+cargo run -p seal -- bump <version>
+```
+
+Review and merge the generated release pull request. Then run the
+[release workflow](https://github.com/MatthewMckee4/seal/actions/workflows/release.yml) with the
+version tag without a leading `v`; the workflow builds artifacts, creates the GitHub release, and
+publishes the documentation.
+
+When changing GitHub Actions, run [`pinact`](https://github.com/suzuki-shunsuke/pinact) before
+opening the pull request:
+
+```sh
+pinact run
+```
