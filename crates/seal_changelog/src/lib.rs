@@ -10,6 +10,8 @@ use seal_github::{GitHubPullRequest, GitHubService, filter_prs_by_date_range};
 use seal_project::ChangelogConfig;
 use semver::Version;
 
+const VERSION_PLACEHOLDER: &str = "{version}";
+
 pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
 
 fn extract_version_from_release_name(name: Option<&String>) -> Option<String> {
@@ -102,7 +104,9 @@ pub fn format_changelog_content(
 
     let mut output = String::new();
 
-    let heading = config.changelog_heading().replace("{version}", version);
+    let heading = config
+        .changelog_heading()
+        .replace(VERSION_PLACEHOLDER, version);
 
     write!(output, "## {heading}\n\n")?;
 

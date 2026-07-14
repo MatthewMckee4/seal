@@ -1,7 +1,7 @@
 [project]
 site_name = "Seal"
 site_url = "https://matthewmckee4.github.io/seal"
-site_description = "A Release management tool, written in Rust"
+site_description = "A release-management tool, written in Rust"
 site_author = "Matthew McKee"
 repo_url = "https://github.com/MatthewMckee4/seal"
 repo_name = "MatthewMckee4/seal"
@@ -12,12 +12,17 @@ dev_addr = "localhost:3000"
 
 nav = [
     { "Home" = "index.md"},
-    { "Reference" = [
-        { "Configuration" = "reference/configuration.md"},
-        { "CLI" = "reference/cli.md"},
+    { "Get Started" = [
+        { "Installation" = "get-started/installation.md"},
+        { "Quick Start" = "get-started/quick-start.md"},
     ]},
     { "Usage" = [
         { "Bumping Versions" = "usage/bumping_versions.md"},
+        { "Changelogs" = "usage/changelogs.md"},
+    ]},
+    { "Reference" = [
+        { "Configuration" = "reference/configuration.md"},
+        { "CLI" = "reference/cli.md"},
     ]},
 ]
 
@@ -25,14 +30,16 @@ nav = [
 language = "en"
 features = [
     "navigation.instant",
+    "navigation.tabs",
+    "navigation.tabs.sticky",
+    "navigation.sections",
+    "navigation.top",
     "search.highlight",
-    "navigation.sections"
 ]
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
 primary = "cyan"
-accent = "cyan"
 scheme = "default"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
@@ -40,7 +47,6 @@ toggle.name = "Switch to dark mode"
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
 primary = "cyan"
-accent = "cyan"
 scheme = "slate"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to light mode"

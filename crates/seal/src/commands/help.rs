@@ -183,7 +183,7 @@ impl Pager {
             .path
             .as_ref()
             .map(|path| path.as_os_str().to_os_string())
-            .unwrap_or(OsString::from(self.kind.to_string()));
+            .unwrap_or_else(|| OsString::from(self.kind.to_string()));
 
         let args = if self.args.is_empty() {
             self.kind.default_args()

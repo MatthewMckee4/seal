@@ -33,7 +33,7 @@ pub async fn generate_changelog(
     let changelog_path = changelog_config
         .changelog_path
         .clone()
-        .unwrap_or(workspace.root().join(DEFAULT_CHANGELOG_PATH));
+        .unwrap_or_else(|| workspace.root().join(DEFAULT_CHANGELOG_PATH));
 
     #[cfg(feature = "integration-test")]
     let github_client: Arc<dyn GitHubService> = {

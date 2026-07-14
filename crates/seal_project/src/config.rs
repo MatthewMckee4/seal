@@ -8,7 +8,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use crate::ProjectName;
 use crate::error::{ConfigValidationError, ProjectError};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, OptionsMetadata)]
 #[serde(rename_all = "kebab-case")]
 pub struct Config {
     /// The members of the project.
@@ -104,7 +104,7 @@ pub enum PreCommitFailure {
     Continue,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, OptionsMetadata)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ReleaseConfig {
     /// The current version of the project.
@@ -324,7 +324,7 @@ impl<'de> Deserialize<'de> for BranchName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, OptionsMetadata, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, OptionsMetadata, Default)]
 #[serde(rename_all = "kebab-case", deny_unknown_fields)]
 pub struct ChangelogConfig {
     /// Labels to ignore when generating changelog.

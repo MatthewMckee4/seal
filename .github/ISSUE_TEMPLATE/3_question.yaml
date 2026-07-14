@@ -1,0 +1,25 @@
+name: Question
+description: Ask a question about Seal
+body:
+  - type: textarea
+    attributes:
+      label: Question
+      description: Describe your question in detail.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Platform
+      description: What operating system and architecture are you using? (see `uname -orsm`)
+      placeholder: e.g., macOS 15 arm64, Windows 11 x86_64, Ubuntu 24.04 amd64
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: Version
+      description: What version of Seal are you using? (see `seal self version`)
+      placeholder: e.g., seal 0.1.0
+    validations:
+      required: false

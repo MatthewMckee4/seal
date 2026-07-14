@@ -1,10 +1,11 @@
 name: Bug report
 description: Report an error or unexpected behavior
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to report an issue! We're glad to have you involved with seal.
+        Thank you for taking the time to report an issue! We're glad to have you involved with Seal.
 
         **Before reporting, please make sure to search through [existing issues](https://github.com/MatthewMckee4/seal/issues?q=is:issue+is:open+label:bug) (including [closed](https://github.com/MatthewMckee4/seal/issues?q=is:issue%20state:closed%20label:bug)).**
 
@@ -14,15 +15,27 @@ body:
       description: |
         A clear and concise description of the bug, including a minimal reproducible example.
 
-        Be sure to include the command you invoked (e.g., `seal test /path/to/file.py`)
+        Be sure to include the command you invoked and the full output, including
+        the complete error message.
+
+        If the behavior depends on configuration, include the relevant section from
+        your `seal.toml`.
 
     validations:
       required: true
 
   - type: input
     attributes:
+      label: Platform
+      description: What operating system and architecture are you using? (see `uname -orsm`)
+      placeholder: e.g., macOS 15 arm64, Windows 11 x86_64, Ubuntu 24.04 amd64
+    validations:
+      required: true
+
+  - type: input
+    attributes:
       label: Version
-      description: What version of seal are you using? (see `seal --version`)
+      description: What version of Seal are you using? (see `seal --version`)
       placeholder: e.g., seal 0.1.0
     validations:
-      required: false
+      required: true

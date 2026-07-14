@@ -60,7 +60,7 @@ impl ProjectWorkspace {
 
         Ok(Self {
             root: project_path.to_path_buf(),
-            config_file: seal_toml_path.clone(),
+            config_file: seal_toml_path,
             config,
             members,
         })

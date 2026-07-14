@@ -18,9 +18,7 @@ impl ProjectName {
             .chars()
             .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
         {
-            return Err(ConfigValidationError::InvalidProjectName {
-                name: value.clone(),
-            });
+            return Err(ConfigValidationError::InvalidProjectName { name: value });
         }
 
         Ok(Self(value))

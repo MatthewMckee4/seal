@@ -1,8 +1,9 @@
-exclude: |
-  (?x)^(
-    docs/reference/cli.md|
-    docs/reference/configuration.md
-  )$
+fail_fast: false
+
+exclude:
+  glob:
+    - docs/reference/cli.md
+    - docs/reference/configuration.md
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -30,32 +31,34 @@ repos:
         priority: 0
 
   - repo: https://github.com/crate-ci/typos
-    rev: v1.40.0
+    rev: v1.48.0
     hooks:
       - id: typos
+        priority: 0
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+        priority: 0
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.26.1
+    hooks:
+      - id: zizmor
+        priority: 0
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.4
+    hooks:
+      - id: check-github-workflows
         priority: 0
 
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:
       - id: mdformat
-        priority: 10
-
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.46.0
-    hooks:
-      - id: markdownlint-fix
-        priority: 20
-
-  - repo: https://github.com/doublify/pre-commit-rust
-    rev: v1.0
-    hooks:
-      - id: cargo-check
-        args: ["--all-targets", "--all-features"]
-        priority: 20
-      - id: clippy
-        args: ["--all-targets", "--all-features", "--", "-D", "warnings"]
-        priority: 20
+        priority: 1
 
   - repo: local
     hooks:
@@ -65,17 +68,27 @@ repos:
         language: system
         types: [rust]
         pass_filenames: false
-        priority: 10
-
-  - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: v1.18.0
-    hooks:
-      - id: zizmor
-        priority: 0
+        priority: 1
 
   - repo: https://github.com/DevinR528/cargo-sort
-    rev: v2.0.2
+    rev: v2.1.4
     hooks:
       - id: cargo-sort
         args: ["-g", "-w"]
-        priority: 10
+        priority: 1
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.49.0
+    hooks:
+      - id: markdownlint-fix
+        priority: 2
+
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: cargo-check
+        args: ["--all-targets", "--all-features"]
+        priority: 2
+      - id: clippy
+        args: ["--all-targets", "--all-features", "--", "-D", "warnings"]
+        priority: 2

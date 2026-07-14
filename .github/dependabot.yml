@@ -6,17 +6,50 @@
 version: 2
 
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    labels:
+      - "dependencies"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    labels:
+      - "dependencies"
+    schedule:
+      interval: "weekly"
+    groups:
+      pre-commit-hooks:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "rust-toolchain"
+    directory: "/"
+    labels:
+      - "dependencies"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
   - package-ecosystem: "cargo" # See documentation for possible values
 
     directory: "/" # Location of package manifests
 
+    labels:
+      - "dependencies"
+
     schedule:
       interval: "weekly"
 
-    ignore:
-      - dependency-name: ruff_python_trivia
-      - dependency-name: ruff_python_ast
-      - dependency-name: ruff_python_parser
-      - dependency-name: ruff_python_file
     cooldown:
       default-days: 7

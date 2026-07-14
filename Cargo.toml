@@ -59,9 +59,20 @@ tracing = { version = "0.1.44" }
 tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 which = { version = "8.0.0" }
 
+[workspace.lints.rust]
+unsafe_code = "warn"
+
 [workspace.lints.clippy]
-pedantic = { level = "warn", priority = -2 }
-# Allowed pedantic lints
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+correctness = { level = "warn", priority = -1 }
+suspicious = { level = "warn", priority = -1 }
+style = { level = "warn", priority = -1 }
+complexity = { level = "warn", priority = -1 }
+perf = { level = "warn", priority = -1 }
+
+# Allowed lints
 char_lit_as_u8 = "allow"
 collapsible_else_if = "allow"
 collapsible_if = "allow"
@@ -72,6 +83,9 @@ missing_errors_doc = "allow"
 missing_panics_doc = "allow"
 module_name_repetitions = "allow"
 must_use_candidate = "allow"
+missing_const_for_fn = "allow"
+option_if_let_else = "allow"
+redundant_pub_crate = "allow"
 similar_names = "allow"
 struct_excessive_bools = "allow"
 too_many_arguments = "allow"

@@ -21,8 +21,8 @@ The members of the project.
 
 ### `changelog`
 
+<span id="changelog_changelog-heading"></span>
 #### [`changelog-heading`](#changelog_changelog-heading)
-<span id="changelog-heading"></span>
 
 Template for the changelog heading. Must contain {version} placeholder.
 
@@ -41,8 +41,8 @@ Template for the changelog heading. Must contain {version} placeholder.
 
 ---
 
+<span id="changelog_changelog-path"></span>
 #### [`changelog-path`](#changelog_changelog-path)
-<span id="changelog-path"></span>
 
 Path to the changelog file. Defaults to `CHANGELOG.md`.
 
@@ -61,8 +61,8 @@ Path to the changelog file. Defaults to `CHANGELOG.md`.
 
 ---
 
+<span id="changelog_ignore-contributors"></span>
 #### [`ignore-contributors`](#changelog_ignore-contributors)
-<span id="ignore-contributors"></span>
 
 Contributors to ignore when generating changelog.
 
@@ -81,8 +81,8 @@ Contributors to ignore when generating changelog.
 
 ---
 
+<span id="changelog_ignore-labels"></span>
 #### [`ignore-labels`](#changelog_ignore-labels)
-<span id="ignore-labels"></span>
 
 Labels to ignore when generating changelog.
 
@@ -101,8 +101,8 @@ Labels to ignore when generating changelog.
 
 ---
 
+<span id="changelog_include-contributors"></span>
 #### [`include-contributors`](#changelog_include-contributors)
-<span id="include-contributors"></span>
 
 Whether to include contributors in the changelog. Defaults to true.
 
@@ -121,8 +121,8 @@ Whether to include contributors in the changelog. Defaults to true.
 
 ---
 
+<span id="changelog_section-labels"></span>
 #### [`section-labels`](#changelog_section-labels)
-<span id="section-labels"></span>
 
 Mapping of section names to labels.
 
@@ -144,8 +144,8 @@ Mapping of section names to labels.
 
 ### `release`
 
+<span id="release_branch-name"></span>
 #### [`branch-name`](#release_branch-name)
-<span id="branch-name"></span>
 
 The branch name to use when creating a new release branch.
 
@@ -164,8 +164,8 @@ The branch name to use when creating a new release branch.
 
 ---
 
+<span id="release_commit-message"></span>
 #### [`commit-message`](#release_commit-message)
-<span id="commit-message"></span>
 
 The commit message to use when committing the release changes.
 
@@ -184,8 +184,8 @@ The commit message to use when committing the release changes.
 
 ---
 
+<span id="release_confirm"></span>
 #### [`confirm`](#release_confirm)
-<span id="confirm"></span>
 
 Whether to confirm the release changes with the user before proceeding.
 
@@ -204,8 +204,8 @@ Whether to confirm the release changes with the user before proceeding.
 
 ---
 
+<span id="release_current-version"></span>
 #### [`current-version`](#release_current-version)
-<span id="current-version"></span>
 
 The current version of the project.
 
@@ -224,8 +224,8 @@ The current version of the project.
 
 ---
 
+<span id="release_on-pre-commit-failure"></span>
 #### [`on-pre-commit-failure`](#release_on-pre-commit-failure)
-<span id="on-pre-commit-failure"></span>
 
 Behavior when a pre-commit command fails.
 
@@ -244,8 +244,8 @@ Behavior when a pre-commit command fails.
 
 ---
 
+<span id="release_pre-commit-commands"></span>
 #### [`pre-commit-commands`](#release_pre-commit-commands)
-<span id="pre-commit-commands"></span>
 
 Commands to run before committing. These run after `git add -A` and before `git commit`.
 A second `git add -A` is run after these commands to stage any changes they make.
@@ -265,8 +265,8 @@ A second `git add -A` is run after these commands to stage any changes they make
 
 ---
 
+<span id="release_push"></span>
 #### [`push`](#release_push)
-<span id="push"></span>
 
 Whether to push the release changes to the remote repository.
 
@@ -285,8 +285,8 @@ Whether to push the release changes to the remote repository.
 
 ---
 
+<span id="release_version-files"></span>
 #### [`version-files`](#release_version-files)
-<span id="version-files"></span>
 
 The version files that need to be updated.
 

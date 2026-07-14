@@ -22,3 +22,6 @@ itertools = { workspace = true }
 markdown = { workspace = true }
 pretty_assertions = { workspace = true }
 textwrap = { workspace = true }
+
+[lints]
+workspace = true

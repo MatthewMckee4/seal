@@ -185,13 +185,10 @@ fn emit_field(output: &mut String, name: &str, field: &Field, parents: &[Set]) {
     if parents_anchor.is_empty() {
         output.push_str(&format!("{header_level} [`{name}`](#{name})\n"));
     } else {
+        output.push_str(&format!("<span id=\"{parents_anchor}_{name}\"></span>\n"));
         output.push_str(&format!(
             "{header_level} [`{name}`](#{parents_anchor}_{name})\n"
         ));
-
-        // the anchor used to just be the name, but now it's the group name
-        // for backwards compatibility, we need to keep the old anchor
-        output.push_str(&format!("<span id=\"{name}\"></span>\n"));
     }
 
     output.push('\n');
@@ -216,7 +213,7 @@ fn emit_field(output: &mut String, name: &str, field: &Field, parents: &[Set]) {
     output.push_str(field.doc);
     output.push_str("\n\n");
     if let Some(default) = field.default {
-        output.push_str(format!("**Default value**: `{}`\n", default).as_str());
+        output.push_str(format!("**Default value**: `{default}`\n").as_str());
     } else {
         output.push_str("**Required**\n");
     }
@@ -269,9 +266,9 @@ fn format_tab(tab_name: &str, header: &str, content: &str) -> String {
 
 /// Format the TOML header for the example usage for a given option.
 fn format_header(scope: Option<&str>, example: &str, parents: &[Set]) -> String {
-    let header = None
-        .into_iter()
-        .chain(parents.iter().filter_map(|parent| parent.name()))
+    let header = parents
+        .iter()
+        .filter_map(|parent| parent.name())
         .chain(scope)
         .join(".");
 

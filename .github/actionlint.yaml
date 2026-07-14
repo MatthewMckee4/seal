@@ -1,0 +1,7 @@
+# cargo-dist generates the release workflow, including shell snippets whose
+# deliberate word splitting and repeated output redirects trigger ShellCheck.
+paths:
+  .github/workflows/release.yml:
+    ignore:
+      - "shellcheck reported issue in this script: SC2086:.+"
+      - "shellcheck reported issue in this script: SC2129:.+"
