@@ -1,4 +1,6 @@
 use assert_fs::prelude::*;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 
 use crate::{common::TestContext, seal_snapshot};
 
@@ -650,6 +652,68 @@ commit-message = "Release v{version}"
 
     insta::assert_snapshot!(context.git_current_branch(), @"main");
     insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
+fn bump_git_commit_failure_includes_hook_output() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+confirm = false
+"#,
+    );
+
+    let hook = context.root.child(".git/hooks/pre-commit");
+    hook.write_str("#!/bin/sh\necho 'pre-commit hook failed'\nexit 1\n")
+        .unwrap();
+
+    #[cfg(unix)]
+    {
+        let mut permissions = std::fs::metadata(hook.path()).unwrap().permissions();
+        permissions.set_mode(0o755);
+        std::fs::set_permissions(hook.path(), permissions).unwrap();
+    }
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ commit-message = "Release v{version}"
+        4     4 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git add -A`
+      `git commit -m Release v1.2.4`
+
+    Updating files...
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+
+    ----- stderr -----
+    error: Command `git commit -m Release v1.2.4` failed (exit code 1)
+    pre-commit hook failed
+    "#);
+
+    insta::assert_snapshot!(context.git_last_commit_message(), @"");
 }
 
 #[test]
