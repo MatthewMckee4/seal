@@ -178,12 +178,28 @@ pub fn prepare_changelog_file_change(
     ))
 }
 
+pub struct PreparedChangelog {
+    pub file_changes: FileChanges,
+    pub section_body: String,
+}
+
+impl PreparedChangelog {
+    fn new(file_changes: FileChanges, generated_section: &str) -> Result<Self> {
+        let section_body = parse_latest_changelog_section(generated_section)?.body;
+
+        Ok(Self {
+            file_changes,
+            section_body,
+        })
+    }
+}
+
 pub async fn prepare_changelog_changes(
     root: &Path,
     version: &str,
     config: &ChangelogConfig,
     github_client: &Arc<dyn GitHubService>,
-) -> Result<FileChanges> {
+) -> Result<PreparedChangelog> {
     let generator = ChangelogGenerator::new(github_client);
     let changelog_content = generator.generate_changelog(version, config).await?;
 
@@ -194,7 +210,7 @@ pub async fn prepare_changelog_changes(
     };
     let change = prepare_changelog_file_change(&changelog_path, &changelog_content)?;
 
-    Ok(FileChanges::new(vec![change]))
+    PreparedChangelog::new(FileChanges::new(vec![change]), &changelog_content)
 }
 
 pub async fn generate_full_changelog(
@@ -652,6 +668,20 @@ mod tests {
         - Old feature
 
         "###);
+    }
+
+    #[test]
+    fn test_prepared_changelog_has_section_body_without_heading() {
+        let prepared = PreparedChangelog::new(
+            FileChanges::new(Vec::new()),
+            "## 1.2.3\n\n### Features\n\n- Added release pull requests\n",
+        )
+        .unwrap();
+
+        assert_eq!(
+            prepared.section_body,
+            "### Features\n\n- Added release pull requests"
+        );
     }
 
     #[test]

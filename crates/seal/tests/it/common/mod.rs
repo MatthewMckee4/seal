@@ -178,6 +178,36 @@ current-version = "{version}"
         self
     }
 
+    /// Add a local bare repository as `origin`.
+    pub fn init_git_remote(&self) -> &Self {
+        let remote = self.root.join(".git/remote.git");
+
+        let output = std::process::Command::new("git")
+            .args(["init", "--bare"])
+            .arg(&remote)
+            .output()
+            .expect("Failed to initialize git remote");
+        assert!(
+            output.status.success(),
+            "Failed to initialize git remote: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+
+        let output = std::process::Command::new("git")
+            .args(["remote", "add", "origin"])
+            .arg(&remote)
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to add git remote");
+        assert!(
+            output.status.success(),
+            "Failed to add git remote: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+
+        self
+    }
+
     /// Get the current git branch name.
     pub fn git_current_branch(&self) -> String {
         let output = std::process::Command::new("git")

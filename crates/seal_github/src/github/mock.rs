@@ -1,7 +1,10 @@
 use anyhow::Result;
 use chrono::{DateTime, TimeZone, Utc};
 
-use crate::github::{GitHubPullRequest, GitHubRelease, GitHubService, filter_prs_by_date_range};
+use crate::github::{
+    GitHubPullRequest, GitHubPullRequestOptions, GitHubPullRequestReference, GitHubRelease,
+    GitHubService, filter_prs_by_date_range,
+};
 
 #[derive(Default, Clone)]
 pub struct MockGithubClient {
@@ -139,6 +142,30 @@ impl GitHubService for MockGithubClient {
                 prs.truncate(max);
             }
             Ok(prs)
+        })
+    }
+
+    fn create_or_update_pull_request(
+        &self,
+        options: GitHubPullRequestOptions,
+    ) -> std::pin::Pin<
+        Box<dyn std::future::Future<Output = Result<GitHubPullRequestReference>> + Send + '_>,
+    > {
+        Box::pin(async move {
+            let number = if options.title == "Release v1.2.4"
+                && options.body.is_empty()
+                && options.head == "release/v1.2.4"
+                && options.base == "main"
+                && !options.draft
+            {
+                8
+            } else {
+                9
+            };
+
+            Ok(GitHubPullRequestReference {
+                url: format!("https://github.com/owner/repo/pull/{number}"),
+            })
         })
     }
 }

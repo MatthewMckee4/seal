@@ -1,21 +1,28 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
 use octocrab::{Octocrab, models::pulls::PullRequest};
 
-use crate::github::{GitHubError, GitHubPullRequest, GitHubRelease, GitHubService};
+use crate::github::{
+    GitHubError, GitHubPullRequest, GitHubPullRequestOptions, GitHubPullRequestReference,
+    GitHubRelease, GitHubService,
+};
 
 #[derive(Debug)]
 pub struct GitHubClient {
     octocrab: Octocrab,
     owner: String,
     repo: String,
+    authenticated: bool,
 }
 
 impl GitHubClient {
     pub fn new(owner: String, repo: String) -> Result<Self> {
-        let github_token = std::env::var("GITHUB_TOKEN")
-            .or_else(|_| std::env::var("GH_TOKEN"))
-            .ok();
+        let github_token = ["GITHUB_TOKEN", "GH_TOKEN"].into_iter().find_map(|name| {
+            std::env::var(name)
+                .ok()
+                .filter(|token| !token.trim().is_empty())
+        });
+        let authenticated = github_token.is_some();
 
         let mut octocrab = Octocrab::builder();
 
@@ -29,6 +36,7 @@ impl GitHubClient {
             octocrab,
             owner,
             repo,
+            authenticated,
         })
     }
 }
@@ -200,6 +208,64 @@ impl GitHubService for GitHubClient {
 
             all_prs.truncate(max_prs);
             Ok(all_prs)
+        })
+    }
+
+    fn create_or_update_pull_request(
+        &self,
+        options: GitHubPullRequestOptions,
+    ) -> std::pin::Pin<
+        Box<dyn std::future::Future<Output = Result<GitHubPullRequestReference>> + Send + '_>,
+    > {
+        Box::pin(async move {
+            if !self.authenticated {
+                return Err(GitHubError::AuthenticationRequired.into());
+            }
+
+            let pull_requests = self.octocrab.pulls(&self.owner, &self.repo);
+            let existing = pull_requests
+                .list()
+                .state(octocrab::params::State::Open)
+                .head(format!("{}:{}", self.owner, options.head))
+                .base(options.base.as_str())
+                .per_page(1)
+                .send()
+                .await
+                .context("Failed to find an existing GitHub pull request")?
+                .items
+                .into_iter()
+                .next();
+
+            let pull_request = if let Some(existing) = existing {
+                pull_requests
+                    .update(existing.number)
+                    .title(options.title.as_str())
+                    .body(options.body.as_str())
+                    .send()
+                    .await
+                    .context("Failed to update GitHub pull request")?
+            } else {
+                pull_requests
+                    .create(
+                        options.title.as_str(),
+                        options.head.as_str(),
+                        options.base.as_str(),
+                    )
+                    .body(options.body.as_str())
+                    .draft(options.draft)
+                    .send()
+                    .await
+                    .context("Failed to create GitHub pull request")?
+            };
+
+            let number = pull_request.number;
+            let url = pull_request
+                .html_url
+                .ok_or(GitHubError::MissingPullRequestUrl { number })?;
+
+            Ok(GitHubPullRequestReference {
+                url: url.to_string(),
+            })
         })
     }
 }

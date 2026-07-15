@@ -1,6 +1,8 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use anyhow::Context;
+
 use crate::ProjectError;
 
 pub fn find_git_root(start_dir: &Path) -> anyhow::Result<PathBuf> {
@@ -21,6 +23,39 @@ pub fn find_git_root(start_dir: &Path) -> anyhow::Result<PathBuf> {
     Ok(PathBuf::from(path_str))
 }
 
+pub fn get_current_branch(current_directory: &Path) -> anyhow::Result<String> {
+    const COMMAND: &str = "git symbolic-ref --short HEAD";
+
+    let output = Command::new("git")
+        .args(["symbolic-ref", "--short", "HEAD"])
+        .current_dir(current_directory)
+        .output()
+        .context("Failed to determine current Git branch")?;
+
+    if !output.status.success() {
+        return Err(ProjectError::GitCommandFailed {
+            command: COMMAND.to_string(),
+            stderr: String::from_utf8_lossy(&output.stderr).trim().to_string(),
+        }
+        .into());
+    }
+
+    let branch = String::from_utf8(output.stdout)
+        .context("Current Git branch is not valid UTF-8")?
+        .trim()
+        .to_string();
+
+    if branch.is_empty() {
+        return Err(ProjectError::GitCommandFailed {
+            command: COMMAND.to_string(),
+            stderr: "Git returned an empty branch name".to_string(),
+        }
+        .into());
+    }
+
+    Ok(branch)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -29,7 +64,7 @@ mod tests {
 
     fn setup_git_repo(dir: &Path) {
         Command::new("git")
-            .args(["init"])
+            .args(["init", "-b", "main"])
             .current_dir(dir)
             .output()
             .unwrap();
@@ -80,5 +115,49 @@ mod tests {
         let temp = TempDir::new().unwrap();
         let result = find_git_root(temp.path());
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_get_current_branch() {
+        let temp = TempDir::new().unwrap();
+        let repo_dir = temp.path();
+        setup_git_repo(repo_dir);
+
+        let branch = get_current_branch(repo_dir).unwrap();
+
+        assert_eq!(branch, "main");
+    }
+
+    #[test]
+    fn test_get_current_branch_detached_head() {
+        let temp = TempDir::new().unwrap();
+        let repo_dir = temp.path();
+        setup_git_repo(repo_dir);
+        fs::write(repo_dir.join("README.md"), "# Test").unwrap();
+
+        let add = Command::new("git")
+            .args(["add", "README.md"])
+            .current_dir(repo_dir)
+            .output()
+            .unwrap();
+        assert!(add.status.success());
+
+        let commit = Command::new("git")
+            .args(["commit", "-m", "Initial commit"])
+            .current_dir(repo_dir)
+            .output()
+            .unwrap();
+        assert!(commit.status.success());
+
+        let checkout = Command::new("git")
+            .args(["checkout", "--detach"])
+            .current_dir(repo_dir)
+            .output()
+            .unwrap();
+        assert!(checkout.status.success());
+
+        let error = get_current_branch(repo_dir).unwrap_err();
+
+        assert!(error.to_string().contains("git symbolic-ref --short HEAD"));
     }
 }

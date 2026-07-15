@@ -34,12 +34,23 @@ pub trait GitHubService: Send + Sync {
     ) -> std::pin::Pin<
         Box<dyn std::future::Future<Output = Result<Vec<GitHubPullRequest>>> + Send + '_>,
     >;
+
+    fn create_or_update_pull_request(
+        &self,
+        options: GitHubPullRequestOptions,
+    ) -> std::pin::Pin<
+        Box<dyn std::future::Future<Output = Result<GitHubPullRequestReference>> + Send + '_>,
+    >;
 }
 
 #[derive(Debug, Error)]
 pub enum GitHubError {
     #[error("No releases found for {owner}/{repo}")]
     NoReleasesFound { owner: String, repo: String },
+    #[error("GitHub authentication is required; set GITHUB_TOKEN or GH_TOKEN")]
+    AuthenticationRequired,
+    #[error("GitHub did not return a browser URL for pull request #{number}")]
+    MissingPullRequestUrl { number: u64 },
 }
 
 #[derive(Debug, Clone)]
@@ -56,6 +67,20 @@ pub struct GitHubPullRequest {
     pub labels: Vec<String>,
     pub author: Option<String>,
     pub merged_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone)]
+pub struct GitHubPullRequestOptions {
+    pub title: String,
+    pub body: String,
+    pub head: String,
+    pub base: String,
+    pub draft: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GitHubPullRequestReference {
+    pub url: String,
 }
 
 pub fn filter_prs_by_date_range(
