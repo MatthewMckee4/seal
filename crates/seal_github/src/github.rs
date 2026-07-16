@@ -9,6 +9,8 @@ pub use client::GitHubClient;
 pub use mock::MockGithubClient;
 
 pub trait GitHubService: Send + Sync {
+    fn ensure_authenticated(&self) -> Result<()>;
+
     fn get_latest_release(
         &self,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<GitHubRelease>> + Send + '_>>;
@@ -51,6 +53,15 @@ pub enum GitHubError {
     AuthenticationRequired,
     #[error("GitHub did not return a browser URL for pull request #{number}")]
     MissingPullRequestUrl { number: u64 },
+    #[error(
+        "GitHub did not return a node ID for pull request #{number}; cannot update its draft state"
+    )]
+    MissingPullRequestNodeId { number: u64 },
+    #[error("Failed to {action}: GitHub returned GraphQL errors: {errors}")]
+    GraphQlErrors {
+        action: &'static str,
+        errors: String,
+    },
 }
 
 #[derive(Debug, Clone)]

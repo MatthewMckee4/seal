@@ -245,6 +245,10 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         writeln!(stdout)?;
     }
 
+    if pull_request.is_some() {
+        github_client.ensure_authenticated()?;
+    }
+
     writeln!(stdout, "Updating files...")?;
 
     file_changes.apply()?;

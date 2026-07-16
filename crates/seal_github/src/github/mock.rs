@@ -2,8 +2,8 @@ use anyhow::Result;
 use chrono::{DateTime, TimeZone, Utc};
 
 use crate::github::{
-    GitHubPullRequest, GitHubPullRequestOptions, GitHubPullRequestReference, GitHubRelease,
-    GitHubService, filter_prs_by_date_range,
+    GitHubError, GitHubPullRequest, GitHubPullRequestOptions, GitHubPullRequestReference,
+    GitHubRelease, GitHubService, filter_prs_by_date_range,
 };
 
 #[derive(Default, Clone)]
@@ -76,6 +76,14 @@ impl MockGithubClient {
 }
 
 impl GitHubService for MockGithubClient {
+    fn ensure_authenticated(&self) -> Result<()> {
+        if std::env::var_os("SEAL_TEST_GITHUB_AUTHENTICATION_REQUIRED").is_some() {
+            return Err(GitHubError::AuthenticationRequired.into());
+        }
+
+        Ok(())
+    }
+
     fn get_latest_release(
         &self,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<GitHubRelease>> + Send + '_>>

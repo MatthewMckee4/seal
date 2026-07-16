@@ -254,7 +254,7 @@ pub struct PullRequestConfig {
     )]
     pub base: Option<String>,
 
-    /// Whether to create the pull request as a draft.
+    /// Whether the pull request should be a draft.
     #[serde(default)]
     #[field(default = "false", value_type = "boolean", example = "draft = true")]
     pub draft: bool,

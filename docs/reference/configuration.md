@@ -370,7 +370,7 @@ Pull request body template. Supports the `{version}` placeholder.
 <span id="release_pull-request_draft"></span>
 #### [`draft`](#release_pull-request_draft)
 
-Whether to create the pull request as a draft.
+Whether the pull request should be a draft.
 
 **Default value**: `false`
 

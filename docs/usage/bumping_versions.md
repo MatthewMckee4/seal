@@ -109,9 +109,9 @@ The table itself enables pull-request creation and requires `commit-message`, `b
 changelog section body or an empty string, `base` defaults to the branch from which the release
 branch was created, and `draft` defaults to `false`. The title and body support `{version}`.
 
-Seal updates an existing open pull request with the same head and base branches instead of creating
-a duplicate. Creating or updating a pull request requires `GITHUB_TOKEN` or `GH_TOKEN` with access
-to the repository.
+Seal updates the title, body, and draft state of an existing open pull request with the same head
+and base branches instead of creating a duplicate. Creating or updating a pull request requires
+`GITHUB_TOKEN` or `GH_TOKEN` with permission to write pull requests in the repository.
 
 ## Pre-Commit Commands
 

@@ -1217,6 +1217,88 @@ push = true
 }
 
 #[test]
+fn bump_pull_request_authentication_failure_makes_no_changes() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+confirm = false
+
+[release.pull-request]
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().env("SEAL_TEST_GITHUB_AUTHENTICATION_REQUIRED", "1").arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+      `git add -A`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
+
+
+    ----- stderr -----
+    error: GitHub authentication is required; set GITHUB_TOKEN or GH_TOKEN
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.3)");
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "1.2.3"
+    version-files = ["README.md"]
+    commit-message = "Release v{version}"
+    branch-name = "release/v{version}"
+    push = true
+    confirm = false
+
+    [release.pull-request]
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"");
+}
+
+#[test]
 fn bump_pull_request_dry_run_prints_defaults() {
     let context = TestContext::new();
 
