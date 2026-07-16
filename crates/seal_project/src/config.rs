@@ -203,6 +203,11 @@ pub struct ReleaseConfig {
     "#
     )]
     pub on_pre_commit_failure: PreCommitFailure,
+
+    /// Pull request configuration. The table itself enables pull request creation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[option_group]
+    pub pull_request: Option<PullRequestConfig>,
 }
 
 #[expect(clippy::trivially_copy_pass_by_ref)]
@@ -218,10 +223,77 @@ fn default_confirm() -> bool {
     true
 }
 
+/// Pull request configuration for release bumps.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, OptionsMetadata, Default)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
+pub struct PullRequestConfig {
+    /// Pull request title template. Supports the `{version}` placeholder.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "resolved commit message",
+        value_type = "string",
+        example = r#"title = "Release v{version}""#
+    )]
+    pub title: Option<String>,
+
+    /// Pull request body template. Supports the `{version}` placeholder.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "generated changelog section or empty",
+        value_type = "string",
+        example = r#"body = "Prepare release v{version}.""#
+    )]
+    pub body: Option<String>,
+
+    /// Base branch for the pull request.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "branch from which the release branch was created",
+        value_type = "string",
+        example = r#"base = "main""#
+    )]
+    pub base: Option<String>,
+
+    /// Whether the pull request should be a draft.
+    #[serde(default)]
+    #[field(default = "false", value_type = "boolean", example = "draft = true")]
+    pub draft: bool,
+}
+
 impl ReleaseConfig {
     fn validate(&self) -> Result<(), ConfigValidationError> {
+        if let Some(pull_request) = &self.pull_request {
+            if self.commit_message.is_none() || self.branch_name.is_none() || !self.push {
+                return Err(ConfigValidationError::PullRequestMissingPrerequisites);
+            }
+
+            pull_request.validate()?;
+        }
+
         if self.push && self.branch_name.is_none() {
             return Err(ConfigValidationError::PushRequiresBranchName);
+        }
+
+        Ok(())
+    }
+}
+
+impl PullRequestConfig {
+    fn validate(&self) -> Result<(), ConfigValidationError> {
+        if self
+            .title
+            .as_ref()
+            .is_some_and(|title| title.trim().is_empty())
+        {
+            return Err(ConfigValidationError::EmptyPullRequestTitle);
+        }
+
+        if self
+            .base
+            .as_ref()
+            .is_some_and(|base| base.trim().is_empty())
+        {
+            return Err(ConfigValidationError::EmptyPullRequestBase);
         }
 
         Ok(())
@@ -533,6 +605,75 @@ version-files = ["VERSION"]
     }
 
     #[test]
+    fn test_parse_pull_request_config() {
+        let toml = r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+
+[release.pull-request]
+title = "Release v{version}"
+body = "Prepare the release."
+base = "main"
+draft = true
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        assert_json_snapshot!(config, @r#"
+        {
+          "members": null,
+          "release": {
+            "current-version": "1.2.3",
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "push": true,
+            "confirm": true,
+            "pull-request": {
+              "title": "Release v{version}",
+              "body": "Prepare the release.",
+              "base": "main",
+              "draft": true
+            }
+          },
+          "changelog": null
+        }
+        "#);
+    }
+
+    #[test]
+    fn test_parse_empty_pull_request_config_uses_defaults() {
+        let toml = r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+
+[release.pull-request]
+"#;
+
+        let config = Config::from_toml_str(toml).unwrap();
+        assert_json_snapshot!(config, @r#"
+        {
+          "members": null,
+          "release": {
+            "current-version": "1.2.3",
+            "commit-message": "Release v{version}",
+            "branch-name": "release/v{version}",
+            "push": true,
+            "confirm": true,
+            "pull-request": {
+              "draft": false
+            }
+          },
+          "changelog": null
+        }
+        "#);
+    }
+
+    #[test]
     fn test_parse_empty_config_requires_current_version() {
         let toml = "[release]";
         let result = Config::from_toml_str(toml);
@@ -552,7 +693,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -792,6 +933,7 @@ branch-name = ""
                 confirm: true,
                 pre_commit_commands: None,
                 on_pre_commit_failure: PreCommitFailure::default(),
+                pull_request: None,
             }),
             changelog: None,
         };
@@ -844,6 +986,7 @@ commit-message = "Release {version} with {version} tag"
                     confirm: true,
                     pre_commit_commands: None,
                     on_pre_commit_failure: Abort,
+                    pull_request: None,
                 },
             ),
             changelog: None,
@@ -914,6 +1057,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     confirm: true,
                     pre_commit_commands: None,
                     on_pre_commit_failure: Abort,
+                    pull_request: None,
                 },
             ),
             changelog: None,
@@ -945,6 +1089,7 @@ version-files = []
                     confirm: true,
                     pre_commit_commands: None,
                     on_pre_commit_failure: Abort,
+                    pull_request: None,
                 },
             ),
             changelog: None,
@@ -1051,6 +1196,99 @@ push = true
 
         let config = Config::from_toml_str(toml).unwrap();
         assert!(config.release.as_ref().unwrap().push);
+    }
+
+    #[test]
+    fn test_validation_pull_request_requires_release_workflow() {
+        let configs = [
+            r#"
+[release]
+current-version = "1.0.0"
+branch-name = "release/{version}"
+push = true
+
+[release.pull-request]
+"#,
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+push = true
+
+[release.pull-request]
+"#,
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+[release.pull-request]
+"#,
+        ];
+
+        let results = configs.map(Config::from_toml_str);
+        assert_debug_snapshot!(results, @r#"
+        [
+            Err(
+                InvalidConfigurationFile(
+                    PullRequestMissingPrerequisites,
+                ),
+            ),
+            Err(
+                InvalidConfigurationFile(
+                    PullRequestMissingPrerequisites,
+                ),
+            ),
+            Err(
+                InvalidConfigurationFile(
+                    PullRequestMissingPrerequisites,
+                ),
+            ),
+        ]
+        "#);
+    }
+
+    #[test]
+    fn test_validation_pull_request_rejects_empty_title_and_base() {
+        let configs = [
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+push = true
+
+[release.pull-request]
+title = "   "
+"#,
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+push = true
+
+[release.pull-request]
+base = "   "
+"#,
+        ];
+
+        let errors = configs.map(Config::from_toml_str);
+        assert_debug_snapshot!(errors, @r#"
+        [
+            Err(
+                InvalidConfigurationFile(
+                    EmptyPullRequestTitle,
+                ),
+            ),
+            Err(
+                InvalidConfigurationFile(
+                    EmptyPullRequestBase,
+                ),
+            ),
+        ]
+        "#);
     }
 
     #[test]

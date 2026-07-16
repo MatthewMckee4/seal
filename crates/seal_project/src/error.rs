@@ -63,6 +63,17 @@ pub enum ConfigValidationError {
     #[error("release.push = true requires branch-name to be set")]
     PushRequiresBranchName,
 
+    #[error(
+        "release.pull-request requires release.commit-message, release.branch-name, and release.push = true"
+    )]
+    PullRequestMissingPrerequisites,
+
+    #[error("release.pull-request.title cannot be empty")]
+    EmptyPullRequestTitle,
+
+    #[error("release.pull-request.base cannot be empty")]
+    EmptyPullRequestBase,
+
     #[error("release.changelog.changelog-heading cannot be empty")]
     EmptyChangelogHeading,
 
@@ -116,6 +127,18 @@ mod tests {
             err.to_string(),
             @"release.current-version is not a valid version: ''"
         );
+
+        let err = ConfigValidationError::PullRequestMissingPrerequisites;
+        assert_snapshot!(
+            err.to_string(),
+            @"release.pull-request requires release.commit-message, release.branch-name, and release.push = true"
+        );
+
+        let err = ConfigValidationError::EmptyPullRequestTitle;
+        assert_snapshot!(err.to_string(), @"release.pull-request.title cannot be empty");
+
+        let err = ConfigValidationError::EmptyPullRequestBase;
+        assert_snapshot!(err.to_string(), @"release.pull-request.base cannot be empty");
     }
 
     #[test]

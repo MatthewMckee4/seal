@@ -7,10 +7,10 @@ mod workspace_member;
 
 pub use config::{
     BranchName, ChangelogConfig, ChangelogHeading, CommitMessage, Config, PreCommitFailure,
-    ReleaseConfig, VersionFile, VersionFileTextFormat,
+    PullRequestConfig, ReleaseConfig, VersionFile, VersionFileTextFormat,
 };
 pub use error::{ConfigValidationError, ProjectError};
-pub use git::find_git_root;
+pub use git::{find_git_root, get_current_branch};
 pub use project::ProjectWorkspace;
 pub use project_name::ProjectName;
 pub use workspace_member::WorkspaceMember;

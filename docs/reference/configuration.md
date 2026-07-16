@@ -323,3 +323,87 @@ The version files that need to be updated.
 
 ---
 
+### `release.pull-request`
+
+Pull request configuration for release bumps.
+
+<span id="release_pull-request_base"></span>
+#### [`base`](#release_pull-request_base)
+
+Base branch for the pull request.
+
+**Default value**: `branch from which the release branch was created`
+
+**Type**: `string`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.pull-request]
+    base = "main"
+    ```
+
+---
+
+<span id="release_pull-request_body"></span>
+#### [`body`](#release_pull-request_body)
+
+Pull request body template. Supports the `{version}` placeholder.
+
+**Default value**: `generated changelog section or empty`
+
+**Type**: `string`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.pull-request]
+    body = "Prepare release v{version}."
+    ```
+
+---
+
+<span id="release_pull-request_draft"></span>
+#### [`draft`](#release_pull-request_draft)
+
+Whether the pull request should be a draft.
+
+**Default value**: `false`
+
+**Type**: `boolean`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.pull-request]
+    draft = true
+    ```
+
+---
+
+<span id="release_pull-request_title"></span>
+#### [`title`](#release_pull-request_title)
+
+Pull request title template. Supports the `{version}` placeholder.
+
+**Default value**: `resolved commit message`
+
+**Type**: `string`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.pull-request]
+    title = "Release v{version}"
+    ```
+
+---
+

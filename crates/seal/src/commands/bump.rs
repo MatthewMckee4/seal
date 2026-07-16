@@ -6,8 +6,8 @@ use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
 use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
-use seal_github::GitHubService;
-use seal_project::{PreCommitFailure, ProjectWorkspace};
+use seal_github::{GitHubPullRequestOptions, GitHubService};
+use seal_project::{PreCommitFailure, ProjectWorkspace, get_current_branch};
 
 use seal_cli::BumpArgs;
 
@@ -91,10 +91,11 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         &new_version,
         &file_resolver,
     )?;
+    let mut changelog_body = String::new();
 
     if !args.no_changelog {
         if let Some(changelog_config) = config.changelog.as_ref() {
-            let changes = seal_changelog::prepare_changelog_changes(
+            let prepared_changelog = seal_changelog::prepare_changelog_changes(
                 workspace.root(),
                 &new_version_string,
                 changelog_config,
@@ -103,7 +104,8 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             .await
             .context("Failed to prepare changelog")?;
 
-            file_changes.extend(changes);
+            changelog_body = prepared_changelog.section_body;
+            file_changes.extend(prepared_changelog.file_changes);
         } else {
             tracing::info!(
                 "Skipping changelog update because no `[changelog]` section was found in the configuration."
@@ -112,6 +114,38 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     } else {
         tracing::info!("Skipping changelog update because `--no-changelog` was provided.");
     }
+
+    let pull_request = if let Some(pull_request_config) = &release_config.pull_request {
+        let default_title = commit_message
+            .as_deref()
+            .context("Pull request configuration requires commit-message")?;
+        let head = branch_name
+            .as_ref()
+            .context("Pull request configuration requires branch-name")?;
+        let base = if let Some(base) = &pull_request_config.base {
+            base.clone()
+        } else {
+            get_current_branch(workspace.root())?
+        };
+
+        Some(GitHubPullRequestOptions {
+            title: if let Some(title) = &pull_request_config.title {
+                title.replace("{version}", &new_version_string)
+            } else {
+                default_title.to_string()
+            },
+            body: if let Some(body) = &pull_request_config.body {
+                body.replace("{version}", &new_version_string)
+            } else {
+                changelog_body.clone()
+            },
+            head: head.clone(),
+            base,
+            draft: pull_request_config.draft,
+        })
+    } else {
+        None
+    };
 
     writeln!(stdout, "Preview of changes:")?;
     let width = seal_terminal::terminal_width();
@@ -180,6 +214,14 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     }
 
     if args.dry_run {
+        if let Some(pull_request) = &pull_request {
+            writeln!(stdout, "Pull request:")?;
+            writeln!(stdout, "  Title: {}", pull_request.title)?;
+            writeln!(stdout, "  Base: {}", pull_request.base)?;
+            writeln!(stdout, "  Draft: {}", pull_request.draft)?;
+            writeln!(stdout)?;
+        }
+
         writeln!(stdout, "Dry run complete. No changes made.")?;
         return Ok(ExitStatus::Success);
     }
@@ -201,6 +243,10 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
             return Ok(ExitStatus::Success);
         }
         writeln!(stdout)?;
+    }
+
+    if pull_request.is_some() {
+        github_client.ensure_authenticated()?;
     }
 
     writeln!(stdout, "Updating files...")?;
@@ -228,6 +274,14 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         } else {
             tagged.command.execute(&mut stdout, workspace.root())?;
         }
+    }
+
+    if let Some(pull_request) = pull_request {
+        let pull_request = github_client
+            .create_or_update_pull_request(pull_request)
+            .await
+            .context("Failed to create or update GitHub pull request")?;
+        writeln!(stdout, "Pull request: {}", pull_request.url)?;
     }
 
     writeln!(stdout, "Successfully bumped to {new_version_string}")?;

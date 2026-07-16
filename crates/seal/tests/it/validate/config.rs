@@ -28,6 +28,35 @@ confirm = false
 }
 
 #[test]
+fn validate_config_with_pull_request() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+
+[release.pull-request]
+title = "Release v{version}"
+body = "Prepare the release."
+base = "main"
+draft = true
+"#,
+    );
+
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Config file `seal.toml` is valid
+
+    ----- stderr -----
+    ");
+}
+
+#[test]
 fn validate_config_with_explicit_path() {
     let context = TestContext::new();
     let custom_config = context.root.child("custom.toml");
@@ -196,6 +225,83 @@ branch-name = ""
 }
 
 #[test]
+fn validate_config_pull_request_requires_release_workflow() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+
+[release.pull-request]
+"#,
+    );
+
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Invalid configuration file: release.pull-request requires release.commit-message, release.branch-name, and release.push = true
+      Caused by: release.pull-request requires release.commit-message, release.branch-name, and release.push = true
+    ");
+}
+
+#[test]
+fn validate_config_empty_pull_request_title() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+
+[release.pull-request]
+title = "   "
+"#,
+    );
+
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Invalid configuration file: release.pull-request.title cannot be empty
+      Caused by: release.pull-request.title cannot be empty
+    ");
+}
+
+#[test]
+fn validate_config_empty_pull_request_base() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+
+[release.pull-request]
+base = "   "
+"#,
+    );
+
+    seal_snapshot!(context.command().arg("validate").arg("config"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Invalid configuration file: release.pull-request.base cannot be empty
+      Caused by: release.pull-request.base cannot be empty
+    ");
+}
+
+#[test]
 fn validate_config_empty_tag_format() {
     let context = TestContext::new();
     context.seal_toml(
@@ -348,7 +454,7 @@ unknown-field = "value"
       |
     3 | unknown-field = "value"
       | ^^^^^^^^^^^^^
-    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`
+    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`
     "#);
 }
 
