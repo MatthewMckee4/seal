@@ -864,6 +864,268 @@ branch-name = "release/v{version}"
 }
 
 #[test]
+fn bump_patch_valid_commit_branch_push() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+      `git add -A`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
+
+    Proceed with these changes? (y/n):
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Executing command: `git push origin release/v1.2.4`
+
+    ----- stderr -----
+    error: Command `git push origin release/v1.2.4` failed (exit code 128)
+    fatal: 'origin' does not appear to be a git repository
+    fatal: Could not read from remote repository.
+
+    Please make sure you have the correct access rights
+    and the repository exists.
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "1.2.4"
+    version-files = ["README.md"]
+    commit-message = "Release v{version}"
+    branch-name = "release/v{version}"
+    push = true
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
+fn bump_patch_valid_commit_branch_push_pr() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+      `git add -A`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
+
+    Proceed with these changes? (y/n):
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Executing command: `git push origin release/v1.2.4`
+
+    ----- stderr -----
+    error: Command `git push origin release/v1.2.4` failed (exit code 128)
+    fatal: 'origin' does not appear to be a git repository
+    fatal: Could not read from remote repository.
+
+    Please make sure you have the correct access rights
+    and the repository exists.
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "1.2.4"
+    version-files = ["README.md"]
+    commit-message = "Release v{version}"
+    branch-name = "release/v{version}"
+    push = true
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
+fn bump_patch_valid_commit_branch_push_pr_no_confirm() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+confirm = false
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+        4     4 │ commit-message = "Release v{version}"
+        5     5 │ branch-name = "release/v{version}"
+        6     6 │ push = true
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+      `git add -A`
+      `git commit -m Release v1.2.4`
+      `git push origin release/v1.2.4`
+
+    Updating files...
+    Executing command: `git checkout -b release/v1.2.4`
+    Executing command: `git add -A`
+    Executing command: `git commit -m Release v1.2.4`
+    Executing command: `git push origin release/v1.2.4`
+
+    ----- stderr -----
+    error: Command `git push origin release/v1.2.4` failed (exit code 128)
+    fatal: 'origin' does not appear to be a git repository
+    fatal: Could not read from remote repository.
+
+    Please make sure you have the correct access rights
+    and the repository exists.
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "1.2.4"
+    version-files = ["README.md"]
+    commit-message = "Release v{version}"
+    branch-name = "release/v{version}"
+    push = true
+    confirm = false
+    "#);
+
+    insta::assert_snapshot!(context.git_current_branch(), @"release/v1.2.4");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
 fn bump_pull_request_not_created_when_push_fails() {
     let context = TestContext::new();
 
