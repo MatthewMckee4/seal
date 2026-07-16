@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.1-alpha.6
+
+### Bug Fixes
+
+- Test git commit hook failure output ([#96](https://github.com/MatthewMckee4/seal/pull/96))
+
+### Bumping
+
+- Create configurable pull requests for release bumps ([#97](https://github.com/MatthewMckee4/seal/pull/97))
+- Pre commit failure ([#69](https://github.com/MatthewMckee4/seal/pull/69))
+- Support pre commit commands ([#68](https://github.com/MatthewMckee4/seal/pull/68))
+
+### Documentation
+
+- Update repository URLs to karva-dev/seal ([#76](https://github.com/MatthewMckee4/seal/pull/76))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+
 ## 0.0.1-alpha.5
 
 ### Bumping
