@@ -127,13 +127,17 @@ Do not edit `docs/reference/cli.md` or `docs/reference/configuration.md` by hand
 
 ## Release Process
 
-Releases are automated and are only performed by maintainers. Use Seal itself to prepare one:
+Run the `Prepare release` workflow with the version bump to perform, such as `alpha` or an
+explicit version. The workflow runs `seal bump <version>` and opens the release pull request.
+
+To prepare a release locally, run:
 
 ```sh
 cargo run -p seal -- bump <version>
 ```
 
-Review and merge the generated release pull request. Then run the
+Seal creates the release branch, commits and pushes the changes, and opens a pull request. Review
+and merge it, then run the
 [release workflow](https://github.com/MatthewMckee4/seal/actions/workflows/release.yml) with the
 version tag without a leading `v`; the workflow builds artifacts, creates the GitHub release, and
 publishes the documentation.
