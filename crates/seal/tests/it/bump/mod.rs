@@ -1184,6 +1184,13 @@ push = true
       `git commit -m Release v1.2.4`
       `git push origin release/v1.2.4`
 
+    Pull request:
+      Title: Release v1.2.4
+      Head: release/v1.2.4
+      Base: main
+      Draft: false
+      Body: (empty)
+
     Proceed with these changes? (y/n):
     Updating files...
     Executing command: `git checkout -b release/v1.2.4`
@@ -1276,6 +1283,13 @@ confirm = false
       `git commit -m Release v1.2.4`
       `git push origin release/v1.2.4`
 
+    Pull request:
+      Title: Release v1.2.4
+      Head: release/v1.2.4
+      Base: main
+      Draft: false
+      Body: (empty)
+
 
     ----- stderr -----
     error: GitHub authentication is required; set GITHUB_TOKEN or GH_TOKEN
@@ -1353,8 +1367,10 @@ push = true
 
     Pull request:
       Title: Release v1.2.4
+      Head: release/v1.2.4
       Base: main
       Draft: false
+      Body: (empty)
 
     Dry run complete. No changes made.
 
@@ -1392,6 +1408,7 @@ branch-name = "release/v{version}"
 push = true
 [release.pull-request]
 title = "Ship {version}"
+body = "Prepare release {version}.\n\nReview before merging."
 base = "stable"
 draft = true
 "#,
@@ -1421,8 +1438,13 @@ draft = true
 
     Pull request:
       Title: Ship 1.2.4
+      Head: release/v1.2.4
       Base: stable
       Draft: true
+      Body:
+        Prepare release 1.2.4.
+
+        Review before merging.
 
     Dry run complete. No changes made.
 
@@ -1489,6 +1511,13 @@ confirm = false
       `git add -A`
       `git commit -m Release v1.2.4`
       `git push origin release/v1.2.4`
+
+    Pull request:
+      Title: Release v1.2.4
+      Head: release/v1.2.4
+      Base: main
+      Draft: false
+      Body: (empty)
 
     Updating files...
     Executing command: `git checkout -b release/v1.2.4`
