@@ -25,7 +25,7 @@ seal_project = { path = "crates/seal_project" }
 seal_terminal = { path = "crates/seal_terminal" }
 seal_version = { path = "crates/seal_version" }
 
-anstream = { version = "0.6.21" }
+anstream = { version = "1.0.0" }
 anyhow = { version = "1.0.100" }
 assert_cmd = { version = "2.1" }
 assert_fs = { version = "1.1" }
