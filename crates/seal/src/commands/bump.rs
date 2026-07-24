@@ -213,20 +213,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         }
     }
 
-    if args.dry_run {
-        if let Some(pull_request) = &pull_request {
-            writeln!(stdout, "Pull request:")?;
-            writeln!(stdout, "  Title: {}", pull_request.title)?;
-            writeln!(stdout, "  Base: {}", pull_request.base)?;
-            writeln!(stdout, "  Draft: {}", pull_request.draft)?;
-            writeln!(stdout)?;
-        }
-
-        writeln!(stdout, "Dry run complete. No changes made.")?;
-        return Ok(ExitStatus::Success);
-    }
-
-    if !commands.is_empty() {
+    if !args.dry_run && !commands.is_empty() {
         writeln!(stdout, "Commands to be executed:")?;
 
         for tagged in &commands {
@@ -234,6 +221,32 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         }
 
         writeln!(stdout)?;
+    }
+
+    if let Some(pull_request) = &pull_request {
+        writeln!(stdout, "Pull request:")?;
+        writeln!(stdout, "  Title: {}", pull_request.title)?;
+        writeln!(stdout, "  Head: {}", pull_request.head)?;
+        writeln!(stdout, "  Base: {}", pull_request.base)?;
+        writeln!(stdout, "  Draft: {}", pull_request.draft)?;
+        if pull_request.body.is_empty() {
+            writeln!(stdout, "  Body: (empty)")?;
+        } else {
+            writeln!(stdout, "  Body:")?;
+            for line in pull_request.body.lines() {
+                if line.is_empty() {
+                    writeln!(stdout)?;
+                } else {
+                    writeln!(stdout, "    {line}")?;
+                }
+            }
+        }
+        writeln!(stdout)?;
+    }
+
+    if args.dry_run {
+        writeln!(stdout, "Dry run complete. No changes made.")?;
+        return Ok(ExitStatus::Success);
     }
 
     if release_config.confirm {

@@ -109,6 +109,9 @@ The table itself enables pull-request creation and requires `commit-message`, `b
 changelog section body or an empty string, `base` defaults to the branch from which the release
 branch was created, and `draft` defaults to `false`. The title and body support `{version}`.
 
+Before confirmation, Seal prints the resolved title, body, head and base branches, and draft state
+alongside the Git commands it will run.
+
 Seal updates the title, body, and draft state of an existing open pull request with the same head
 and base branches instead of creating a duplicate. Creating or updating a pull request requires
 `GITHUB_TOKEN` or `GH_TOKEN` with permission to write pull requests in the repository.
