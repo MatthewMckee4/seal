@@ -3,7 +3,7 @@ use glob::glob;
 use seal_file_change::{FileChange, FileChanges, make_absolute};
 use seal_fs::FileResolver;
 use seal_project::{VersionFile, VersionFileTextFormat};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::Version;
 
@@ -43,15 +43,13 @@ pub fn calculate_version_file_changes(
     let new_version_str = new_version.to_string();
 
     for version_file in version_files {
-        let previous_change_count = changes.len();
-
         match version_file {
             VersionFile::Text {
                 path,
                 format,
                 field,
             } => {
-                for path in glob(path)?.filter_map(Result::ok) {
+                for path in version_file_paths(path)? {
                     let absolute_path = make_absolute(root, &path);
                     let old_content = fs_err::read_to_string(&path)?;
 
@@ -109,13 +107,9 @@ pub fn calculate_version_file_changes(
 
                     changes.push(FileChange::new(absolute_path, old_content, new_content));
                 }
-
-                if changes.len() == previous_change_count {
-                    anyhow::bail!("No files found for path or glob `{path}`");
-                }
             }
             VersionFile::Search { path, search } => {
-                for path in glob(path)?.filter_map(Result::ok) {
+                for path in version_file_paths(path)? {
                     let old_content = fs_err::read_to_string(&path)?;
 
                     let search_with_current = search.replace("{version}", current_version);
@@ -135,13 +129,9 @@ pub fn calculate_version_file_changes(
                         new_content,
                     ));
                 }
-
-                if changes.len() == previous_change_count {
-                    anyhow::bail!("No files found for path or glob `{path}`");
-                }
             }
             VersionFile::JustPath { path } | VersionFile::Simple(path) => {
-                for path in glob(path)?.filter_map(Result::ok) {
+                for path in version_file_paths(path)? {
                     let absolute_path = make_absolute(root, &path);
                     let old_content = fs_err::read_to_string(&path)?;
 
@@ -153,10 +143,6 @@ pub fn calculate_version_file_changes(
                     )?;
 
                     changes.push(FileChange::new(absolute_path, old_content, new_content));
-                }
-
-                if changes.len() == previous_change_count {
-                    anyhow::bail!("No files found for path or glob `{path}`");
                 }
             }
         }
@@ -183,6 +169,16 @@ pub fn calculate_version_file_changes(
     ));
 
     Ok(FileChanges::new(changes))
+}
+
+fn version_file_paths(path: &str) -> Result<Vec<PathBuf>> {
+    let paths = glob(path)?.collect::<std::result::Result<Vec<_>, _>>()?;
+
+    if paths.is_empty() {
+        anyhow::bail!("No files found for path or glob `{path}`");
+    }
+
+    Ok(paths)
 }
 
 fn exact_version_replacement(
