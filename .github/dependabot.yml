@@ -8,6 +8,8 @@ version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
+    exclude-paths:
+      - ".github/workflows/release.yml"
     labels:
       - "dependencies"
     schedule:
