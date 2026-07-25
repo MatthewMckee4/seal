@@ -43,6 +43,8 @@ pub fn calculate_version_file_changes(
     let new_version_str = new_version.to_string();
 
     for version_file in version_files {
+        let previous_change_count = changes.len();
+
         match version_file {
             VersionFile::Text {
                 path,
@@ -108,7 +110,7 @@ pub fn calculate_version_file_changes(
                     changes.push(FileChange::new(absolute_path, old_content, new_content));
                 }
 
-                if changes.is_empty() {
+                if changes.len() == previous_change_count {
                     anyhow::bail!("No files found for path or glob `{path}`");
                 }
             }
@@ -134,7 +136,7 @@ pub fn calculate_version_file_changes(
                     ));
                 }
 
-                if changes.is_empty() {
+                if changes.len() == previous_change_count {
                     anyhow::bail!("No files found for path or glob `{path}`");
                 }
             }
@@ -153,7 +155,7 @@ pub fn calculate_version_file_changes(
                     changes.push(FileChange::new(absolute_path, old_content, new_content));
                 }
 
-                if changes.is_empty() {
+                if changes.len() == previous_change_count {
                     anyhow::bail!("No files found for path or glob `{path}`");
                 }
             }
