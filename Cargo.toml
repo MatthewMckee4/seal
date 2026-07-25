@@ -36,7 +36,7 @@ dunce = { version = "1.0.5" }
 fs-err = { version = "3.2.2", features = ["tokio"] }
 glob = { version = "0.3.3" }
 insta = { version = "1.46", features = ["filters", "json"] }
-itertools = { version = "0.14.0" }
+itertools = { version = "0.15.0" }
 jiff = { version = "0.2.18", features = ["serde"] }
 markdown = { version = "1.0.0" }
 octocrab = { version = "0.49" }
