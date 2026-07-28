@@ -421,7 +421,7 @@ pub struct ChangelogConfig {
     )]
     pub ignore_contributors: Option<Vec<String>>,
 
-    /// Mapping of section names to labels.
+    /// Mapping of section names to labels. Use `__unknown__` to include unlabeled pull requests.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[field(
         default = "{}",

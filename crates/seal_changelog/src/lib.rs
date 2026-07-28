@@ -11,6 +11,7 @@ use seal_project::ChangelogConfig;
 use semver::Version;
 
 const VERSION_PLACEHOLDER: &str = "{version}";
+const UNKNOWN_LABEL: &str = "__unknown__";
 
 pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
 
@@ -74,7 +75,9 @@ pub fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> 
         let mut categorized_pr = false;
         for (section_name, section_label_list) in section_labels {
             for label in section_label_list {
-                if pr.labels.iter().any(|l| l == label) {
+                if pr.labels.iter().any(|pr_label| pr_label == label)
+                    || pr.labels.is_empty() && label == UNKNOWN_LABEL
+                {
                     categorized
                         .entry(section_name.clone())
                         .or_insert_with(Vec::new)
@@ -596,6 +599,48 @@ mod tests {
 
         - [@alice](https://github.com/alice)
         - [@bob](https://github.com/bob)
+        ");
+    }
+
+    #[test]
+    fn test_format_changelog_with_unlabeled_pr() {
+        let prs = vec![
+            GitHubPullRequest {
+                title: "Unlabeled change".to_string(),
+                number: 1,
+                url: "https://github.com/owner/repo/pull/1".to_string(),
+                labels: vec![],
+                author: Some("alice".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 8, 12, 15, 20, 0).unwrap(),
+            },
+            GitHubPullRequest {
+                title: "Unmapped change".to_string(),
+                number: 2,
+                url: "https://github.com/owner/repo/pull/2".to_string(),
+                labels: vec!["documentation".to_string()],
+                author: Some("bob".to_string()),
+                merged_at: Utc.with_ymd_and_hms(2025, 8, 13, 9, 45, 0).unwrap(),
+            },
+        ];
+
+        let mut section_labels = BTreeMap::new();
+        section_labels.insert("Other changes".to_string(), vec![UNKNOWN_LABEL.to_string()]);
+
+        let config = ChangelogConfig {
+            section_labels: Some(section_labels),
+            include_contributors: Some(false),
+            ..Default::default()
+        };
+
+        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+
+        insta::assert_snapshot!(result, @r"
+        ## 1.0.0
+
+        ### Other changes
+
+        - Unlabeled change ([#1](https://github.com/owner/repo/pull/1))
+
         ");
     }
 
