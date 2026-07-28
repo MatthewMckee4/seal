@@ -124,7 +124,7 @@ Whether to include contributors in the changelog. Defaults to true.
 <span id="changelog_section-labels"></span>
 #### [`section-labels`](#changelog_section-labels)
 
-Mapping of section names to labels.
+Mapping of section names to labels. Use `__unknown__` to include unlabeled pull requests.
 
 **Default value**: `{}`
 
