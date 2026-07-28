@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.0.1-alpha.7
+
+### CLI
+
+- Preview pull request details before confirmation ([#110](https://github.com/MatthewMckee4/seal/pull/110))
+
+### Changelog
+
+- Include unlabeled pull requests in changelogs ([#127](https://github.com/MatthewMckee4/seal/pull/127))
+
+### Configuration
+
+- Update Cargo.lock during releases ([#109](https://github.com/MatthewMckee4/seal/pull/109))
+
+### Documentation
+
+- Improve contributor guides ([#107](https://github.com/MatthewMckee4/seal/pull/107))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+
 ## 0.0.1-alpha.6
 
 ### Bug Fixes
