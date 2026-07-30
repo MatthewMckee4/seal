@@ -1,6 +1,10 @@
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
-use octocrab::{Octocrab, models::pulls::PullRequest};
+use octocrab::{
+    Octocrab,
+    models::pulls::PullRequest,
+    params::{Direction, pulls::Sort},
+};
 
 use crate::github::{
     GitHubError, GitHubPullRequest, GitHubPullRequestOptions, GitHubPullRequestReference,
@@ -181,34 +185,44 @@ impl GitHubService for GitHubClient {
             let mut all_prs = Vec::new();
 
             loop {
-                let prs = self
+                let response = self
                     .octocrab
                     .pulls(&self.owner, &self.repo)
                     .list()
                     .state(octocrab::params::State::Closed)
+                    .sort(Sort::Updated)
+                    .direction(Direction::Descending)
                     .per_page(100)
                     .page(page)
                     .send()
-                    .await?
-                    .into_iter()
-                    .filter_map(gh_pr_to_github_pull_request)
-                    .collect::<Vec<_>>();
+                    .await?;
 
-                if prs.is_empty() {
+                if response.items.is_empty() {
                     break;
                 }
 
-                for pr in prs {
-                    if let Some(since) = since {
-                        if pr.merged_at <= since {
-                            return Ok(all_prs);
-                        }
+                for pr in response {
+                    if let Some(since) = since
+                        && let Some(updated_at) = pr.updated_at.as_ref()
+                        && *updated_at <= since
+                    {
+                        return Ok(all_prs);
                     }
 
-                    if let Some(until) = until {
-                        if pr.merged_at > until {
-                            continue;
-                        }
+                    let Some(pr) = gh_pr_to_github_pull_request(pr) else {
+                        continue;
+                    };
+
+                    if let Some(since) = since
+                        && pr.merged_at <= since
+                    {
+                        continue;
+                    }
+
+                    if let Some(until) = until
+                        && pr.merged_at > until
+                    {
+                        continue;
                     }
 
                     all_prs.push(pr);
@@ -354,6 +368,7 @@ fn gh_pr_to_github_pull_request(pr: PullRequest) -> Option<GitHubPullRequest> {
 #[cfg(test)]
 mod tests {
     use anyhow::{Context as _, Result};
+    use chrono::{DateTime, Utc};
     use octocrab::Octocrab;
     use serde_json::{Value, json};
     use wiremock::{
@@ -413,6 +428,34 @@ mod tests {
             },
             "draft": draft,
         })
+    }
+
+    fn closed_pull_request(
+        number: u64,
+        created_at: &str,
+        updated_at: &str,
+        merged_at: Option<&str>,
+    ) -> Value {
+        let mut pull_request = pull_request(number, false, None);
+        pull_request["created_at"] = json!(created_at);
+        pull_request["updated_at"] = json!(updated_at);
+        pull_request["closed_at"] = json!(updated_at);
+        pull_request["merged_at"] = json!(merged_at);
+        pull_request
+    }
+
+    async fn mount_closed_pull_requests_page(server: &MockServer, page: u32, response: Vec<Value>) {
+        Mock::given(method("GET"))
+            .and(path(format!("/repos/{OWNER}/{REPO}/pulls")))
+            .and(query_param("state", "closed"))
+            .and(query_param("sort", "updated"))
+            .and(query_param("direction", "desc"))
+            .and(query_param("per_page", "100"))
+            .and(query_param("page", page.to_string()))
+            .respond_with(ResponseTemplate::new(200).set_body_json(response))
+            .expect(1)
+            .mount(server)
+            .await;
     }
 
     async fn mount_lookup(server: &MockServer, response: Vec<Value>) {
@@ -494,6 +537,57 @@ mod tests {
             Some(GitHubError::AuthenticationRequired)
         ));
         assert_received_paths(&server, &[]).await?;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn gets_pr_created_before_release_when_merged_after_release() -> Result<()> {
+        let server = MockServer::start().await;
+        mount_closed_pull_requests_page(
+            &server,
+            1,
+            vec![closed_pull_request(
+                4,
+                "2026-01-20T00:00:00Z",
+                "2026-02-02T00:00:00Z",
+                None,
+            )],
+        )
+        .await;
+        mount_closed_pull_requests_page(
+            &server,
+            2,
+            vec![
+                closed_pull_request(
+                    1,
+                    "2025-12-20T00:00:00Z",
+                    "2026-02-01T00:00:00Z",
+                    Some("2025-12-25T00:00:00Z"),
+                ),
+                closed_pull_request(
+                    2,
+                    "2025-01-01T00:00:00Z",
+                    "2026-01-15T00:00:00Z",
+                    Some("2026-01-15T00:00:00Z"),
+                ),
+                closed_pull_request(3, "2025-12-01T00:00:00Z", "2025-12-31T00:00:00Z", None),
+            ],
+        )
+        .await;
+
+        let since = "2026-01-01T00:00:00Z".parse::<DateTime<Utc>>()?;
+        let pull_requests = test_client(&server, true)?
+            .get_prs_between(Some(&since), None)
+            .await?;
+
+        assert_eq!(
+            pull_requests
+                .iter()
+                .map(|pull_request| pull_request.number)
+                .collect::<Vec<_>>(),
+            vec![2]
+        );
 
         Ok(())
     }
