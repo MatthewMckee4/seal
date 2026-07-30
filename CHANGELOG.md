@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.1-alpha.8
+
+### Bug Fixes
+
+- Fix changelog pull request date filtering ([#129](https://github.com/MatthewMckee4/seal/pull/129))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+- [@github-actions[bot]](https://github.com/github-actions[bot])
+
 ## 0.0.1-alpha.7
 
 ### CLI
