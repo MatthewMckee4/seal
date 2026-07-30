@@ -13,6 +13,31 @@ use semver::Version;
 const VERSION_PLACEHOLDER: &str = "{version}";
 const UNKNOWN_LABEL: &str = "__unknown__";
 
+fn contributor_url(contributor: &str) -> String {
+    if let Some(app) = contributor.strip_suffix("[bot]") {
+        format!("https://github.com/apps/{app}")
+    } else {
+        format!("https://github.com/{contributor}")
+    }
+}
+
+fn write_contributors(output: &mut String, mut contributors: Vec<String>) -> Result<()> {
+    if contributors.is_empty() {
+        return Ok(());
+    }
+
+    output.push_str("### Contributors\n\n");
+    contributors.sort();
+
+    for contributor in contributors {
+        let url = contributor_url(&contributor);
+        writeln!(output, "- [@{contributor}]({url})")?;
+    }
+
+    output.push('\n');
+    Ok(())
+}
+
 pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
 
 fn extract_version_from_release_name(name: Option<&String>) -> Option<String> {
@@ -123,20 +148,8 @@ pub fn format_changelog_content(
         output.push('\n');
     }
 
-    if config.include_contributors() && !categorized.contributors.is_empty() {
-        output.push_str("### Contributors\n\n");
-
-        let mut contributors = categorized.contributors;
-        contributors.sort();
-
-        for contributor in contributors {
-            writeln!(
-                output,
-                "- [@{contributor}](https://github.com/{contributor})"
-            )?;
-        }
-
-        output.push('\n');
+    if config.include_contributors() {
+        write_contributors(&mut output, categorized.contributors)?;
     }
 
     Ok(output)
@@ -275,20 +288,8 @@ pub async fn generate_full_changelog(
             output.push('\n');
         }
 
-        if config.include_contributors() && !categorized.contributors.is_empty() {
-            output.push_str("### Contributors\n\n");
-
-            let mut contributors = categorized.contributors;
-            contributors.sort();
-
-            for contributor in contributors {
-                writeln!(
-                    output,
-                    "- [@{contributor}](https://github.com/{contributor})"
-                )?;
-            }
-
-            output.push('\n');
+        if config.include_contributors() {
+            write_contributors(&mut output, categorized.contributors)?;
         }
     }
 
@@ -551,6 +552,32 @@ mod tests {
         - Add feature ([#1](https://github.com/owner/repo/pull/1))
 
         "###);
+    }
+
+    #[test]
+    fn test_format_changelog_with_bot_contributor() {
+        let prs = vec![GitHubPullRequest {
+            title: "Update workflow".to_string(),
+            number: 1,
+            url: "https://github.com/owner/repo/pull/1".to_string(),
+            labels: vec!["ci".to_string()],
+            author: Some("github-actions[bot]".to_string()),
+            merged_at: Utc.with_ymd_and_hms(2025, 9, 5, 12, 0, 0).unwrap(),
+        }];
+
+        let mut section_labels = BTreeMap::new();
+        section_labels.insert("CI".to_string(), vec!["ci".to_string()]);
+
+        let config = ChangelogConfig {
+            section_labels: Some(section_labels),
+            ..Default::default()
+        };
+
+        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+
+        assert!(
+            result.contains("- [@github-actions[bot]](https://github.com/apps/github-actions)")
+        );
     }
 
     #[test]
