@@ -21,6 +21,23 @@ fn contributor_url(contributor: &str) -> String {
     }
 }
 
+fn write_contributors(output: &mut String, mut contributors: Vec<String>) -> Result<()> {
+    if contributors.is_empty() {
+        return Ok(());
+    }
+
+    output.push_str("### Contributors\n\n");
+    contributors.sort();
+
+    for contributor in contributors {
+        let url = contributor_url(&contributor);
+        writeln!(output, "- [@{contributor}]({url})")?;
+    }
+
+    output.push('\n');
+    Ok(())
+}
+
 pub const DEFAULT_CHANGELOG_PATH: &str = "CHANGELOG.md";
 
 fn extract_version_from_release_name(name: Option<&String>) -> Option<String> {
@@ -131,18 +148,8 @@ pub fn format_changelog_content(
         output.push('\n');
     }
 
-    if config.include_contributors() && !categorized.contributors.is_empty() {
-        output.push_str("### Contributors\n\n");
-
-        let mut contributors = categorized.contributors;
-        contributors.sort();
-
-        for contributor in contributors {
-            let url = contributor_url(&contributor);
-            writeln!(output, "- [@{contributor}]({url})")?;
-        }
-
-        output.push('\n');
+    if config.include_contributors() {
+        write_contributors(&mut output, categorized.contributors)?;
     }
 
     Ok(output)
@@ -281,18 +288,8 @@ pub async fn generate_full_changelog(
             output.push('\n');
         }
 
-        if config.include_contributors() && !categorized.contributors.is_empty() {
-            output.push_str("### Contributors\n\n");
-
-            let mut contributors = categorized.contributors;
-            contributors.sort();
-
-            for contributor in contributors {
-                let url = contributor_url(&contributor);
-                writeln!(output, "- [@{contributor}]({url})")?;
-            }
-
-            output.push('\n');
+        if config.include_contributors() {
+            write_contributors(&mut output, categorized.contributors)?;
         }
     }
 
