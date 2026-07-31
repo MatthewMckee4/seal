@@ -88,13 +88,10 @@ pub fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> 
             continue;
         }
 
-        if let Some(author) = &pr.author {
-            if let Some(ignore_contributors) = &config.ignore_contributors {
-                if ignore_contributors.contains(author) {
-                    continue;
-                }
-            }
-            contributors.insert(author.clone());
+        if let (Some(author), Some(ignore_contributors)) = (&pr.author, &config.ignore_contributors)
+            && ignore_contributors.contains(author)
+        {
+            continue;
         }
 
         let mut categorized_pr = false;
@@ -115,12 +112,43 @@ pub fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> 
                 break;
             }
         }
+
+        if categorized_pr && let Some(author) = pr.author {
+            contributors.insert(author);
+        }
     }
 
     CategorizedPRs {
         sections: categorized,
         contributors: contributors.into_iter().collect(),
     }
+}
+
+fn write_categorized_prs(
+    output: &mut String,
+    categorized: CategorizedPRs,
+    config: &ChangelogConfig,
+) -> Result<()> {
+    if categorized.sections.is_empty() {
+        output.push_str("No changes.\n\n");
+        return Ok(());
+    }
+
+    for (section_name, prs) in &categorized.sections {
+        write!(output, "### {section_name}\n\n")?;
+
+        for pr in prs {
+            writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
+        }
+
+        output.push('\n');
+    }
+
+    if config.include_contributors() {
+        write_contributors(output, categorized.contributors)?;
+    }
+
+    Ok(())
 }
 
 pub fn format_changelog_content(
@@ -138,19 +166,7 @@ pub fn format_changelog_content(
 
     write!(output, "## {heading}\n\n")?;
 
-    for (section_name, prs) in &categorized.sections {
-        write!(output, "### {section_name}\n\n")?;
-
-        for pr in prs {
-            writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
-        }
-
-        output.push('\n');
-    }
-
-    if config.include_contributors() {
-        write_contributors(&mut output, categorized.contributors)?;
-    }
+    write_categorized_prs(&mut output, categorized, config)?;
 
     Ok(output)
 }
@@ -278,19 +294,7 @@ pub async fn generate_full_changelog(
             )?;
         }
 
-        for (section_name, prs) in &categorized.sections {
-            write!(output, "### {section_name}\n\n")?;
-
-            for pr in prs {
-                writeln!(output, "- {} ([#{}]({}))", pr.title, pr.number, pr.url)?;
-            }
-
-            output.push('\n');
-        }
-
-        if config.include_contributors() {
-            write_contributors(&mut output, categorized.contributors)?;
-        }
+        write_categorized_prs(&mut output, categorized, config)?;
     }
 
     Ok(output)
@@ -615,7 +619,7 @@ mod tests {
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
 
-        insta::assert_snapshot!(result, @r"
+        insta::assert_snapshot!(result, @"
         ## 1.0.0
 
         ### Enhancements
@@ -625,7 +629,6 @@ mod tests {
         ### Contributors
 
         - [@alice](https://github.com/alice)
-        - [@bob](https://github.com/bob)
         ");
     }
 
@@ -686,10 +689,11 @@ mod tests {
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
 
-        insta::assert_snapshot!(result, @r###"
+        insta::assert_snapshot!(result, @"
         ## 1.0.0
 
-        "###);
+        No changes.
+        ");
     }
 
     #[test]
@@ -781,7 +785,11 @@ mod tests {
 
         let result = format_changelog_content("1.0.0", prs, &config).unwrap();
 
-        insta::assert_snapshot!(result, @"## 1.0.0");
+        insta::assert_snapshot!(result, @"
+        ## 1.0.0
+
+        No changes.
+        ");
     }
 
     #[test]
