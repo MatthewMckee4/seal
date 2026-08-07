@@ -738,7 +738,7 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -957,7 +957,7 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1091,7 +1091,7 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-v").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("-v").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1175,7 +1175,7 @@ version = \"0.0.1\"
         )
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-v").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("-v").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----

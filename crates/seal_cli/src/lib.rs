@@ -152,13 +152,17 @@ pub struct BumpArgs {
     /// Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')
     pub version: String,
 
-    /// Show what would be done without making any changes
+    /// Run preflight checks and show what would be done without making changes
     #[arg(long)]
     pub dry_run: bool,
 
     /// Skip generating or updating the changelog
     #[arg(long)]
     pub no_changelog: bool,
+
+    /// Bypass the clean working tree and index check
+    #[arg(long)]
+    pub force: bool,
 }
 
 #[derive(Args, Debug)]
