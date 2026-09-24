@@ -23,6 +23,7 @@ include-contributors = true
 Pull requests can appear in more than one section when they have labels from multiple mappings.
 Use the special `__unknown__` label to include pull requests without labels. Pull requests with
 labels that are not mapped to a section do not appear in a section.
+When no pull requests match a section, Seal writes `No changes.` for the release.
 
 Seal uses `CHANGELOG.md` by default. Set `changelog-path` to use another file. See the
 [configuration reference](../reference/configuration.md) for all filtering and formatting options.
