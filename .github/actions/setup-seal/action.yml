@@ -52,4 +52,4 @@ runs:
         if ($LASTEXITCODE -ne 0) {
           exit $LASTEXITCODE
         }
-        Add-Content -LiteralPath $env:GITHUB_PATH -Value $env:XDG_BIN_HOME
+        $env:XDG_BIN_HOME | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
