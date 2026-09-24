@@ -13,8 +13,9 @@ use seal_github::MockGithubClient;
 use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
 use seal_github::{GitHubPullRequestOptions, GitHubService};
 use seal_project::{PreCommitFailure, ProjectWorkspace, get_current_branch};
+use serde::Serialize;
 
-use seal_cli::BumpArgs;
+use seal_cli::{BumpArgs, OutputFormat};
 
 use crate::ExitStatus;
 use crate::printer::Printer;
@@ -37,7 +38,32 @@ fn create_github_client(root: &Path) -> Result<Arc<dyn GitHubService>> {
     Ok(Arc::new(GitHubClient::new(owner, repo)?))
 }
 
+#[derive(Debug, Serialize)]
+struct BumpPlan {
+    current_version: String,
+    new_version: String,
+    changed_files: Vec<String>,
+    branch: Option<String>,
+    commit_message: Option<String>,
+    commands: Vec<Vec<String>>,
+    push: bool,
+    pull_request: Option<PullRequestPlan>,
+}
+
+#[derive(Debug, Serialize)]
+struct PullRequestPlan {
+    title: String,
+    body: String,
+    head: String,
+    base: String,
+    draft: bool,
+}
+
 pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
+    if matches!(args.output_format, OutputFormat::Json) && !args.dry_run {
+        anyhow::bail!("`--output-format json` requires `--dry-run`");
+    }
+
     let mut stdout = printer.stdout();
 
     let version_bump: VersionBump = args
@@ -61,10 +87,13 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let new_version_string = new_version.to_string();
 
-    writeln!(
-        stdout,
-        "Bumping version from {current_version_string} to {new_version_string}"
-    )?;
+    if matches!(args.output_format, OutputFormat::Text) {
+        writeln!(
+            stdout,
+            "Bumping version from {current_version_string} to {new_version_string}"
+        )?;
+        writeln!(stdout)?;
+    }
 
     let branch_name = release_config
         .branch_name
@@ -75,8 +104,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         .commit_message
         .as_ref()
         .map(|message| message.as_str().replace("{version}", &new_version_string));
-
-    writeln!(stdout)?;
 
     let version_files = release_config.version_files.as_deref().unwrap_or(&[]);
 
@@ -153,29 +180,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         None
     };
 
-    writeln!(stdout, "Preview of changes:")?;
-    let width = seal_terminal::terminal_width();
-
-    writeln!(stdout, "─────────────{:─^1$}", "", width.saturating_sub(13))?;
-
-    for change in &file_changes {
-        change.display_diff(&mut stdout, &file_resolver)?;
-    }
-
-    writeln!(stdout)?;
-
-    writeln!(stdout, "Changes to be made:")?;
-
-    for change in &file_changes {
-        writeln!(
-            stdout,
-            "  - Update `{}`",
-            file_resolver.relative_path(change.path()).display()
-        )?;
-    }
-
-    writeln!(stdout)?;
-
     let mut commands: Vec<TaggedCommand> = Vec::new();
 
     if let Some(branch) = &branch_name {
@@ -219,17 +223,69 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         }
     }
 
-    if !args.dry_run && !commands.is_empty() {
+    let plan = BumpPlan {
+        current_version: current_version_string.clone(),
+        new_version: new_version_string.clone(),
+        changed_files: file_changes
+            .iter()
+            .map(|change| {
+                file_resolver
+                    .relative_path(change.path())
+                    .display()
+                    .to_string()
+            })
+            .collect(),
+        branch: branch_name.clone(),
+        commit_message: commit_message.clone(),
+        commands: commands
+            .iter()
+            .map(|tagged| tagged.command.as_args().to_vec())
+            .collect(),
+        push: release_config.push,
+        pull_request: pull_request.as_ref().map(|pull_request| PullRequestPlan {
+            title: pull_request.title.clone(),
+            body: pull_request.body.clone(),
+            head: pull_request.head.clone(),
+            base: pull_request.base.clone(),
+            draft: pull_request.draft,
+        }),
+    };
+
+    if matches!(args.output_format, OutputFormat::Json) {
+        writeln!(stdout, "{}", serde_json::to_string_pretty(&plan)?)?;
+        return Ok(ExitStatus::Success);
+    }
+
+    writeln!(stdout, "Preview of changes:")?;
+    let width = seal_terminal::terminal_width();
+
+    writeln!(stdout, "─────────────{:─^1$}", "", width.saturating_sub(13))?;
+
+    for change in &file_changes {
+        change.display_diff(&mut stdout, &file_resolver)?;
+    }
+
+    writeln!(stdout)?;
+
+    writeln!(stdout, "Changes to be made:")?;
+
+    for path in &plan.changed_files {
+        writeln!(stdout, "  - Update `{path}`")?;
+    }
+
+    writeln!(stdout)?;
+
+    if !args.dry_run && !plan.commands.is_empty() {
         writeln!(stdout, "Commands to be executed:")?;
 
-        for tagged in &commands {
-            writeln!(stdout, "  `{}`", tagged.command.as_string())?;
+        for command in &plan.commands {
+            writeln!(stdout, "  `{}`", command.join(" "))?;
         }
 
         writeln!(stdout)?;
     }
 
-    if let Some(pull_request) = &pull_request {
+    if let Some(pull_request) = &plan.pull_request {
         writeln!(stdout, "Pull request:")?;
         writeln!(stdout, "  Title: {}", pull_request.title)?;
         writeln!(stdout, "  Head: {}", pull_request.head)?;
@@ -310,7 +366,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         writeln!(stdout, "Pull request: {}", pull_request.url)?;
     }
 
-    writeln!(stdout, "Successfully bumped to {new_version_string}")?;
+    writeln!(stdout, "Successfully bumped to {}", plan.new_version)?;
 
     Ok(ExitStatus::Success)
 }

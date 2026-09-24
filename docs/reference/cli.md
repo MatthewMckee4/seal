@@ -167,7 +167,12 @@ seal bump [OPTIONS] <VERSION>
 </dd><dt id="seal-bump--no-changelog"><a href="#seal-bump--no-changelog"><code>--no-changelog</code></a></dt><dd><p>Skip generating or updating the changelog</p>
 </dd><dt id="seal-bump--no-progress"><a href="#seal-bump--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
-</dd><dt id="seal-bump--quiet"><a href="#seal-bump--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
+</dd><dt id="seal-bump--output-format"><a href="#seal-bump--output-format"><code>--output-format</code></a> <i>output-format</i></dt><dd><p>Select the output format (JSON requires --dry-run)</p>
+<p>[default: text]</p><p>Possible values:</p>
+<ul>
+<li><code>text</code>:  Display output as plain text</li>
+<li><code>json</code>:  Display output as JSON</li>
+</ul></dd><dt id="seal-bump--quiet"><a href="#seal-bump--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-bump--verbose"><a href="#seal-bump--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
 </dd></dl>
