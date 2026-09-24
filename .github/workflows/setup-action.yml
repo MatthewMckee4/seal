@@ -1,0 +1,107 @@
+name: Setup action smoke test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  smoke:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # zizmor: ignore[self-repository] - smoke test exercises action from this checkout.
+      - name: Set up Seal
+        uses: ./.github/actions/setup-seal
+        with:
+          version: 0.0.1-alpha.8
+
+      - name: Verify installed version on Unix
+        if: runner.os != 'Windows'
+        shell: bash
+        run: test "$(seal self version --short)" = '0.0.1-alpha.8'
+
+      - name: Verify installed version on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = seal self version --short
+          if ($LASTEXITCODE -ne 0 -or $version -ne '0.0.1-alpha.8') {
+            throw "Unexpected Seal version: $version"
+          }
+
+      - name: Preview release on Unix
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          fixture="$RUNNER_TEMP/seal-fixture"
+          mkdir -p "$fixture"
+          printf '%s\n' '[release]' 'current-version = "1.2.3"' 'version-files = ["VERSION"]' > "$fixture/seal.toml"
+          printf '1.2.3\n' > "$fixture/VERSION"
+          git -C "$fixture" init --quiet
+          git -C "$fixture" remote add origin https://github.com/example/example.git
+          (cd "$fixture" && seal bump patch --dry-run)
+          test "$(cat "$fixture/VERSION")" = '1.2.3'
+
+      - name: Preview release on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $fixture = Join-Path $env:RUNNER_TEMP 'seal-fixture'
+          New-Item -ItemType Directory -Path $fixture | Out-Null
+          @'
+          [release]
+          current-version = "1.2.3"
+          version-files = ["VERSION"]
+          '@ | Set-Content -Path (Join-Path $fixture 'seal.toml')
+          Set-Content -Path (Join-Path $fixture 'VERSION') -Value '1.2.3'
+          git -C $fixture init --quiet
+          git -C $fixture remote add origin https://github.com/example/example.git
+          Push-Location $fixture
+          try {
+            seal bump patch --dry-run
+            if ($LASTEXITCODE -ne 0) {
+              throw "Dry run failed with exit code $LASTEXITCODE"
+            }
+          } finally {
+            Pop-Location
+          }
+          if ((Get-Content (Join-Path $fixture 'VERSION')) -ne '1.2.3') {
+            throw 'Dry run modified VERSION'
+          }
+
+  rejects-invalid-version:
+    name: Reject invalid version input
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # zizmor: ignore[self-repository] - smoke test exercises action from this checkout.
+      - name: Reject path-like version
+        id: setup
+        continue-on-error: true
+        uses: ./.github/actions/setup-seal
+        with:
+          version: 0.0.1/evil
+
+      - name: Fail if invalid version was accepted
+        if: steps.setup.outcome == 'success'
+        shell: bash
+        run: exit 1
