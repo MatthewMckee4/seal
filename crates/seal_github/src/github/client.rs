@@ -75,7 +75,10 @@ impl GitHubClient {
                 "variables": { "pullRequestId": node_id },
             }))
             .await
-            .with_context(|| format!("Failed to {action}"))?;
+            .map_err(|error| GitHubError::GraphQlErrors {
+                action,
+                errors: error.to_string(),
+            })?;
 
         if let Some(errors) = response.get("errors").and_then(serde_json::Value::as_array)
             && !errors.is_empty()
