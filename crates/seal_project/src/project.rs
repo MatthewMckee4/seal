@@ -1,8 +1,8 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-use crate::{Config, ProjectError, ProjectName, WorkspaceMember};
+use crate::{Config, ProjectError, ProjectName, WorkspaceMember, find_git_root};
 
 #[derive(Debug, Clone)]
 pub struct ProjectWorkspace {
@@ -23,11 +23,56 @@ impl ProjectWorkspace {
     /// Discover workspace from current directory
     pub fn discover() -> Result<Self> {
         let current_dir = std::env::current_dir()?;
-        let project = Self::from_project_path(&current_dir)?;
+        let project = Self::discover_from(&current_dir)?;
 
         tracing::info!("Workspace discovered at {:?}", project.root);
 
         Ok(project)
+    }
+
+    fn discover_from(start_dir: &Path) -> Result<Self> {
+        let git_root = match find_git_root(start_dir) {
+            Ok(path) => Some(dunce::canonicalize(&path).with_context(|| {
+                format!("Failed to canonicalize Git root `{}`", path.display())
+            })?),
+            Err(error) => match error.downcast_ref::<ProjectError>() {
+                Some(ProjectError::NotInGitRepository { .. }) => None,
+                _ => return Err(error),
+            },
+        };
+        let mut directory = dunce::canonicalize(start_dir).with_context(|| {
+            format!("Failed to canonicalize directory `{}`", start_dir.display())
+        })?;
+        let mut searched = Vec::new();
+
+        loop {
+            searched.push(directory.clone());
+            let config_path = directory.join("seal.toml");
+
+            if config_path.is_file() {
+                return Self::from_config_file(&config_path);
+            }
+
+            if git_root.as_deref() == Some(directory.as_path()) {
+                break;
+            }
+
+            let Some(parent) = directory.parent() else {
+                break;
+            };
+
+            if parent == directory {
+                break;
+            }
+
+            if git_root.is_none() {
+                break;
+            }
+
+            directory = parent.to_path_buf();
+        }
+
+        Err(ProjectError::ConfigNotFound { searched }.into())
     }
 
     /// Load workspace from a specific config file path
@@ -124,7 +169,17 @@ mod tests {
     use super::*;
     use insta::{assert_debug_snapshot, assert_json_snapshot};
     use std::fs;
+    use std::process::Command;
     use tempfile::TempDir;
+
+    fn setup_git_repo(dir: &Path) {
+        let output = Command::new("git")
+            .args(["init", "-b", "main"])
+            .current_dir(dir)
+            .output()
+            .expect("Failed to initialize Git repository");
+        assert!(output.status.success());
+    }
 
     #[test]
     fn test_discover_with_explicit_config_path() {
@@ -237,6 +292,120 @@ current-version = "3.0.0"
 
         let result = ProjectWorkspace::from_config_file(&missing_path);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_discover_from_nested_directory() {
+        let temp = TempDir::new().unwrap();
+        setup_git_repo(temp.path());
+        let nested = temp.path().join("crates/seal");
+        fs::create_dir_all(&nested).unwrap();
+        fs::write(
+            temp.path().join("seal.toml"),
+            "[release]\ncurrent-version = \"1.0.0\"\n",
+        )
+        .unwrap();
+
+        let workspace = ProjectWorkspace::discover_from(&nested).unwrap();
+
+        assert_eq!(
+            workspace.root(),
+            &dunce::canonicalize(temp.path()).expect("Failed to canonicalize test root")
+        );
+    }
+
+    #[test]
+    fn test_discover_uses_nearest_config() {
+        let temp = TempDir::new().unwrap();
+        setup_git_repo(temp.path());
+        let nested = temp.path().join("crates/seal");
+        fs::create_dir_all(&nested).unwrap();
+        fs::write(
+            temp.path().join("seal.toml"),
+            "[release]\ncurrent-version = \"1.0.0\"\n",
+        )
+        .unwrap();
+        fs::write(
+            nested.join("seal.toml"),
+            "[release]\ncurrent-version = \"2.0.0\"\n",
+        )
+        .unwrap();
+
+        let workspace = ProjectWorkspace::discover_from(&nested).unwrap();
+
+        assert_eq!(
+            workspace
+                .config()
+                .release
+                .as_ref()
+                .map(|release| release.current_version.as_str()),
+            Some("2.0.0")
+        );
+    }
+
+    #[test]
+    fn test_discover_does_not_escape_git_root() {
+        let temp = TempDir::new().unwrap();
+        let repository = temp.path().join("repository");
+        fs::create_dir_all(&repository).unwrap();
+        setup_git_repo(&repository);
+        fs::write(
+            temp.path().join("seal.toml"),
+            "[release]\ncurrent-version = \"1.0.0\"\n",
+        )
+        .unwrap();
+        let nested = repository.join("crates/seal");
+        fs::create_dir_all(&nested).unwrap();
+
+        let error = ProjectWorkspace::discover_from(&nested).unwrap_err();
+
+        assert!(error.to_string().contains(&nested.display().to_string()));
+        assert!(
+            error
+                .to_string()
+                .contains(&repository.display().to_string())
+        );
+        assert!(
+            !error
+                .to_string()
+                .contains(&temp.path().join("seal.toml").display().to_string())
+        );
+    }
+
+    #[test]
+    fn test_discover_stops_at_worktree_git_root() {
+        let temp = TempDir::new().unwrap();
+        let repository = temp.path().join("repository");
+        let git_dir = temp.path().join("git-dir");
+        fs::create_dir_all(&repository).unwrap();
+        let git_dir_string = git_dir.to_str().expect("Git directory is not valid UTF-8");
+        let output = Command::new("git")
+            .args(["init", "-b", "main", "--separate-git-dir", git_dir_string])
+            .current_dir(&repository)
+            .output()
+            .expect("Failed to initialize Git worktree");
+        assert!(output.status.success());
+        assert!(repository.join(".git").is_file());
+        fs::write(
+            temp.path().join("seal.toml"),
+            "[release]\ncurrent-version = \"1.0.0\"\n",
+        )
+        .unwrap();
+        let nested = repository.join("crates/seal");
+        fs::create_dir_all(&nested).unwrap();
+
+        let error = ProjectWorkspace::discover_from(&nested).unwrap_err();
+
+        assert!(
+            error
+                .to_string()
+                .contains(&repository.display().to_string())
+        );
+        assert!(
+            !error
+                .to_string()
+                .contains(&temp.path().join("seal.toml").display().to_string())
+        );
     }
 
     #[test]

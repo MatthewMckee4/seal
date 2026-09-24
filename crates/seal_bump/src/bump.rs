@@ -1,9 +1,9 @@
 use anyhow::{Context, Result};
-use glob::glob;
+use glob::{Pattern, glob};
 use seal_file_change::{FileChange, FileChanges, make_absolute};
 use seal_fs::FileResolver;
 use seal_project::{VersionFile, VersionFileTextFormat};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::Version;
 
@@ -49,7 +49,7 @@ pub fn calculate_version_file_changes(
                 format,
                 field,
             } => {
-                for path in glob(path)?.filter_map(Result::ok) {
+                for path in matching_paths(root, path)? {
                     let absolute_path = make_absolute(root, &path);
                     let old_content = fs_err::read_to_string(&path)?;
 
@@ -113,7 +113,7 @@ pub fn calculate_version_file_changes(
                 }
             }
             VersionFile::Search { path, search } => {
-                for path in glob(path)?.filter_map(Result::ok) {
+                for path in matching_paths(root, path)? {
                     let old_content = fs_err::read_to_string(&path)?;
 
                     let search_with_current = search.replace("{version}", current_version);
@@ -139,7 +139,7 @@ pub fn calculate_version_file_changes(
                 }
             }
             VersionFile::JustPath { path } | VersionFile::Simple(path) => {
-                for path in glob(path)?.filter_map(Result::ok) {
+                for path in matching_paths(root, path)? {
                     let absolute_path = make_absolute(root, &path);
                     let old_content = fs_err::read_to_string(&path)?;
 
@@ -183,6 +183,21 @@ pub fn calculate_version_file_changes(
     Ok(FileChanges::new(changes))
 }
 
+fn matching_paths(root: &Path, pattern: &str) -> Result<Vec<PathBuf>> {
+    let absolute_pattern = if Path::new(pattern).is_absolute() {
+        pattern.to_owned()
+    } else {
+        format!(
+            "{}{}{}",
+            Pattern::escape(root.to_string_lossy().as_ref()),
+            std::path::MAIN_SEPARATOR,
+            pattern
+        )
+    };
+
+    Ok(glob(&absolute_pattern)?.collect::<Result<Vec<_>, _>>()?)
+}
+
 fn exact_version_replacement(
     path: &Path,
     content: &str,
@@ -221,5 +236,25 @@ fn nested_toml_key<'a>(source: &'a toml::Value, key: &str) -> Result<&'a str> {
         toml::Value::Float(f) => Ok(Box::leak(f.to_string().into_boxed_str())),
         toml::Value::Boolean(b) => Ok(Box::leak(b.to_string().into_boxed_str())),
         other => anyhow::bail!("Expected final TOML value to be string-like, got {other:?}"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::matching_paths;
+    use std::fs;
+    use tempfile::TempDir;
+
+    #[test]
+    fn matching_paths_escapes_root_metacharacters() {
+        let temp = TempDir::new().expect("Failed to create test directory");
+        let root = temp.path().join("repo[1]");
+        fs::create_dir(&root).expect("Failed to create test repository");
+        let version_file = root.join("VERSION");
+        fs::write(&version_file, "1.0.0").expect("Failed to write version file");
+
+        let paths = matching_paths(&root, "VERSION").expect("Failed to match version file");
+
+        assert_eq!(paths, vec![version_file]);
     }
 }

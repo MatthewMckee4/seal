@@ -7,14 +7,14 @@ fn generate_changelog_no_seal_toml() {
     let context = TestContext::new().with_filtered_missing_file_error();
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog"), @"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
-      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+    error: Could not find seal.toml. Searched directories:
+      - [TEMP]/
     ");
 }
 

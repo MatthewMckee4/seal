@@ -11,14 +11,14 @@ fn bump_no_seal_toml() {
     let context = TestContext::new().with_filtered_missing_file_error();
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
-      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+    error: Could not find seal.toml. Searched directories:
+      - [TEMP]/
     ");
 
     insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
@@ -219,6 +219,57 @@ current-version = "1.2.3"
 
     insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
     insta::assert_snapshot!(context.git_last_commit_message(), @"");
+}
+
+#[test]
+fn bump_from_subdirectory_uses_parent_config_paths() {
+    let context = TestContext::new();
+    context.init_git();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["VERSION"]
+confirm = false
+"#,
+    );
+    context.root.child("VERSION").write_str("1.2.3\n").unwrap();
+    let subdirectory = context.root.child("crates/seal");
+    subdirectory.create_dir_all().unwrap();
+
+    let mut command = context.command();
+    command.current_dir(subdirectory.path());
+
+    seal_snapshot!(context.filters(), command.arg("bump").arg("patch").arg("--dry-run"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: VERSION
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-1.2.3
+              1 │+1.2.4
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["VERSION"]
+        4     4 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `VERSION`
+      - Update `seal.toml`
+
+    Dry run complete. No changes made.
+
+    ----- stderr -----
+    "#);
 }
 
 #[test]

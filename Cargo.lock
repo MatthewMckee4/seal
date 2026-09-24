@@ -1989,6 +1989,7 @@ dependencies = [
  "seal_fs",
  "seal_project",
  "semver",
+ "tempfile",
  "thiserror",
  "toml",
  "tracing",
