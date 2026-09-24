@@ -2,6 +2,10 @@
 # https://docs.zizmor.sh/configuration/
 #
 rules:
+  github-env:
+    # The setup action must export its isolated install directory to later steps.
+    ignore:
+      - action.yml
   template-injection:
     ignore:
       # like with `secrets-inherit`, `cargo dist` introduces some
