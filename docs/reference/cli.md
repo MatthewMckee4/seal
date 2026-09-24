@@ -82,7 +82,7 @@ seal validate [OPTIONS] <COMMAND>
 
 Validate workspace configuration file
 
-If no config path is provided, discovers seal.toml in the current directory.
+If no config path is provided, discovers seal.toml from the current directory up to the Git root.
 
 <h3 class="cli-reference">Usage</h3>
 
@@ -112,7 +112,7 @@ seal validate config [OPTIONS]
 
 Validate full project workspace including members
 
-If no project path is provided, uses the current directory.
+If no project path is provided, discovers seal.toml from the current directory up to the Git root.
 
 <h3 class="cli-reference">Usage</h3>
 

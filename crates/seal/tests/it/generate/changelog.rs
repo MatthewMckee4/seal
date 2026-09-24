@@ -7,14 +7,14 @@ fn generate_changelog_no_seal_toml() {
     let context = TestContext::new().with_filtered_missing_file_error();
     context.init_git();
 
-    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog"), @"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
-      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+    error: Could not find seal.toml. Searched directories:
+      - [TEMP]/
     ");
 }
 
@@ -384,4 +384,46 @@ ignore-labels = ["internal", "ci"]
 
     - [@alice](https://github.com/alice)
     ");
+}
+
+#[test]
+fn generate_changelog_from_subdirectory_uses_parent_config_path() {
+    let context = TestContext::new();
+    context.init_git();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+
+[changelog]
+changelog-path = "docs/CHANGELOG.md"
+"#,
+    );
+    context
+        .root
+        .child("docs")
+        .create_dir_all()
+        .expect("Failed to create docs directory");
+    context
+        .root
+        .child("docs/CHANGELOG.md")
+        .write_str("Existing changelog")
+        .expect("Failed to write changelog");
+    let subdirectory = context.root.child("crates/seal");
+    subdirectory
+        .create_dir_all()
+        .expect("Failed to create subdirectory");
+    let mut command = context.command();
+    command.current_dir(subdirectory.path());
+
+    seal_snapshot!(context.filters(), command.arg("generate").arg("changelog"), @"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Changelog already exists at `docs/CHANGELOG.md`. Remove it first if you want to regenerate it.
+    ");
+    assert_eq!(context.read_file("docs/CHANGELOG.md"), "Existing changelog");
+    assert!(!subdirectory.child("docs/CHANGELOG.md").path().exists());
 }

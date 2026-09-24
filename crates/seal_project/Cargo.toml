@@ -12,6 +12,7 @@ license.workspace = true
 ignored = ["seal_options_metadata"]
 
 [dependencies]
+dunce = { workspace = true }
 seal_macros = { workspace = true }
 seal_options_metadata = { workspace = true }
 
@@ -23,7 +24,6 @@ toml = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
-dunce = { workspace = true }
 insta = { workspace = true }
 tempfile = { workspace = true }
 
