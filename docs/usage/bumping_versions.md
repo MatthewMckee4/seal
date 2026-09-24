@@ -28,6 +28,15 @@ seal bump patch
 
 Seal replaces `0.0.1` with `0.0.2` in `README.md` and updates `current-version` in `seal.toml`.
 
+For automation, pass `--yes` (or `-y`) to skip the confirmation prompt:
+
+```console
+seal bump patch --yes
+```
+
+Without the flag, Seal follows the `release.confirm` configuration (enabled by default). The flag
+has no effect on `--dry-run`, which always makes no changes.
+
 ## Structured and Targeted Replacements
 
 Use a TOML field when only one value should change, and a search template for a precise text

@@ -170,6 +170,7 @@ seal bump [OPTIONS] <VERSION>
 </dd><dt id="seal-bump--quiet"><a href="#seal-bump--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-bump--verbose"><a href="#seal-bump--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd><dt id="seal-bump--yes"><a href="#seal-bump--yes"><code>--yes</code></a>, <code>-y</code></dt><dd><p>Skip confirmation before applying changes</p>
 </dd></dl>
 
 ## seal generate
