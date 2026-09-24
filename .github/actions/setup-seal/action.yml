@@ -53,3 +53,4 @@ runs:
           exit $LASTEXITCODE
         }
         $env:XDG_BIN_HOME | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        "PATH=$env:XDG_BIN_HOME;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
