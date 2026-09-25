@@ -2,6 +2,10 @@
 # https://docs.zizmor.sh/configuration/
 #
 rules:
+  misfeature:
+    # The Windows setup action uses cmd to append a path to the runner command file.
+    ignore:
+      - action.yml
   github-env:
     # The setup action must export its isolated install directory to later steps.
     ignore:
