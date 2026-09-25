@@ -149,7 +149,7 @@ pub enum Commands {
 
 #[derive(Args, Debug)]
 pub struct BumpArgs {
-    /// Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')
+    /// Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', 'auto', or '1.2.3')
     pub version: String,
 
     /// Show what would be done without making any changes

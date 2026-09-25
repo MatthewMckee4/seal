@@ -1998,6 +1998,7 @@ dependencies = [
  "semver",
  "serde",
  "tempfile",
+ "tokio",
 ]
 
 [[package]]

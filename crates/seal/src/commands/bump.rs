@@ -6,8 +6,8 @@ use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
 use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
-use seal_github::{GitHubPullRequestOptions, GitHubService};
-use seal_project::{PreCommitFailure, ProjectWorkspace, get_current_branch};
+use seal_github::{GitHubPullRequest, GitHubPullRequestOptions, GitHubService};
+use seal_project::{BumpLabelsConfig, PreCommitFailure, ProjectWorkspace, get_current_branch};
 
 use seal_cli::BumpArgs;
 
@@ -20,13 +20,68 @@ struct TaggedCommand {
     is_pre_commit: bool,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+struct AutoBumpMatch {
+    number: u64,
+    title: String,
+    labels: Vec<String>,
+}
+
+fn infer_auto_bump(
+    pull_requests: &[GitHubPullRequest],
+    labels: &BumpLabelsConfig,
+) -> Result<(VersionBump, Vec<AutoBumpMatch>)> {
+    let candidates = [
+        (VersionBump::Major, labels.major.as_deref().unwrap_or(&[])),
+        (VersionBump::Minor, labels.minor.as_deref().unwrap_or(&[])),
+        (VersionBump::Patch, labels.patch.as_deref().unwrap_or(&[])),
+    ];
+
+    for (bump, configured_labels) in candidates {
+        let mut matches = pull_requests
+            .iter()
+            .filter_map(|pull_request| {
+                let mut matching_labels: Vec<_> = pull_request
+                    .labels
+                    .iter()
+                    .filter(|label| configured_labels.contains(label))
+                    .cloned()
+                    .collect();
+                if matching_labels.is_empty() {
+                    return None;
+                }
+                matching_labels.sort();
+                Some(AutoBumpMatch {
+                    number: pull_request.number,
+                    title: pull_request.title.clone(),
+                    labels: matching_labels,
+                })
+            })
+            .collect::<Vec<_>>();
+
+        if !matches.is_empty() {
+            matches.sort_by_key(|pull_request| pull_request.number);
+            return Ok((bump, matches));
+        }
+    }
+
+    anyhow::bail!(
+        "No merged pull requests matched the configured release bump labels; add a major, minor, or patch label, or use an explicit bump"
+    )
+}
+
 pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
 
-    let version_bump: VersionBump = args
-        .version
-        .parse()
-        .context("Failed to parse version bump argument")?;
+    let parsed_version_bump = if args.version.eq_ignore_ascii_case("auto") {
+        None
+    } else {
+        Some(
+            args.version
+                .parse()
+                .context("Failed to parse version bump argument")?,
+        )
+    };
 
     let workspace = ProjectWorkspace::discover()?;
     let config = workspace.config();
@@ -40,9 +95,55 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let current_version_string = &release_config.current_version;
 
+    #[cfg(feature = "integration-test")]
+    let github_client: Arc<dyn GitHubService> = {
+        #[cfg(any(test, feature = "integration-test"))]
+        use seal_github::MockGithubClient;
+        Arc::new(MockGithubClient::new())
+    };
+    #[cfg(not(feature = "integration-test"))]
+    let github_client: Arc<dyn GitHubService> = {
+        use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
+
+        let repo_url = get_git_remote_url(workspace.root())?;
+        let (owner, repo) = parse_github_repo(&repo_url)?;
+        Arc::new(GitHubClient::new(owner, repo)?)
+    };
+
+    let (version_bump, auto_matches, auto_pull_requests) =
+        if let Some(version_bump) = parsed_version_bump {
+            (version_bump, Vec::new(), None)
+        } else {
+            let labels = release_config.bump_labels.as_ref().context(
+            "`seal bump auto` requires [release.bump-labels] with major, minor, or patch labels",
+        )?;
+            let pull_requests = seal_changelog::get_pull_requests_for_next_release(&github_client)
+                .await
+                .context("Failed to collect pull requests for automatic bump")?;
+            let (version_bump, matches) = infer_auto_bump(&pull_requests, labels)?;
+            (version_bump, matches, Some(pull_requests))
+        };
+
     let new_version = seal_bump::calculate_new_version(current_version_string, &version_bump)?;
 
     let new_version_string = new_version.to_string();
+
+    if !auto_matches.is_empty() {
+        writeln!(
+            stdout,
+            "Detected {version_bump} bump from merged pull requests:"
+        )?;
+        for pull_request in &auto_matches {
+            writeln!(
+                stdout,
+                "  - #{} {} ({})",
+                pull_request.number,
+                pull_request.title,
+                pull_request.labels.join(", ")
+            )?;
+        }
+        writeln!(stdout)?;
+    }
 
     writeln!(
         stdout,
@@ -69,21 +170,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let file_resolver = FileResolver::new(workspace.root().clone());
 
-    #[cfg(feature = "integration-test")]
-    let github_client: Arc<dyn GitHubService> = {
-        #[cfg(any(test, feature = "integration-test"))]
-        use seal_github::MockGithubClient;
-        Arc::new(MockGithubClient::new())
-    };
-    #[cfg(not(feature = "integration-test"))]
-    let github_client: Arc<dyn GitHubService> = {
-        use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
-
-        let repo_url = get_git_remote_url(workspace.root())?;
-        let (owner, repo) = parse_github_repo(&repo_url)?;
-        Arc::new(GitHubClient::new(owner, repo)?)
-    };
-
     let mut file_changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
@@ -95,13 +181,22 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     if !args.no_changelog {
         if let Some(changelog_config) = config.changelog.as_ref() {
-            let prepared_changelog = seal_changelog::prepare_changelog_changes(
-                workspace.root(),
-                &new_version_string,
-                changelog_config,
-                &github_client,
-            )
-            .await
+            let prepared_changelog = if let Some(pull_requests) = auto_pull_requests {
+                seal_changelog::prepare_changelog_changes_from_prs(
+                    workspace.root(),
+                    &new_version_string,
+                    changelog_config,
+                    pull_requests,
+                )
+            } else {
+                seal_changelog::prepare_changelog_changes(
+                    workspace.root(),
+                    &new_version_string,
+                    changelog_config,
+                    &github_client,
+                )
+                .await
+            }
             .context("Failed to prepare changelog")?;
 
             changelog_body = prepared_changelog.section_body;

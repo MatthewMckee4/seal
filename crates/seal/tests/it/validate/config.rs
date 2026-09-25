@@ -454,7 +454,7 @@ unknown-field = "value"
       |
     3 | unknown-field = "value"
       | ^^^^^^^^^^^^^
-    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`
+    unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `bump-labels`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`
     "#);
 }
 

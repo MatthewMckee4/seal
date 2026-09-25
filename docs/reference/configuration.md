@@ -323,6 +323,70 @@ The version files that need to be updated.
 
 ---
 
+### `release.bump-labels`
+
+Pull request labels that determine an automatic version bump.
+
+<span id="release_bump-labels_major"></span>
+#### [`major`](#release_bump-labels_major)
+
+Labels that trigger a major version bump.
+
+**Default value**: `[]`
+
+**Type**: `list`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.bump-labels]
+    major = ["breaking"]
+    ```
+
+---
+
+<span id="release_bump-labels_minor"></span>
+#### [`minor`](#release_bump-labels_minor)
+
+Labels that trigger a minor version bump.
+
+**Default value**: `[]`
+
+**Type**: `list`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.bump-labels]
+    minor = ["enhancement"]
+    ```
+
+---
+
+<span id="release_bump-labels_patch"></span>
+#### [`patch`](#release_bump-labels_patch)
+
+Labels that trigger a patch version bump.
+
+**Default value**: `[]`
+
+**Type**: `list`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release.bump-labels]
+    patch = ["bug"]
+    ```
+
+---
+
 ### `release.pull-request`
 
 Pull request configuration for release bumps.

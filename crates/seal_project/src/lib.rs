@@ -6,8 +6,8 @@ mod project_name;
 mod workspace_member;
 
 pub use config::{
-    BranchName, ChangelogConfig, ChangelogHeading, CommitMessage, Config, PreCommitFailure,
-    PullRequestConfig, ReleaseConfig, VersionFile, VersionFileTextFormat,
+    BranchName, BumpLabelsConfig, ChangelogConfig, ChangelogHeading, CommitMessage, Config,
+    PreCommitFailure, PullRequestConfig, ReleaseConfig, VersionFile, VersionFileTextFormat,
 };
 pub use error::{ConfigValidationError, ProjectError};
 pub use git::{find_git_root, get_current_branch};

@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use seal_file_change::{FileChange, FileChanges};
-use seal_github::{GitHubPullRequest, GitHubService, filter_prs_by_date_range};
+use seal_github::{GitHubError, GitHubPullRequest, GitHubService, filter_prs_by_date_range};
 
 use seal_project::ChangelogConfig;
 use semver::Version;
@@ -50,25 +50,26 @@ fn extract_version_from_release_name(name: Option<&String>) -> Option<String> {
     })
 }
 
-struct ChangelogGenerator<'a> {
-    github_service: &'a Arc<dyn GitHubService>,
-}
+/// Get merged pull requests since the latest release, or all merged pull requests if no release
+/// exists yet.
+pub async fn get_pull_requests_for_next_release(
+    github_service: &Arc<dyn GitHubService>,
+) -> Result<Vec<GitHubPullRequest>> {
+    let release = match github_service.get_latest_release().await {
+        Ok(release) => Some(release),
+        Err(error)
+            if error
+                .downcast_ref::<GitHubError>()
+                .is_some_and(|error| matches!(error, GitHubError::NoReleasesFound { .. })) =>
+        {
+            None
+        }
+        Err(error) => return Err(error),
+    };
 
-impl<'a> ChangelogGenerator<'a> {
-    fn new(github_service: &'a Arc<dyn GitHubService>) -> Self {
-        Self { github_service }
-    }
-
-    async fn generate_changelog(&self, version: &str, config: &ChangelogConfig) -> Result<String> {
-        let release = self.github_service.get_latest_release().await.ok();
-
-        let prs = self
-            .github_service
-            .get_prs_between(release.as_ref().map(|r| &r.created_at), None)
-            .await?;
-
-        format_changelog_content(version, prs, config)
-    }
+    github_service
+        .get_prs_between(release.as_ref().map(|release| &release.created_at), None)
+        .await
 }
 
 pub struct CategorizedPRs {
@@ -216,8 +217,18 @@ pub async fn prepare_changelog_changes(
     config: &ChangelogConfig,
     github_client: &Arc<dyn GitHubService>,
 ) -> Result<PreparedChangelog> {
-    let generator = ChangelogGenerator::new(github_client);
-    let changelog_content = generator.generate_changelog(version, config).await?;
+    let prs = get_pull_requests_for_next_release(github_client).await?;
+
+    prepare_changelog_changes_from_prs(root, version, config, prs)
+}
+
+pub fn prepare_changelog_changes_from_prs(
+    root: &Path,
+    version: &str,
+    config: &ChangelogConfig,
+    prs: Vec<GitHubPullRequest>,
+) -> Result<PreparedChangelog> {
+    let changelog_content = format_changelog_content(version, prs, config)?;
 
     let changelog_path = if let Some(path) = config.changelog_path.as_ref() {
         root.join(path)
@@ -351,8 +362,75 @@ pub fn create_release_body(changelog_content: &str) -> Result<ReleaseBody> {
 mod tests {
     use super::*;
     use chrono::{TimeZone, Utc};
+    use seal_github::{GitHubError, GitHubPullRequestOptions, GitHubPullRequestReference};
     use seal_project::ChangelogHeading;
     use std::collections::BTreeMap;
+    use std::future::Future;
+
+    struct FailingReleaseClient;
+
+    impl GitHubService for FailingReleaseClient {
+        fn ensure_authenticated(&self) -> Result<()> {
+            Ok(())
+        }
+
+        fn get_latest_release(
+            &self,
+        ) -> std::pin::Pin<Box<dyn Future<Output = Result<seal_github::GitHubRelease>> + Send + '_>>
+        {
+            Box::pin(async {
+                Err(GitHubError::GraphQlErrors {
+                    action: "load latest release",
+                    errors: "request failed".to_string(),
+                }
+                .into())
+            })
+        }
+
+        fn get_all_releases(
+            &self,
+        ) -> std::pin::Pin<
+            Box<dyn Future<Output = Result<Vec<seal_github::GitHubRelease>>> + Send + '_>,
+        > {
+            Box::pin(async { Ok(Vec::new()) })
+        }
+
+        fn get_prs_between(
+            &self,
+            _since: Option<&chrono::DateTime<Utc>>,
+            _until: Option<&chrono::DateTime<Utc>>,
+        ) -> std::pin::Pin<Box<dyn Future<Output = Result<Vec<GitHubPullRequest>>> + Send + '_>>
+        {
+            Box::pin(async { Ok(Vec::new()) })
+        }
+
+        fn get_prs(
+            &self,
+            _max: Option<usize>,
+        ) -> std::pin::Pin<Box<dyn Future<Output = Result<Vec<GitHubPullRequest>>> + Send + '_>>
+        {
+            Box::pin(async { Ok(Vec::new()) })
+        }
+
+        fn create_or_update_pull_request(
+            &self,
+            _options: GitHubPullRequestOptions,
+        ) -> std::pin::Pin<Box<dyn Future<Output = Result<GitHubPullRequestReference>> + Send + '_>>
+        {
+            Box::pin(async { Ok(GitHubPullRequestReference { url: String::new() }) })
+        }
+    }
+
+    #[tokio::test]
+    async fn test_get_pull_requests_for_next_release_propagates_release_errors() {
+        let client: Arc<dyn GitHubService> = Arc::new(FailingReleaseClient);
+
+        let error = get_pull_requests_for_next_release(&client)
+            .await
+            .expect_err("latest release error should be returned");
+
+        assert!(error.to_string().contains("request failed"));
+    }
 
     #[test]
     fn test_format_changelog_with_section_labels() {

@@ -181,6 +181,11 @@ pub struct ReleaseConfig {
     )]
     pub confirm: bool,
 
+    /// Pull request labels that determine the bump selected by `seal bump auto`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[option_group]
+    pub bump_labels: Option<BumpLabelsConfig>,
+
     /// Commands to run before committing. These run after `git add -A` and before `git commit`.
     /// A second `git add -A` is run after these commands to stage any changes they make.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -258,6 +263,34 @@ pub struct PullRequestConfig {
     #[serde(default)]
     #[field(default = "false", value_type = "boolean", example = "draft = true")]
     pub draft: bool,
+}
+
+/// Pull request labels that determine an automatic version bump.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, OptionsMetadata, Default)]
+#[serde(rename_all = "kebab-case", deny_unknown_fields)]
+pub struct BumpLabelsConfig {
+    /// Labels that trigger a major version bump.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "[]",
+        value_type = "list",
+        example = r#"major = ["breaking"]"#
+    )]
+    pub major: Option<Vec<String>>,
+
+    /// Labels that trigger a minor version bump.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(
+        default = "[]",
+        value_type = "list",
+        example = r#"minor = ["enhancement"]"#
+    )]
+    pub minor: Option<Vec<String>>,
+
+    /// Labels that trigger a patch version bump.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[field(default = "[]", value_type = "list", example = r#"patch = ["bug"]"#)]
+    pub patch: Option<Vec<String>>,
 }
 
 impl ReleaseConfig {
@@ -693,7 +726,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `bump-labels`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -931,6 +964,7 @@ branch-name = ""
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
                 push: true,
                 confirm: true,
+                bump_labels: None,
                 pre_commit_commands: None,
                 on_pre_commit_failure: PreCommitFailure::default(),
                 pull_request: None,
@@ -984,6 +1018,7 @@ commit-message = "Release {version} with {version} tag"
                     branch_name: None,
                     push: false,
                     confirm: true,
+                    bump_labels: None,
                     pre_commit_commands: None,
                     on_pre_commit_failure: Abort,
                     pull_request: None,
@@ -1055,6 +1090,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                     branch_name: None,
                     push: false,
                     confirm: true,
+                    bump_labels: None,
                     pre_commit_commands: None,
                     on_pre_commit_failure: Abort,
                     pull_request: None,
@@ -1087,6 +1123,7 @@ version-files = []
                     branch_name: None,
                     push: false,
                     confirm: true,
+                    bump_labels: None,
                     pre_commit_commands: None,
                     on_pre_commit_failure: Abort,
                     pull_request: None,
