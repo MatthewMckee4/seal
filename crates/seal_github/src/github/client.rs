@@ -75,7 +75,10 @@ impl GitHubClient {
                 "variables": { "pullRequestId": node_id },
             }))
             .await
-            .with_context(|| format!("Failed to {action}"))?;
+            .map_err(|error| GitHubError::GraphQlErrors {
+                action,
+                errors: error.to_string(),
+            })?;
 
         if let Some(errors) = response.get("errors").and_then(serde_json::Value::as_array)
             && !errors.is_empty()
@@ -258,12 +261,12 @@ impl GitHubService for GitHubClient {
                     .send()
                     .await?;
 
+                let is_empty = response.items.is_empty();
                 let merged_prs: Vec<_> = response
                     .into_iter()
                     .filter_map(gh_pr_to_github_pull_request)
                     .collect();
 
-                let is_empty = merged_prs.is_empty();
                 all_prs.extend(merged_prs);
 
                 // Stop if we've hit our max or if the page was empty
@@ -588,6 +591,40 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![2]
         );
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn gets_merged_prs_after_unmerged_pages() -> Result<()> {
+        for limit in [None, Some(1)] {
+            let server = MockServer::start().await;
+            let date = "2026-01-01T00:00:00Z";
+            let pages = [
+                vec![closed_pull_request(1, date, date, None)],
+                vec![
+                    closed_pull_request(2, date, date, Some(date)),
+                    closed_pull_request(3, date, date, Some(date)),
+                ],
+                Vec::new(),
+            ];
+
+            for (index, response) in pages.into_iter().enumerate() {
+                Mock::given(method("GET"))
+                    .and(path(format!("/repos/{OWNER}/{REPO}/pulls")))
+                    .and(query_param("state", "closed"))
+                    .and(query_param("per_page", "100"))
+                    .and(query_param("page", (index + 1).to_string()))
+                    .respond_with(ResponseTemplate::new(200).set_body_json(response))
+                    .expect(u64::from(index < 2 || limit.is_none()))
+                    .mount(&server)
+                    .await;
+            }
+
+            let pull_requests = test_client(&server, true)?.get_prs(limit).await?;
+            let numbers: Vec<_> = pull_requests.iter().map(|pr| pr.number).collect();
+            assert_eq!(numbers, if limit.is_some() { vec![2] } else { vec![2, 3] });
+        }
 
         Ok(())
     }
