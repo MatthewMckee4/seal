@@ -49,7 +49,7 @@ semver = { version = "1.0" }
 serde = { version = "1.0.228", features = ["derive", "rc"] }
 serde_json = { version = "1.0" }
 similar = { version = "3.1", features = ["inline"] }
-syn = { version = "2.0.114" }
+syn = { version = "3.0.3" }
 tempfile = { version = "3.24" }
 textwrap = { version = "0.16.2" }
 thiserror = { version = "2.0" }
