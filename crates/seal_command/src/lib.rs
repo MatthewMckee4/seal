@@ -34,6 +34,10 @@ impl CommandWrapper {
         self.command_with_args.join(" ")
     }
 
+    pub fn as_args(&self) -> &[String] {
+        &self.command_with_args
+    }
+
     /// Execute the command and return an error if it fails.
     pub fn execute(
         &self,

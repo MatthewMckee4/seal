@@ -222,6 +222,160 @@ current-version = "1.2.3"
 }
 
 #[test]
+fn bump_json_dry_run_prints_resolved_plan_without_changes() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+
+[release.pull-request]
+title = "Release v{version}"
+body = "Prepare release v{version}."
+base = "main"
+draft = true
+"#,
+    );
+    context
+        .root
+        .child("README.md")
+        .write_str("Version 1.2.3\n")
+        .unwrap();
+
+    let seal_toml_before = fs_err::read_to_string(context.root.child("seal.toml").path()).unwrap();
+    let readme_before = fs_err::read_to_string(context.root.child("README.md").path()).unwrap();
+    let output = seal_snapshot!(context.filters(), context.command().args([
+        "bump",
+        "patch",
+        "--dry-run",
+        "--no-changelog",
+        "--output-format",
+        "json",
+    ]), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    {
+      "current_version": "1.2.3",
+      "new_version": "1.2.4",
+      "changed_files": [
+        "README.md",
+        "seal.toml"
+      ],
+      "branch": "release/v1.2.4",
+      "commit_message": "Release v1.2.4",
+      "commands": [
+        [
+          "git",
+          "checkout",
+          "-b",
+          "release/v1.2.4"
+        ],
+        [
+          "git",
+          "add",
+          "-A"
+        ],
+        [
+          "git",
+          "commit",
+          "-m",
+          "Release v1.2.4"
+        ],
+        [
+          "git",
+          "push",
+          "origin",
+          "release/v1.2.4"
+        ]
+      ],
+      "push": true,
+      "pull_request": {
+        "title": "Release v1.2.4",
+        "body": "Prepare release v1.2.4.",
+        "head": "release/v1.2.4",
+        "base": "main",
+        "draft": true
+      }
+    }
+
+    ----- stderr -----
+    "#);
+
+    let plan: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(plan["current_version"], "1.2.3");
+    assert_eq!(plan["new_version"], "1.2.4");
+    assert_eq!(
+        plan["changed_files"],
+        serde_json::json!(["README.md", "seal.toml"])
+    );
+    assert_eq!(plan["branch"], "release/v1.2.4");
+    assert_eq!(plan["commit_message"], "Release v1.2.4");
+    assert_eq!(plan["push"], true);
+    assert_eq!(
+        plan["commands"],
+        serde_json::json!([
+            ["git", "checkout", "-b", "release/v1.2.4"],
+            ["git", "add", "-A"],
+            ["git", "commit", "-m", "Release v1.2.4"],
+            ["git", "push", "origin", "release/v1.2.4"]
+        ])
+    );
+    assert_eq!(
+        plan["pull_request"],
+        serde_json::json!({
+            "title": "Release v1.2.4",
+            "body": "Prepare release v1.2.4.",
+            "head": "release/v1.2.4",
+            "base": "main",
+            "draft": true
+        })
+    );
+    assert_eq!(
+        fs_err::read_to_string(context.root.child("seal.toml").path()).unwrap(),
+        seal_toml_before
+    );
+    assert_eq!(
+        fs_err::read_to_string(context.root.child("README.md").path()).unwrap(),
+        readme_before
+    );
+    insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
+    insta::assert_snapshot!(context.git_last_commit_message(), @"");
+}
+
+#[test]
+fn bump_json_output_requires_dry_run() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+"#,
+    );
+
+    seal_snapshot!(context.filters(), context.command().args([
+        "bump",
+        "patch",
+        "--output-format",
+        "json",
+    ]), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: `--output-format json` requires `--dry-run`
+    ");
+}
+
+#[test]
 fn bump_patch_valid_dry_run_single_version_file() {
     let context = TestContext::new();
 

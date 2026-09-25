@@ -28,6 +28,18 @@ seal bump patch
 
 Seal replaces `0.0.1` with `0.0.2` in `README.md` and updates `current-version` in `seal.toml`.
 
+## JSON Release Plans
+
+Use JSON output to pass a resolved dry-run plan to CI or another tool:
+
+```console
+seal bump patch --dry-run --output-format json
+```
+
+The command writes only the JSON plan to stdout. It includes resolved versions, changed paths,
+branch and commit settings, commands, push behavior, and pull-request details when configured.
+JSON output requires `--dry-run`; it never writes files or runs Git commands.
+
 ## Structured and Targeted Replacements
 
 Use a TOML field when only one value should change, and a search template for a precise text

@@ -12,6 +12,14 @@ pub enum VersionFormat {
     Json,
 }
 
+#[derive(Debug, Clone, Copy, clap::ValueEnum)]
+pub enum OutputFormat {
+    /// Display output as plain text.
+    Text,
+    /// Display output as JSON.
+    Json,
+}
+
 #[derive(Debug, Copy, Clone, clap::ValueEnum)]
 pub enum ColorChoice {
     /// Enables colored output only when the output is going to a terminal or TTY with support.
@@ -159,6 +167,10 @@ pub struct BumpArgs {
     /// Skip generating or updating the changelog
     #[arg(long)]
     pub no_changelog: bool,
+
+    /// Select the output format (JSON requires --dry-run).
+    #[arg(long, value_enum, default_value = "text")]
+    pub output_format: OutputFormat,
 }
 
 #[derive(Args, Debug)]
