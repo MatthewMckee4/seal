@@ -22,6 +22,9 @@ This updates `package.version` without replacing unrelated occurrences of `0.1.0
 seal validate config
 ```
 
+Commit `seal.toml` and any version-file changes before previewing; version bumps require a clean
+working tree and index by default.
+
 ## Preview a Version Bump
 
 Preview a patch release without modifying files:

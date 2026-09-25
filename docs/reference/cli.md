@@ -162,7 +162,8 @@ seal bump [OPTIONS] <VERSION>
 <li><code>auto</code>:  Enables colored output only when the output is going to a terminal or TTY with support</li>
 <li><code>always</code>:  Enables colored output regardless of the detected environment</li>
 <li><code>never</code>:  Disables colored output</li>
-</ul></dd><dt id="seal-bump--dry-run"><a href="#seal-bump--dry-run"><code>--dry-run</code></a></dt><dd><p>Show what would be done without making any changes</p>
+</ul></dd><dt id="seal-bump--dry-run"><a href="#seal-bump--dry-run"><code>--dry-run</code></a></dt><dd><p>Run preflight checks and show what would be done without making changes</p>
+</dd><dt id="seal-bump--force"><a href="#seal-bump--force"><code>--force</code></a></dt><dd><p>Bypass the clean working tree and index check</p>
 </dd><dt id="seal-bump--help"><a href="#seal-bump--help"><code>--help</code></a>, <code>-h</code></dt><dd><p>Display the concise help for this command</p>
 </dd><dt id="seal-bump--no-changelog"><a href="#seal-bump--no-changelog"><code>--no-changelog</code></a></dt><dd><p>Skip generating or updating the changelog</p>
 </dd><dt id="seal-bump--no-progress"><a href="#seal-bump--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>

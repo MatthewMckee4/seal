@@ -194,7 +194,7 @@ current-version = "1.2.3"
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -211,6 +211,9 @@ current-version = "1.2.3"
 
     Changes to be made:
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
 
     Dry run complete. No changes made.
 
@@ -241,7 +244,7 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -265,6 +268,9 @@ version-files = ["README.md"]
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
 
     Dry run complete. No changes made.
 
@@ -297,7 +303,7 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -603,7 +609,7 @@ commit-message = "Release v{version}"
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -680,7 +686,7 @@ confirm = false
         std::fs::set_permissions(hook.path(), permissions).unwrap();
     }
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -738,7 +744,7 @@ branch-name = "release/v{version}"
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -814,7 +820,7 @@ branch-name = "release/v{version}"
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -867,7 +873,7 @@ branch-name = "release/v{version}"
 fn bump_patch_valid_commit_branch_push() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -886,9 +892,9 @@ push = true
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
-    success: false
-    exit_code: 2
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
@@ -926,14 +932,9 @@ push = true
     Executing command: `git add -A`
     Executing command: `git commit -m Release v1.2.4`
     Executing command: `git push origin release/v1.2.4`
+    Successfully bumped to 1.2.4
 
     ----- stderr -----
-    error: Command `git push origin release/v1.2.4` failed (exit code 128)
-    fatal: 'origin' does not appear to be a git repository
-    fatal: Could not read from remote repository.
-
-    Please make sure you have the correct access rights
-    and the repository exists.
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
@@ -954,7 +955,7 @@ push = true
 fn bump_patch_valid_commit_branch_push_pr() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -973,9 +974,9 @@ push = true
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
-    success: false
-    exit_code: 2
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
+    success: true
+    exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
@@ -1013,14 +1014,9 @@ push = true
     Executing command: `git add -A`
     Executing command: `git commit -m Release v1.2.4`
     Executing command: `git push origin release/v1.2.4`
+    Successfully bumped to 1.2.4
 
     ----- stderr -----
-    error: Command `git push origin release/v1.2.4` failed (exit code 128)
-    fatal: 'origin' does not appear to be a git repository
-    fatal: Could not read from remote repository.
-
-    Please make sure you have the correct access rights
-    and the repository exists.
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
@@ -1041,7 +1037,7 @@ push = true
 fn bump_patch_valid_commit_branch_push_pr_no_confirm() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -1061,9 +1057,9 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
-    success: false
-    exit_code: 2
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch"), @r#"
+    success: true
+    exit_code: 0
     ----- stdout -----
     Bumping version from 1.2.3 to 1.2.4
 
@@ -1100,14 +1096,9 @@ confirm = false
     Executing command: `git add -A`
     Executing command: `git commit -m Release v1.2.4`
     Executing command: `git push origin release/v1.2.4`
+    Successfully bumped to 1.2.4
 
     ----- stderr -----
-    error: Command `git push origin release/v1.2.4` failed (exit code 128)
-    fatal: 'origin' does not appear to be a git repository
-    fatal: Could not read from remote repository.
-
-    Please make sure you have the correct access rights
-    and the repository exists.
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
@@ -1129,7 +1120,7 @@ confirm = false
 fn bump_pull_request_not_created_when_push_fails() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -1150,7 +1141,18 @@ push = true
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    let hook = context.root.child(".git/hooks/pre-push");
+    hook.write_str("#!/bin/sh\necho 'pre-push hook failed' >&2\nexit 1\n")
+        .unwrap();
+
+    #[cfg(unix)]
+    {
+        let mut permissions = std::fs::metadata(hook.path()).unwrap().permissions();
+        permissions.set_mode(0o755);
+        std::fs::set_permissions(hook.path(), permissions).unwrap();
+    }
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -1199,12 +1201,9 @@ push = true
     Executing command: `git push origin release/v1.2.4`
 
     ----- stderr -----
-    error: Command `git push origin release/v1.2.4` failed (exit code 128)
-    fatal: 'origin' does not appear to be a git repository
-    fatal: Could not read from remote repository.
-
-    Please make sure you have the correct access rights
-    and the repository exists.
+    error: Command `git push origin release/v1.2.4` failed (exit code 1)
+    pre-push hook failed
+    error: failed to push some refs to '[TEMP]/.git/remote.git'
     "#);
 
     insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
@@ -1227,7 +1226,7 @@ push = true
 fn bump_pull_request_authentication_failure_makes_no_changes() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -1249,7 +1248,7 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().env("SEAL_TEST_GITHUB_AUTHENTICATION_REQUIRED", "1").arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().env("SEAL_TEST_GITHUB_AUTHENTICATION_REQUIRED", "1").arg("bump").arg("--force").arg("patch"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -1316,7 +1315,7 @@ confirm = false
 fn bump_pull_request_dry_run_prints_defaults() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -1337,7 +1336,7 @@ push = true
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1364,6 +1363,13 @@ push = true
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
+      - Release branch `release/v1.2.4` is available locally
+      - Remote `origin` is configured
+      - Release branch `release/v1.2.4` is available on `origin`
+      - GitHub authentication is available
 
     Pull request:
       Title: Release v1.2.4
@@ -1397,7 +1403,7 @@ push = true
 fn bump_pull_request_dry_run_prints_custom_options() {
     let context = TestContext::new();
 
-    context.init_git();
+    context.init_git().init_git_remote();
 
     context.seal_toml(
         r#"
@@ -1414,7 +1420,7 @@ draft = true
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1435,6 +1441,13 @@ draft = true
 
     Changes to be made:
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
+      - Release branch `release/v1.2.4` is available locally
+      - Remote `origin` is configured
+      - Release branch `release/v1.2.4` is available on `origin`
+      - GitHub authentication is available
 
     Pull request:
       Title: Ship 1.2.4
@@ -1478,7 +1491,7 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1567,7 +1580,7 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("alpha").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1591,6 +1604,9 @@ version-files = ["README.md"]
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
 
     Dry run complete. No changes made.
 
@@ -1623,7 +1639,7 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3-alpha.0)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("alpha").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1647,6 +1663,9 @@ version-files = ["README.md"]
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
 
     Dry run complete. No changes made.
 
@@ -1679,7 +1698,7 @@ version-files = ["README.md"]
         .write_str("# My Package (1.2.3-alpha)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("alpha").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("alpha").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1703,6 +1722,9 @@ version-files = ["README.md"]
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
 
     Dry run complete. No changes made.
 
@@ -1772,7 +1794,7 @@ pre-commit-commands = ["touch pre-commit-ran.txt", "echo done"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").arg("--dry-run"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1798,6 +1820,10 @@ pre-commit-commands = ["touch pre-commit-ran.txt", "echo done"]
     Changes to be made:
       - Update `README.md`
       - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
+      - Pre-commit commands have a commit message
 
     Dry run complete. No changes made.
 
@@ -1830,7 +1856,7 @@ pre-commit-commands = ["touch pre-commit-ran.txt"]
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").write_stdin("y\n"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch").write_stdin("y\n"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1903,7 +1929,7 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -1976,7 +2002,7 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch"), @r#"
     success: false
     exit_code: 2
     ----- stdout -----
@@ -2045,7 +2071,7 @@ confirm = false
         .write_str("# My Package (1.2.3)")
         .unwrap();
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("--force").arg("patch"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -2096,4 +2122,457 @@ confirm = false
     assert!(context.root.join("success.txt").exists());
     insta::assert_snapshot!(context.git_current_branch(), @"main");
     insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
+fn bump_dirty_worktree_fails_without_changes() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+confirm = false
+"#,
+    );
+    context.init_git();
+    context
+        .root
+        .child("notes.txt")
+        .write_str("unfinished work")
+        .unwrap();
+
+    let config_before = context.read_file("seal.toml");
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+
+    ----- stderr -----
+    error: Working tree and index are not clean:
+      ?? notes.txt
+    Commit or stash these changes before running `seal bump`, or use `--force` to bypass this check.
+    "#);
+
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
+    assert_eq!(context.git_last_commit_message(), "Initial commit");
+}
+
+#[test]
+fn bump_force_dry_run_reports_skipped_cleanliness_check() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+"#,
+    );
+    context.init_git();
+    context
+        .root
+        .child("notes.txt")
+        .write_str("unfinished work")
+        .unwrap();
+
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--force").arg("--dry-run"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index check skipped (--force)
+
+    Dry run complete. No changes made.
+
+    ----- stderr -----
+    "#);
+
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.read_file("notes.txt"), "unfinished work");
+}
+
+#[test]
+fn bump_existing_local_release_branch_fails_without_changes() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+branch-name = "release/v{version}"
+confirm = false
+"#,
+    );
+    context.init_git();
+
+    let branch = std::process::Command::new("git")
+        .args(["branch", "release/v1.2.4"])
+        .current_dir(context.root.path())
+        .output()
+        .expect("Failed to create release branch");
+    assert!(branch.status.success());
+
+    let config_before = context.read_file("seal.toml");
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ branch-name = "release/v{version}"
+        4     4 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+
+
+    ----- stderr -----
+    error: Release branch `release/v1.2.4` already exists locally
+    "#);
+
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
+    assert!(context.git_branch_exists("release/v1.2.4"));
+}
+
+#[test]
+fn bump_existing_remote_release_branch_fails_without_changes() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+branch-name = "release/v{version}"
+confirm = false
+"#,
+    );
+    context.init_git().init_git_remote();
+
+    let push = std::process::Command::new("git")
+        .args(["push", "origin", "HEAD:refs/heads/release/v1.2.4"])
+        .current_dir(context.root.path())
+        .output()
+        .expect("Failed to create remote release branch");
+    assert!(push.status.success());
+
+    let config_before = context.read_file("seal.toml");
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ branch-name = "release/v{version}"
+        4     4 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+
+
+    ----- stderr -----
+    error: Release branch `release/v1.2.4` already exists on remote `origin`
+    "#);
+
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
+    assert!(!context.git_branch_exists("release/v1.2.4"));
+
+    let remote_branch = std::process::Command::new("git")
+        .args([
+            "ls-remote",
+            "--exit-code",
+            "--heads",
+            "origin",
+            "refs/heads/release/v1.2.4",
+        ])
+        .current_dir(context.root.path())
+        .output()
+        .expect("Failed to inspect remote release branch");
+    assert!(remote_branch.status.success());
+}
+
+#[test]
+fn bump_push_requires_origin_without_changes() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+branch-name = "release/v{version}"
+push = true
+confirm = false
+"#,
+    );
+    context.init_git();
+
+    let config_before = context.read_file("seal.toml");
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ branch-name = "release/v{version}"
+        4     4 │ push = true
+        5     5 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/v1.2.4`
+      `git push origin release/v1.2.4`
+
+
+    ----- stderr -----
+    error: No `origin` Git remote is configured; release.push = true requires one
+    "#);
+
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
+    assert!(!context.git_branch_exists("release/v1.2.4"));
+}
+
+#[test]
+fn bump_pull_request_dry_run_requires_authentication() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+[release.pull-request]
+"#,
+    );
+    context.init_git().init_git_remote();
+
+    let config_before = context.read_file("seal.toml");
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().env("SEAL_TEST_GITHUB_AUTHENTICATION_REQUIRED", "1").arg("bump").arg("patch").arg("--dry-run"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ commit-message = "Release v{version}"
+        4     4 │ branch-name = "release/v{version}"
+        5     5 │ push = true
+        6     6 │ [release.pull-request]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+
+    ----- stderr -----
+    error: GitHub authentication is required; set GITHUB_TOKEN or GH_TOKEN
+    "#);
+
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
+    assert!(!context.git_branch_exists("release/v1.2.4"));
+}
+
+#[test]
+fn bump_dry_run_reports_preflight_checks() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+pre-commit-commands = ["cargo fmt"]
+[release.pull-request]
+"#,
+    );
+    context.init_git().init_git_remote();
+
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ commit-message = "Release v{version}"
+        4     4 │ branch-name = "release/v{version}"
+        5     5 │ push = true
+        6     6 │ pre-commit-commands = ["cargo fmt"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index are clean
+      - Release branch `release/v1.2.4` is available locally
+      - Remote `origin` is configured
+      - Release branch `release/v1.2.4` is available on `origin`
+      - Pre-commit commands have a commit message
+      - GitHub authentication is available
+
+    Pull request:
+      Title: Release v1.2.4
+      Head: release/v1.2.4
+      Base: main
+      Draft: false
+      Body: (empty)
+
+    Dry run complete. No changes made.
+
+    ----- stderr -----
+    "#);
+
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
+    assert!(!context.git_branch_exists("release/v1.2.4"));
+}
+
+#[test]
+fn bump_invalid_resolved_branch_fails_without_changes() {
+    let context = TestContext::new();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+branch-name = "release/{version} invalid"
+confirm = false
+"#,
+    );
+    context.init_git();
+
+    let config_before = context.read_file("seal.toml");
+    let status_before = context.git_status();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ branch-name = "release/{version} invalid"
+        4     4 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git checkout -b release/1.2.4 invalid`
+
+
+    ----- stderr -----
+    error: Release branch `release/1.2.4 invalid` is not a valid Git branch name
+    "#);
+
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert_eq!(context.git_status(), status_before);
+    assert_eq!(context.git_current_branch(), "main");
 }

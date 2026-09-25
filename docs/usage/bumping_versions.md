@@ -26,6 +26,9 @@ seal bump patch --dry-run
 seal bump patch
 ```
 
+Commit the configuration and version files before running either command; Seal requires a clean
+working tree and index by default.
+
 Seal replaces `0.0.1` with `0.0.2` in `README.md` and updates `current-version` in `seal.toml`.
 
 ## Structured and Targeted Replacements
@@ -70,6 +73,17 @@ seal bump 2.0.0-rc.1
 ```
 
 An explicit version must be newer than `current-version`.
+
+## Git Preflight Checks
+
+Before applying changes, Seal verifies that the working tree and index are clean. When a release
+branch is configured, its resolved name must be valid and absent locally and on `origin` when
+that remote exists. `push = true` requires `origin`, and pull-request creation requires GitHub
+authentication. A non-empty `pre-commit-commands` list requires `commit-message`.
+
+`--dry-run` runs and reports the same checks. `--force` skips only the clean working tree and index
+check; branch, remote, configuration, and authentication failures remain errors. Because commit
+workflows use `git add -A`, forcing a dirty tree can include existing changes in the release commit.
 
 ## Release Branches and Commits
 
