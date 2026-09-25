@@ -834,6 +834,82 @@ ignore-contributors = ["ignored"]
 }
 
 #[test]
+fn bump_auto_uses_highest_matching_label() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+[release.bump-labels]
+major = ["breaking"]
+minor = ["enhancement"]
+patch = ["bug"]
+"#,
+    );
+
+    context.init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("auto").arg("--dry-run"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Detected minor bump from merged pull requests:
+      - #6 Add new feature X (enhancement)
+      - #7 Add new feature X (enhancement)
+
+    Bumping version from 1.2.3 to 1.3.0
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.3.0"
+        3     3 │ [release.bump-labels]
+        4     4 │ major = ["breaking"]
+        5     5 │ minor = ["enhancement"]
+        6     6 │ patch = ["bug"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Preflight checks:
+      - Working tree and index are clean
+
+    Dry run complete. No changes made.
+
+    ----- stderr -----
+    "#);
+}
+
+#[test]
+fn bump_auto_requires_matching_label() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+
+[release.bump-labels]
+major = ["breaking"]
+"#,
+    );
+
+    context.init_git();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("auto").arg("--dry-run"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: No merged pull requests matched the configured release bump labels; add a major, minor, or patch label, or use an explicit bump
+    "#);
+}
+
+#[test]
 fn bump_changelog_different_path() {
     let context = TestContext::new();
     context.seal_toml(
@@ -2918,5 +2994,44 @@ fn bump_json_dry_run_runs_preflight() {
       ?? seal.toml
     Commit or stash these changes before running `seal bump`, or use `--force` to bypass this check.
     ");
+    assert!(context.read_file("seal.toml").contains("1.2.3"));
+}
+
+#[test]
+fn bump_auto_json_dry_run_prints_only_json() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+[release.bump-labels]
+minor = ["enhancement"]
+"#,
+    );
+    context.init_git();
+    let output = seal_snapshot!(context.filters(), context.command().args([
+        "bump", "auto", "--dry-run", "--output-format", "json",
+    ]), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    {
+      "current_version": "1.2.3",
+      "new_version": "1.3.0",
+      "changed_files": [
+        "seal.toml"
+      ],
+      "branch": null,
+      "commit_message": null,
+      "commands": [],
+      "push": false,
+      "pull_request": null
+    }
+
+    ----- stderr -----
+    "#);
+    let plan: serde_json::Value =
+        serde_json::from_slice(&output.stdout).expect("Expected only JSON");
+    assert_eq!(plan["new_version"], "1.3.0");
     assert!(context.read_file("seal.toml").contains("1.2.3"));
 }

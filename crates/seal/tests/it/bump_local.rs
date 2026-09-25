@@ -228,8 +228,6 @@ push = true
     success: false
     exit_code: 2
     ----- stdout -----
-    Bumping version from 1.2.3 to 1.2.4
-
 
     ----- stderr -----
     error: Invalid GitHub repository URL: https://example.com/owner/repo

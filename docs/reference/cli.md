@@ -150,7 +150,7 @@ seal bump [OPTIONS] <VERSION>
 
 <h3 class="cli-reference">Arguments</h3>
 
-<dl class="cli-reference"><dt id="seal-bump--version"><a href="#seal-bump--version"<code>VERSION</code></a></dt><dd><p>Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', or '1.2.3')</p>
+<dl class="cli-reference"><dt id="seal-bump--version"><a href="#seal-bump--version"<code>VERSION</code></a></dt><dd><p>Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', 'auto', or '1.2.3')</p>
 </dd></dl>
 
 <h3 class="cli-reference">Options</h3>

@@ -106,6 +106,25 @@ authentication. A non-empty `pre-commit-commands` list requires `commit-message`
 check; branch, remote, configuration, and authentication failures remain errors. Because commit
 workflows use `git add -A`, forcing a dirty tree can include existing changes in the release commit.
 
+## Automatic Bump Selection
+
+Configure pull request labels when the release version should follow the highest-impact merged
+change since the latest GitHub release:
+
+```toml title="seal.toml"
+[release]
+current-version = "1.2.3"
+
+[release.bump-labels]
+major = ["breaking"]
+minor = ["enhancement"]
+patch = ["bug"]
+```
+
+Run `seal bump auto` to select a major, minor, or patch bump. Seal uses the highest configured
+label found on merged pull requests and prints the pull requests that determined the result. It
+fails when no configured label matches; explicit version arguments continue to work independently.
+
 ## Release Branches and Commits
 
 Configure branch and commit templates to run the Git workflow after files are updated:
