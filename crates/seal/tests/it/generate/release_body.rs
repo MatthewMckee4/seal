@@ -25,6 +25,48 @@ current-version = "1.0.0"
 }
 
 #[test]
+fn generate_release_from_subdirectory_uses_parent_config_path() {
+    let context = TestContext::new();
+    context.init_git();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+
+[changelog]
+changelog-path = "docs/CHANGELOG.md"
+"#,
+    );
+    context.root.child("docs").create_dir_all().unwrap();
+    context
+        .root
+        .child("docs/CHANGELOG.md")
+        .write_str("# Changelog\n\n## 1.0.0\n\nRelease notes.\n")
+        .unwrap();
+    let subdirectory = context.root.child("crates/seal");
+    subdirectory.create_dir_all().unwrap();
+
+    let mut command = context.command();
+    command.current_dir(subdirectory.path());
+    seal_snapshot!(
+        context.filters(),
+        command.arg("generate").arg("release"),
+        @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    {
+      "title": "1.0.0",
+      "body": "Release notes.",
+      "prerelease": false
+    }
+
+    ----- stderr -----
+    "#
+    );
+}
+
+#[test]
 fn generate_release_empty_changelog() {
     let context = TestContext::new();
     context.init_git();

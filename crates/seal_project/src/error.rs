@@ -13,6 +13,9 @@ pub enum ProjectError {
         source: std::io::Error,
     },
 
+    #[error("Could not find seal.toml. Searched directories:\n{}", searched.iter().map(|path| format!("  - {}", path.display())).collect::<Vec<_>>().join("\n"))]
+    ConfigNotFound { searched: Vec<PathBuf> },
+
     #[error("No parent directory found for path: {path}")]
     NoParentDirectory { path: PathBuf },
 

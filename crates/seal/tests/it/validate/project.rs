@@ -67,14 +67,14 @@ fn validate_project_short_flag() {
 fn validate_project_not_found() {
     let context = TestContext::new().with_filtered_missing_file_error();
 
-    seal_snapshot!(context.filters(), context.command().arg("validate").arg("project"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("project"), @"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
-      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+    error: Could not find seal.toml. Searched directories:
+      - [TEMP]/
     ");
 }
 
