@@ -47,6 +47,8 @@ repos:
     hooks:
       - id: zizmor
         priority: 0
+        args:
+          - --config=.github/zizmor.yml
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.38.0
