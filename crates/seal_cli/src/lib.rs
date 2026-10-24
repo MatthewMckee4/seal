@@ -156,6 +156,10 @@ pub struct BumpArgs {
     #[arg(long)]
     pub dry_run: bool,
 
+    /// Skip confirmation before applying changes
+    #[arg(long, short = 'y')]
+    pub yes: bool,
+
     /// Skip generating or updating the changelog
     #[arg(long)]
     pub no_changelog: bool,

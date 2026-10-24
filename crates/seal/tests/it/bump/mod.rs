@@ -194,7 +194,7 @@ current-version = "1.2.3"
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run"), @r#"
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--dry-run").arg("--yes"), @r#"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -338,6 +338,119 @@ version-files = ["README.md"]
 
     insta::assert_snapshot!(context.git_current_branch(), @"HEAD");
     insta::assert_snapshot!(context.git_last_commit_message(), @"");
+}
+
+#[test]
+fn bump_patch_valid_single_version_file_yes() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .expect("Failed to write README.md");
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("--yes"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Updating files...
+    Successfully bumped to 1.2.4
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
+    insta::assert_snapshot!(context.read_file("seal.toml"), @r#"
+    [release]
+    current-version = "1.2.4"
+    version-files = ["README.md"]
+    "#);
+}
+
+#[test]
+fn bump_patch_valid_single_version_file_short_yes() {
+    let context = TestContext::new();
+
+    context.init_git();
+
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+version-files = ["README.md"]
+"#,
+    );
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# My Package (1.2.3)")
+        .expect("Failed to write README.md");
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch").arg("-y"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: README.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1       │-# My Package (1.2.3)
+              1 │+# My Package (1.2.4)
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ version-files = ["README.md"]
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `README.md`
+      - Update `seal.toml`
+
+    Updating files...
+    Successfully bumped to 1.2.4
+
+    ----- stderr -----
+    "#);
+
+    insta::assert_snapshot!(context.read_file("README.md"), @"# My Package (1.2.4)");
 }
 
 #[test]

@@ -249,7 +249,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         return Ok(ExitStatus::Success);
     }
 
-    if release_config.confirm {
+    if release_config.confirm && !args.yes {
         if !confirm_changes(&mut stdout)? {
             writeln!(printer.stderr())?;
             writeln!(printer.stderr(), "No changes applied.")?;
