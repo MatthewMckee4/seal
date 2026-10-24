@@ -1347,6 +1347,40 @@ version-files = ["VERSION"]
 }
 
 #[test]
+fn bump_glob_not_found_after_matching_version_file() {
+    let context = TestContext::new();
+    context
+        .seal_toml(
+            r#"
+[release]
+current-version = "1.0.0"
+commit-message = "Release {version}"
+branch-name = "release/{version}"
+
+version-files = ["README.md", "VERSION"]
+"#,
+        )
+        .init_git();
+
+    context
+        .root
+        .child("README.md")
+        .write_str("# Version 1.0.0")
+        .unwrap();
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("major"), @r"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.0.0 to 2.0.0
+
+
+    ----- stderr -----
+    error: No files found for path or glob `VERSION`
+    ");
+}
+
+#[test]
 fn bump_glob_not_found_just_path() {
     let context = TestContext::new();
     context
