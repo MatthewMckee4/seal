@@ -1,11 +1,16 @@
 use std::fmt::Write as _;
 use std::io;
+use std::path::Path;
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
 use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
+#[cfg(feature = "integration-test")]
+use seal_github::MockGithubClient;
+#[cfg(not(feature = "integration-test"))]
+use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
 use seal_github::{GitHubPullRequestOptions, GitHubService};
 use seal_project::{PreCommitFailure, ProjectWorkspace, get_current_branch};
 
@@ -18,6 +23,18 @@ use crate::printer::Printer;
 struct TaggedCommand {
     command: CommandWrapper,
     is_pre_commit: bool,
+}
+
+#[cfg(feature = "integration-test")]
+fn create_github_client(_root: &Path) -> Arc<dyn GitHubService> {
+    Arc::new(MockGithubClient::new())
+}
+
+#[cfg(not(feature = "integration-test"))]
+fn create_github_client(root: &Path) -> Result<Arc<dyn GitHubService>> {
+    let repo_url = get_git_remote_url(root)?;
+    let (owner, repo) = parse_github_repo(&repo_url)?;
+    Ok(Arc::new(GitHubClient::new(owner, repo)?))
 }
 
 pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
@@ -69,21 +86,6 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let file_resolver = FileResolver::new(workspace.root().clone());
 
-    #[cfg(feature = "integration-test")]
-    let github_client: Arc<dyn GitHubService> = {
-        #[cfg(any(test, feature = "integration-test"))]
-        use seal_github::MockGithubClient;
-        Arc::new(MockGithubClient::new())
-    };
-    #[cfg(not(feature = "integration-test"))]
-    let github_client: Arc<dyn GitHubService> = {
-        use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
-
-        let repo_url = get_git_remote_url(workspace.root())?;
-        let (owner, repo) = parse_github_repo(&repo_url)?;
-        Arc::new(GitHubClient::new(owner, repo)?)
-    };
-
     let mut file_changes = calculate_version_file_changes(
         workspace.root(),
         version_files,
@@ -95,6 +97,10 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     if !args.no_changelog {
         if let Some(changelog_config) = config.changelog.as_ref() {
+            #[cfg(feature = "integration-test")]
+            let github_client = create_github_client(workspace.root());
+            #[cfg(not(feature = "integration-test"))]
+            let github_client = create_github_client(workspace.root())?;
             let prepared_changelog = seal_changelog::prepare_changelog_changes(
                 workspace.root(),
                 &new_version_string,
@@ -258,9 +264,16 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         writeln!(stdout)?;
     }
 
-    if pull_request.is_some() {
-        github_client.ensure_authenticated()?;
-    }
+    let pull_request = pull_request
+        .map(|pull_request| {
+            #[cfg(feature = "integration-test")]
+            let github_client = create_github_client(workspace.root());
+            #[cfg(not(feature = "integration-test"))]
+            let github_client = create_github_client(workspace.root())?;
+            github_client.ensure_authenticated()?;
+            Ok::<_, anyhow::Error>((pull_request, github_client))
+        })
+        .transpose()?;
 
     writeln!(stdout, "Updating files...")?;
 
@@ -289,7 +302,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         }
     }
 
-    if let Some(pull_request) = pull_request {
+    if let Some((pull_request, github_client)) = pull_request {
         let pull_request = github_client
             .create_or_update_pull_request(pull_request)
             .await

@@ -3,6 +3,8 @@
 
 pub(crate) mod common;
 
+mod bump_local;
+
 #[cfg(feature = "integration-test")]
 mod bump;
 
