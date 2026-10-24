@@ -25,6 +25,23 @@ pub enum ProjectError {
     #[error("Git command '{command}' failed: {stderr}")]
     GitCommandFailed { command: String, stderr: String },
 
+    #[error(
+        "Working tree and index are not clean:\n{changes}\nCommit or stash these changes before running `seal bump`, or use `--force` to bypass this check."
+    )]
+    DirtyGitState { changes: String },
+
+    #[error("Release branch `{branch}` is not a valid Git branch name")]
+    InvalidGitBranch { branch: String },
+
+    #[error("Release branch `{branch}` already exists locally")]
+    LocalGitBranchExists { branch: String },
+
+    #[error("No `{remote}` Git remote is configured; release.push = true requires one")]
+    MissingGitRemote { remote: String },
+
+    #[error("Release branch `{branch}` already exists on remote `{remote}`")]
+    RemoteGitBranchExists { branch: String, remote: String },
+
     #[error("Workspace member '{member}' is missing seal.toml at path: {path}")]
     MemberMissingSealToml { member: String, path: PathBuf },
 
@@ -62,6 +79,9 @@ pub enum ConfigValidationError {
 
     #[error("release.push = true requires branch-name to be set")]
     PushRequiresBranchName,
+
+    #[error("release.pre-commit-commands requires release.commit-message to be set")]
+    PreCommitCommandsRequireCommitMessage,
 
     #[error(
         "release.pull-request requires release.commit-message, release.branch-name, and release.push = true"
@@ -149,5 +169,50 @@ mod tests {
             project_err.to_string(),
             @"Invalid configuration file: release.commit-message cannot be empty"
         );
+    }
+
+    #[test]
+    fn test_dirty_git_state_error_display() {
+        let error = ProjectError::DirtyGitState {
+            changes: "  M src/lib.rs".to_string(),
+        };
+        assert_snapshot!(error.to_string(), @r#"
+        Working tree and index are not clean:
+          M src/lib.rs
+        Commit or stash these changes before running `seal bump`, or use `--force` to bypass this check.
+        "#);
+    }
+
+    #[test]
+    fn test_invalid_git_branch_error_display() {
+        let error = ProjectError::InvalidGitBranch {
+            branch: "bad branch".to_string(),
+        };
+        assert_snapshot!(error.to_string(), @"Release branch `bad branch` is not a valid Git branch name");
+    }
+
+    #[test]
+    fn test_local_git_branch_exists_error_display() {
+        let error = ProjectError::LocalGitBranchExists {
+            branch: "release/v1.2.3".to_string(),
+        };
+        assert_snapshot!(error.to_string(), @"Release branch `release/v1.2.3` already exists locally");
+    }
+
+    #[test]
+    fn test_missing_git_remote_error_display() {
+        let error = ProjectError::MissingGitRemote {
+            remote: "origin".to_string(),
+        };
+        assert_snapshot!(error.to_string(), @"No `origin` Git remote is configured; release.push = true requires one");
+    }
+
+    #[test]
+    fn test_remote_git_branch_exists_error_display() {
+        let error = ProjectError::RemoteGitBranchExists {
+            branch: "release/v1.2.3".to_string(),
+            remote: "origin".to_string(),
+        };
+        assert_snapshot!(error.to_string(), @"Release branch `release/v1.2.3` already exists on remote `origin`");
     }
 }

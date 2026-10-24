@@ -1,5 +1,6 @@
 use std::fmt::Write as _;
 use std::io;
+use std::path::Path;
 use std::sync::Arc;
 
 use anyhow::{Context, Result};
@@ -7,7 +8,10 @@ use seal_bump::{VersionBump, calculate_version_file_changes};
 use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
 use seal_github::{GitHubPullRequestOptions, GitHubService};
-use seal_project::{PreCommitFailure, ProjectWorkspace, get_current_branch};
+use seal_project::{
+    PreCommitFailure, ProjectWorkspace, ReleaseConfig, ensure_clean_worktree,
+    ensure_release_branch_available, get_current_branch,
+};
 
 use seal_cli::BumpArgs;
 
@@ -69,19 +73,26 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     let file_resolver = FileResolver::new(workspace.root().clone());
 
+    let uses_github =
+        (!args.no_changelog && config.changelog.is_some()) || release_config.pull_request.is_some();
+
     #[cfg(feature = "integration-test")]
-    let github_client: Arc<dyn GitHubService> = {
+    let github_client: Option<Arc<dyn GitHubService>> = if uses_github {
         #[cfg(any(test, feature = "integration-test"))]
         use seal_github::MockGithubClient;
-        Arc::new(MockGithubClient::new())
+        Some(Arc::new(MockGithubClient::new()))
+    } else {
+        None
     };
     #[cfg(not(feature = "integration-test"))]
-    let github_client: Arc<dyn GitHubService> = {
+    let github_client: Option<Arc<dyn GitHubService>> = if uses_github {
         use seal_github::{GitHubClient, get_git_remote_url, parse_github_repo};
 
         let repo_url = get_git_remote_url(workspace.root())?;
         let (owner, repo) = parse_github_repo(&repo_url)?;
-        Arc::new(GitHubClient::new(owner, repo)?)
+        Some(Arc::new(GitHubClient::new(owner, repo)?))
+    } else {
+        None
     };
 
     let mut file_changes = calculate_version_file_changes(
@@ -99,7 +110,9 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
                 workspace.root(),
                 &new_version_string,
                 changelog_config,
-                &github_client,
+                github_client
+                    .as_ref()
+                    .context("Changelog generation requires a GitHub client")?,
             )
             .await
             .context("Failed to prepare changelog")?;
@@ -213,6 +226,22 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         }
     }
 
+    if args.dry_run {
+        let checks = run_bump_preflight(
+            args,
+            release_config,
+            branch_name.as_deref(),
+            github_client.as_deref(),
+            workspace.root(),
+        )?;
+
+        writeln!(stdout, "Preflight checks:")?;
+        for check in checks {
+            writeln!(stdout, "  - {check}")?;
+        }
+        writeln!(stdout)?;
+    }
+
     if !args.dry_run && !commands.is_empty() {
         writeln!(stdout, "Commands to be executed:")?;
 
@@ -258,9 +287,13 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         writeln!(stdout)?;
     }
 
-    if pull_request.is_some() {
-        github_client.ensure_authenticated()?;
-    }
+    run_bump_preflight(
+        args,
+        release_config,
+        branch_name.as_deref(),
+        github_client.as_deref(),
+        workspace.root(),
+    )?;
 
     writeln!(stdout, "Updating files...")?;
 
@@ -291,6 +324,8 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
 
     if let Some(pull_request) = pull_request {
         let pull_request = github_client
+            .as_ref()
+            .context("Pull request creation requires a GitHub client")?
             .create_or_update_pull_request(pull_request)
             .await
             .context("Failed to create or update GitHub pull request")?;
@@ -300,6 +335,56 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
     writeln!(stdout, "Successfully bumped to {new_version_string}")?;
 
     Ok(ExitStatus::Success)
+}
+
+fn run_bump_preflight(
+    args: &BumpArgs,
+    release_config: &ReleaseConfig,
+    branch_name: Option<&str>,
+    github_client: Option<&dyn GitHubService>,
+    root: &Path,
+) -> Result<Vec<String>> {
+    let mut checks = Vec::new();
+
+    if args.force {
+        checks.push("Working tree and index check skipped (--force)".to_string());
+    } else {
+        ensure_clean_worktree(root)?;
+        checks.push("Working tree and index are clean".to_string());
+    }
+
+    if let Some(branch_name) = branch_name {
+        let remote = "origin";
+        let remote_checked =
+            ensure_release_branch_available(root, branch_name, remote, release_config.push)?;
+        checks.push(format!(
+            "Release branch `{branch_name}` is available locally"
+        ));
+
+        if remote_checked {
+            checks.push(format!("Remote `{remote}` is configured"));
+            checks.push(format!(
+                "Release branch `{branch_name}` is available on `{remote}`"
+            ));
+        }
+    }
+
+    if release_config
+        .pre_commit_commands
+        .as_ref()
+        .is_some_and(|commands| !commands.is_empty())
+    {
+        checks.push("Pre-commit commands have a commit message".to_string());
+    }
+
+    if release_config.pull_request.is_some() {
+        github_client
+            .context("Pull request creation requires a GitHub client")?
+            .ensure_authenticated()?;
+        checks.push("GitHub authentication is available".to_string());
+    }
+
+    Ok(checks)
 }
 
 fn confirm_changes(stdout: &mut impl std::fmt::Write) -> Result<bool> {

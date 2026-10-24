@@ -247,8 +247,9 @@ Behavior when a pre-commit command fails.
 <span id="release_pre-commit-commands"></span>
 #### [`pre-commit-commands`](#release_pre-commit-commands)
 
-Commands to run before committing. These run after `git add -A` and before `git commit`.
-A second `git add -A` is run after these commands to stage any changes they make.
+Commands to run before committing. A non-empty list requires `commit-message`. These run
+after `git add -A` and before `git commit`. A second `git add -A` is run after these commands
+to stage any changes they make.
 
 **Default value**: `[]`
 
@@ -260,6 +261,7 @@ A second `git add -A` is run after these commands to stage any changes they make
 
     ```toml
     [release]
+    commit-message = "Release {version}"
     pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
     ```
 

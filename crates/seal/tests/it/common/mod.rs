@@ -247,6 +247,19 @@ current-version = "{version}"
         output.status.success()
     }
 
+    /// Get the working tree and index status.
+    pub fn git_status(&self) -> String {
+        let output = std::process::Command::new("git")
+            .args(["status", "--porcelain=v1", "--untracked-files=all"])
+            .current_dir(self.root.path())
+            .output()
+            .expect("Failed to get git status");
+
+        assert!(output.status.success(), "Failed to get git status");
+
+        String::from_utf8(output.stdout).expect("Invalid UTF-8")
+    }
+
     pub fn merge_current_branch_and_checkout_main(&self) {
         let current_branch = self.git_current_branch();
 
