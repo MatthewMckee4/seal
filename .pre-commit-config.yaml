@@ -90,8 +90,8 @@ repos:
     rev: v1.0
     hooks:
       - id: cargo-check
-        args: ["--all-targets", "--all-features"]
+        args: ["--locked", "--all-targets", "--all-features"]
         priority: 2
       - id: clippy
-        args: ["--all-targets", "--all-features", "--", "-D", "warnings"]
+        args: ["--locked", "--all-targets", "--all-features", "--", "-D", "warnings"]
         priority: 2
