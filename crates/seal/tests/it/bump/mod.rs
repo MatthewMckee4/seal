@@ -3155,13 +3155,19 @@ Other = ["documentation"]
 
     ----- stderr -----
     "#);
-    let changelog = context.read_file("CHANGELOG.md");
-    assert!(changelog.contains("### Features"));
-    assert!(changelog.contains("[@alice]"));
-    assert!(!changelog.contains("Bug fixes"));
-    assert!(!changelog.contains("[@bob]"));
-    assert!(!changelog.contains("[@ignored]"));
-    assert!(!changelog.contains("[@joe]"));
+    insta::assert_snapshot!(context.read_file("CHANGELOG.md"), @"
+    # Changelog
+
+    ## 1.2.4
+
+    ### Features
+
+    - Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+
+    ### Contributors
+
+    - [@alice](https://github.com/alice)
+    ");
 }
 
 #[test]

@@ -43,6 +43,10 @@ Use `cargo test` with the same arguments when `cargo-nextest` is unavailable.
 
 ### Snapshot Updates
 
+Always use inline snapshots to assert changelog contents or any other file
+contents in tests. Do not use `assert!(contents.contains(...))` or similar
+substring checks; snapshot the full file so unexpected changes are visible.
+
 After running tests, always review every snapshot that was added or updated.
 Check for pending `.snap.new` files if affected tests use snapshots.
 
