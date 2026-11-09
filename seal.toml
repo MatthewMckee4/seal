@@ -5,6 +5,7 @@ version-files = [
     "crates/seal_version/Cargo.toml",
     "crates/seal/Cargo.toml",
     "README.md",
+    "docs/get-started/installation.md",
     { path = "dist-workspace.toml", field = "workspace.version", format = "toml" }
 ]
 

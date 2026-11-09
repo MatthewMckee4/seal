@@ -33,14 +33,14 @@ Continue with the [quick start](quick-start.md) to configure a project.
 
 ## GitHub Actions
 
-Use the composite setup action with an explicit release version. Pin the action reference to a
-reviewed commit SHA, and pin the installed Seal version separately:
+Use the composite setup action with an explicit release version. The example pins the action to
+a reviewed commit SHA and selects the installed Seal version separately:
 
 ```yaml
 permissions: {}
 
 steps:
-  - uses: MatthewMckee4/seal@<full-commit-sha>
+  - uses: MatthewMckee4/seal@e48455a3a35b7303c58efd897e7034fd752fc8d7
     with:
       version: 0.0.1-alpha.8
 ```
