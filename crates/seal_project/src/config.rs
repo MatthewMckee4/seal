@@ -181,13 +181,15 @@ pub struct ReleaseConfig {
     )]
     pub confirm: bool,
 
-    /// Commands to run before committing. These run after `git add -A` and before `git commit`.
-    /// A second `git add -A` is run after these commands to stage any changes they make.
+    /// Commands to run before committing. A non-empty list requires `commit-message`. These run
+    /// after `git add -A` and before `git commit`. A second `git add -A` is run after these commands
+    /// to stage any changes they make.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[field(
         default = "[]",
         value_type = "list",
         example = r#"
+        commit-message = "Release {version}"
         pre-commit-commands = ["cargo fmt", "npm run lint:fix"]
     "#
     )]
@@ -262,6 +264,15 @@ pub struct PullRequestConfig {
 
 impl ReleaseConfig {
     fn validate(&self) -> Result<(), ConfigValidationError> {
+        if self.commit_message.is_none()
+            && self
+                .pre_commit_commands
+                .as_ref()
+                .is_some_and(|commands| !commands.is_empty())
+        {
+            return Err(ConfigValidationError::PreCommitCommandsRequireCommitMessage);
+        }
+
         if let Some(pull_request) = &self.pull_request {
             if self.commit_message.is_none() || self.branch_name.is_none() || !self.push {
                 return Err(ConfigValidationError::PullRequestMissingPrerequisites);
@@ -1196,6 +1207,34 @@ push = true
 
         let config = Config::from_toml_str(toml).unwrap();
         assert!(config.release.as_ref().unwrap().push);
+    }
+
+    #[test]
+    fn test_validation_pre_commit_commands_require_commit_message() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+pre-commit-commands = ["cargo fmt"]
+"#;
+
+        let result = Config::from_toml_str(toml);
+
+        assert_debug_snapshot!(result.unwrap_err(), @r#"
+        InvalidConfigurationFile(
+            PreCommitCommandsRequireCommitMessage,
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_validation_empty_pre_commit_commands_do_not_require_commit_message() {
+        let toml = r#"
+[release]
+current-version = "1.0.0"
+pre-commit-commands = []
+"#;
+
+        assert!(Config::from_toml_str(toml).is_ok());
     }
 
     #[test]
