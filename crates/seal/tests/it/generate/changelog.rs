@@ -240,7 +240,7 @@ include-contributors = false
 "#,
     );
 
-    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog").arg("--dry-run").arg("--max-prs").arg("5"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("generate").arg("changelog").arg("--dry-run").arg("--max-prs").arg("5"), @"
     success: true
     exit_code: 0
     ----- stdout -----
@@ -249,6 +249,14 @@ include-contributors = false
     ### Documentation
 
     - Update documentation ([#3](https://github.com/owner/repo/pull/3))
+
+    ## 0.2.0
+
+    No changelog entries for this release.
+
+    ## Release 2025-11-05
+
+    No changelog entries for this release.
 
 
     ----- stderr -----
@@ -426,4 +434,38 @@ changelog-path = "docs/CHANGELOG.md"
     ");
     assert_eq!(context.read_file("docs/CHANGELOG.md"), "Existing changelog");
     assert!(!subdirectory.child("docs/CHANGELOG.md").path().exists());
+}
+
+#[test]
+fn generate_changelog_with_empty_release_ranges() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+[changelog]
+"#,
+    );
+    context.init_git();
+    seal_snapshot!(context.filters(), context.command().args([
+        "generate", "changelog", "--dry-run", "--max-prs", "1",
+    ]), @"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    ## 1.0.0
+
+    No changelog entries for this release.
+
+    ## 0.2.0
+
+    No changelog entries for this release.
+
+    ## Release 2025-11-05
+
+    No changelog entries for this release.
+
+
+    ----- stderr -----
+    ");
 }
