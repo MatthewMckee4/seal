@@ -1,0 +1,60 @@
+name: Setup Seal
+description: Install a pinned Seal release on a GitHub-hosted runner
+
+inputs:
+  version:
+    description: Seal release version to install, such as 0.0.1-alpha.8
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # zizmor: ignore[github-env] - runner path must be exported for following steps.
+    - name: Install Seal on Unix
+      if: runner.os != 'Windows'
+      shell: bash
+      env:
+        SEAL_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        if ! [[ "$SEAL_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+          printf 'Invalid Seal version: %s\n' "$SEAL_VERSION" >&2
+          exit 1
+        fi
+
+        export XDG_BIN_HOME="$RUNNER_TEMP/seal/bin"
+        export SEAL_NO_MODIFY_PATH=1
+        curl --fail --location --proto '=https' --tlsv1.2 \
+          "https://github.com/MatthewMckee4/seal/releases/download/$SEAL_VERSION/seal-installer.sh" \
+          | sh
+        printf '%s\n' "$XDG_BIN_HOME" >> "$GITHUB_PATH"
+
+    # zizmor: ignore[github-env] - runner path must be exported for following steps.
+    - name: Install Seal on Windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      env:
+        SEAL_VERSION: ${{ inputs.version }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+
+        if ($env:SEAL_VERSION -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') {
+          throw "Invalid Seal version: $env:SEAL_VERSION"
+        }
+
+        $installerPath = Join-Path $env:RUNNER_TEMP 'seal-installer.ps1'
+        $installerUrl = "https://github.com/MatthewMckee4/seal/releases/download/$env:SEAL_VERSION/seal-installer.ps1"
+        Invoke-WebRequest -Uri $installerUrl -OutFile $installerPath
+        $env:XDG_BIN_HOME = Join-Path $env:RUNNER_TEMP 'seal\bin'
+        $env:SEAL_NO_MODIFY_PATH = '1'
+        & $installerPath
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+        }
+
+    # zizmor: ignore[github-env] - runner path must be exported for following steps.
+    - name: Add Seal to Windows PATH
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: echo %RUNNER_TEMP%\seal\bin>>%GITHUB_PATH%
