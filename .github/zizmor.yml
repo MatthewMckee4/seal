@@ -19,3 +19,8 @@ rules:
     # cargo-dist supplies its build containers through the generated matrix.
     ignore:
       - release.yml
+  self-repository:
+    # cargo-dist 0.32 generates workspace-relative custom workflow calls.
+    # actionlint does not yet understand GitHub's newer $/ syntax.
+    ignore:
+      - release.yml
