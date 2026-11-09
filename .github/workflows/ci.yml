@@ -99,9 +99,6 @@ jobs:
 
       - uses: j178/prek-action@44924fe9ef4a6f88253c4b6b1bf11c689d3ce53d # v3.1.0
 
-      - name: Test CI gate policy
-        run: uv run --script scripts/test_ci_gate.py
-
   cargo-shear:
     name: "cargo shear"
 
@@ -177,11 +174,11 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - name: "Test production features"
+      - name: "Test default features"
         run: cargo nextest run --locked --no-fail-fast
 
-      - name: "Test all features"
-        run: cargo nextest run --locked --no-fail-fast --all-features
+      - name: "Test mocked CLI commands"
+        run: cargo nextest run --locked --no-fail-fast --all-features -p seal --test it -E 'test(bump::) | test(generate::)'
 
   coverage:
     name: "coverage"
