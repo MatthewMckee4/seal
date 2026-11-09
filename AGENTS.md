@@ -100,8 +100,11 @@ pinact run
   done.
 - Follow existing code style. Check neighboring files for patterns.
 - Prefer integration tests under `crates/seal/tests/it/` when behavior crosses
-  crate or CLI boundaries. Command integration tests should use the existing
-  `seal_snapshot!` helper.
+  crate or CLI boundaries. Always use the existing `seal_snapshot!` helper to
+  assert command output and exit behavior. Do not replace command snapshots
+  with assertions on `output.status.success()`, empty stdout, or output
+  substrings. Add separate assertions for filesystem or Git side effects when
+  needed.
 - Keep changes focused. Do not expand the task to unrelated issues.
 - Before writing significant new code, look for existing utilities or
   mechanisms that solve the problem. Prefer fixing the underlying
@@ -133,8 +136,10 @@ pinact run
 
 ## Pull Requests
 
-Use the pull request template and add relevant labels. Keep the summary and
-test plan concise. Write descriptions as prose, not bullet lists or
+Use the pull request template and add only the minimal, directly relevant
+labels. Do not add every label that could apply. Use plain descriptive PR
+titles without prefixes such as `feat:` or `fix:`. Keep the summary and test
+plan concise. Write descriptions as prose, not bullet lists or
 checklists. Explain what changed and why; include implementation details only
 when reviewers need them.
 
