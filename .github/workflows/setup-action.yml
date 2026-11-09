@@ -23,9 +23,8 @@ jobs:
         with:
           persist-credentials: false
 
-      # zizmor: ignore[self-repository] - smoke test exercises action from this checkout.
       - name: Set up Seal
-        uses: ./.github/actions/setup-seal
+        uses: ./.github/actions/setup-seal # zizmor: ignore[self-repository] - test this checkout
         with:
           version: 0.0.1-alpha.8
 
@@ -93,11 +92,10 @@ jobs:
         with:
           persist-credentials: false
 
-      # zizmor: ignore[self-repository] - smoke test exercises action from this checkout.
       - name: Reject path-like version
         id: setup
         continue-on-error: true
-        uses: ./.github/actions/setup-seal
+        uses: ./.github/actions/setup-seal # zizmor: ignore[self-repository] - test this checkout
         with:
           version: 0.0.1/evil
 
