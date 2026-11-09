@@ -40,6 +40,18 @@ seal bump patch --yes
 Without the flag, Seal follows the `release.confirm` configuration (enabled by default). The flag
 has no effect on `--dry-run`, which always makes no changes.
 
+## JSON Release Plans
+
+Use JSON output to pass a resolved dry-run plan to CI or another tool:
+
+```console
+seal bump patch --dry-run --output-format json
+```
+
+The command writes only the JSON plan to stdout. It includes resolved versions, changed paths,
+branch and commit settings, commands, push behavior, and pull-request details when configured.
+JSON output requires `--dry-run`; it never writes files or executes the planned commands.
+
 ## Structured and Targeted Replacements
 
 Use a TOML field when only one value should change, and a search template for a precise text
