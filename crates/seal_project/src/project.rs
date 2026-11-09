@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
-use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-use crate::{Config, ProjectError, ProjectName, WorkspaceMember, find_git_root};
+use crate::{Config, ProjectError, ProjectName, find_git_root};
 
 #[derive(Debug, Clone)]
 pub struct ProjectWorkspace {
@@ -16,7 +16,7 @@ pub struct ProjectWorkspace {
     config: Config,
 
     /// Members of the workspace
-    members: BTreeMap<ProjectName, WorkspaceMember>,
+    members: BTreeSet<ProjectName>,
 }
 
 impl ProjectWorkspace {
@@ -107,11 +107,8 @@ impl ProjectWorkspace {
         })
     }
 
-    fn load_members(
-        root: &Path,
-        config: &Config,
-    ) -> Result<BTreeMap<ProjectName, WorkspaceMember>, ProjectError> {
-        let mut members = BTreeMap::new();
+    fn load_members(root: &Path, config: &Config) -> Result<BTreeSet<ProjectName>, ProjectError> {
+        let mut members = BTreeSet::new();
 
         if let Some(config_members) = &config.members {
             for (name, relative_path) in config_members {
@@ -132,11 +129,8 @@ impl ProjectWorkspace {
                     });
                 }
 
-                let member_config = Config::from_file(&member_config_path)?;
-                members.insert(
-                    name.clone(),
-                    WorkspaceMember::new(member_path, member_config),
-                );
+                Config::from_file(&member_config_path)?;
+                members.insert(name.clone());
             }
         }
 
@@ -151,7 +145,7 @@ impl ProjectWorkspace {
         &self.config
     }
 
-    pub fn members(&self) -> &BTreeMap<ProjectName, WorkspaceMember> {
+    pub fn members(&self) -> &BTreeSet<ProjectName> {
         &self.members
     }
 
@@ -476,12 +470,12 @@ current-version = "0.2.0"
         assert!(
             workspace
                 .members
-                .contains_key(&ProjectName::new("pkg1".to_string()).unwrap())
+                .contains(&ProjectName::new("pkg1".to_string()).unwrap())
         );
         assert!(
             workspace
                 .members
-                .contains_key(&ProjectName::new("pkg2".to_string()).unwrap())
+                .contains(&ProjectName::new("pkg2".to_string()).unwrap())
         );
     }
 

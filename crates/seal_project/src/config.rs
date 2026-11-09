@@ -21,7 +21,7 @@ pub struct Config {
             pkg2 = "packages/pkg2"
         "#
     )]
-    pub members: Option<BTreeMap<ProjectName, PathBuf>>,
+    pub(super) members: Option<BTreeMap<ProjectName, PathBuf>>,
 
     #[option_group]
     /// Release configuration for versioning and publishing.
@@ -33,13 +33,13 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn from_toml_str(content: &str) -> Result<Self, ProjectError> {
+    fn from_toml_str(content: &str) -> Result<Self, ProjectError> {
         let config: Self = toml::from_str(content).map_err(ProjectError::ConfigParseError)?;
         config.validate()?;
         Ok(config)
     }
 
-    pub fn from_file(path: &Path) -> Result<Self, ProjectError> {
+    pub(super) fn from_file(path: &Path) -> Result<Self, ProjectError> {
         let content =
             fs_err::read_to_string(path).map_err(|e| ProjectError::ConfigFileNotReadable {
                 path: path.to_path_buf(),
@@ -350,7 +350,7 @@ impl PullRequestConfig {
 pub struct CommitMessage(String);
 
 impl CommitMessage {
-    pub fn new(value: String) -> Result<Self, ConfigValidationError> {
+    fn new(value: String) -> Result<Self, ConfigValidationError> {
         if value.trim().is_empty() {
             return Err(ConfigValidationError::EmptyCommitMessage);
         }
@@ -398,7 +398,7 @@ impl<'de> Deserialize<'de> for CommitMessage {
 pub struct BranchName(String);
 
 impl BranchName {
-    pub fn new(value: String) -> Result<Self, ConfigValidationError> {
+    fn new(value: String) -> Result<Self, ConfigValidationError> {
         if value.trim().is_empty() {
             return Err(ConfigValidationError::EmptyBranchName);
         }
@@ -556,7 +556,7 @@ impl ChangelogHeading {
         Ok(Self(value))
     }
 
-    pub fn as_str(&self) -> &str {
+    fn as_str(&self) -> &str {
         &self.0
     }
 }

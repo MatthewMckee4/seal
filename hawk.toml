@@ -1,0 +1,16 @@
+[[production]]
+package = "seal"
+bin = "seal"
+reason = "shipped release-management CLI"
+
+[[production]]
+package = "seal_dev"
+bin = "seal_dev"
+reason = "developer tooling for generated references"
+
+[[feature-profile]]
+name = "default"
+
+[[feature-profile]]
+name = "integration-test"
+all-features = true

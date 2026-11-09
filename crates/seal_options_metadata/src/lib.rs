@@ -108,14 +108,16 @@ impl OptionSet {
     /// Returns `true` if this set has an option that resolves to `name`.
     ///
     /// The name can be separated by `.` to find a nested option.
-    pub fn has(&self, name: &str) -> bool {
+    #[cfg(test)]
+    fn has(&self, name: &str) -> bool {
         self.find(name).is_some()
     }
 
     /// Returns `Some` if this set has an option that resolves to `name` and `None` otherwise.
     ///
     /// The name can be separated by `.` to find a nested option.
-    pub fn find(&self, name: &str) -> Option<OptionEntry> {
+    #[cfg(test)]
+    fn find(&self, name: &str) -> Option<OptionEntry> {
         struct FindOptionVisitor<'a> {
             option: Option<OptionEntry>,
             parts: std::str::Split<'a, char>,
@@ -311,8 +313,8 @@ impl Display for Field {
 /// on Clap).
 #[derive(Debug, Eq, PartialEq, Clone, Serialize)]
 pub struct PossibleValue {
-    pub name: String,
-    pub help: Option<String>,
+    name: String,
+    help: Option<String>,
 }
 
 impl Display for PossibleValue {

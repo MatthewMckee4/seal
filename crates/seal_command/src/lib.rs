@@ -6,7 +6,7 @@ use std::{path::Path, process::Command};
 pub struct CommandResult {
     pub success: bool,
     pub exit_code: Option<i32>,
-    pub stderr: String,
+    stderr: String,
 }
 
 pub struct CommandWrapper {
@@ -18,7 +18,7 @@ pub struct CommandWrapper {
 
 impl CommandWrapper {
     /// Create a new command.
-    pub fn new<T>(command_with_args: Vec<T>) -> Self
+    fn new<T>(command_with_args: Vec<T>) -> Self
     where
         T: ToString,
     {
