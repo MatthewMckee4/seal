@@ -21,6 +21,7 @@ concurrency:
 permissions: {}
 
 env:
+  # renovate: datasource=docker depName=python
   PYTHON_VERSION: "3.14"
 
 jobs:

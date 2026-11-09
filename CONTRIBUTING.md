@@ -184,3 +184,25 @@ pinact run
 ```
 
 Review generated workflow changes before committing them.
+
+## Dependency Updates
+
+Renovate configuration lives in [`.github/renovate.json5`](.github/renovate.json5).
+Install the [Renovate GitHub App](https://github.com/apps/renovate) or grant an
+existing installation access to `MatthewMckee4/seal` before expecting update
+pull requests. Merging the configuration does not install or enable the app.
+Updates run weekly after a seven-day release age, with the `dependencies` label.
+
+Cargo dependencies, Rust toolchains, GitHub Actions, and pre-commit hooks use
+Renovate's built-in managers. Annotate workflow environment versions with
+`# renovate: datasource=<datasource> depName=<package>` to use the shared
+`customManagers:githubActionsVersions` preset. Custom regex managers also track
+annotated tool pins passed to `taiki-e/install-action` and cargo-dist sources.
+
+The generated `.github/workflows/release.yml` is excluded from direct Renovate
+updates. Custom managers track `cargo-dist-version` and the action SHA pins in
+`dist-workspace.toml` instead. Before merging those updates, install the
+configured cargo-dist version, run `cargo dist generate`, and commit the generated
+diff so release workflow pins stay in sync with their source. Preserve full
+commit SHAs in `[dist.github-action-commits]`; do not run an action updater
+directly on the generated workflow.

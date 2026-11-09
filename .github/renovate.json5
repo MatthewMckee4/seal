@@ -1,0 +1,71 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabledManagers": [
+    "cargo",
+    "custom.regex",
+    "github-actions",
+    "pre-commit",
+    "rust-toolchain"
+  ],
+  "extends": [
+    "config:recommended",
+    "customManagers:githubActionsVersions",
+    "helpers:pinGitHubActionDigests",
+    "schedule:weekly",
+    ":enablePreCommit"
+  ],
+  "ignorePaths": [
+    ".github/workflows/release.yml"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "minimumReleaseAge": "7 days",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^dist-workspace\\.toml$/",
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+cargo-dist-version = \"(?<currentValue>[^\"]+)\"",
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+tool: [^@\\s]+@(?<currentValue>\\S+)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^dist-workspace\\.toml$/"
+      ],
+      "matchStrings": [
+        "\"(?<depName>actions/[^\"\\s]+)\" = \"(?<currentDigest>[a-f0-9]{40})\" # (?<currentValue>v\\S+)"
+      ],
+      "datasourceTemplate": "github-tags",
+      "depTypeTemplate": "cargo-dist-action"
+    }
+  ],
+  "packageRules": [
+    {
+      "groupName": "GitHub Actions",
+      "matchManagers": [
+        "github-actions"
+      ]
+    },
+    {
+      "groupName": "pre-commit hooks",
+      "matchManagers": [
+        "pre-commit"
+      ]
+    },
+    {
+      "groupName": "cargo-dist",
+      "matchFileNames": [
+        "dist-workspace.toml"
+      ],
+      "prBodyNotes": [
+        "Regenerate `.github/workflows/release.yml` with the configured cargo-dist version using `cargo dist generate`, and commit the generated diff before merging."
+      ]
+    }
+  ]
+}
