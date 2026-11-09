@@ -19,6 +19,7 @@ env:
   CARGO_INCREMENTAL: 0
   CARGO_NET_RETRY: 10
   CARGO_TERM_COLOR: always
+  # renovate: datasource=docker depName=python
   PYTHON_VERSION: "3.14"
   RUSTUP_MAX_RETRIES: 10
 
@@ -59,7 +60,7 @@ jobs:
             ':!.github/FUNDING.yml' \
             ':!.github/ISSUE_TEMPLATE/**' \
             ':!.github/PULL_REQUEST_TEMPLATE.md' \
-            ':!.github/dependabot.yml' \
+            ':!.github/renovate.json5' \
             ':!.github/zizmor.yml' \
             ':!docs/' \
             ':!.markdownlint.yaml' \
@@ -115,6 +116,7 @@ jobs:
       - name: "Install cargo shear"
         uses: taiki-e/install-action@1e29709c0ec63babbe8f266397a465f29a825f91 # v2.87.31
         with:
+          # renovate: datasource=crate depName=cargo-shear
           tool: cargo-shear@1.12.4
 
       - name: "Check unused dependencies"
