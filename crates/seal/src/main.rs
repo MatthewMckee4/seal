@@ -157,7 +157,10 @@ async fn run(cli: Cli) -> Result<ExitStatus> {
                 dry_run,
                 max_prs,
                 overwrite,
-            } => commands::generate_changelog(dry_run, printer, overwrite, max_prs).await,
+                sections,
+            } => {
+                commands::generate_changelog(dry_run, printer, overwrite, max_prs, &sections).await
+            }
             GenerateCommand::Release => commands::generate_release_body(printer).await,
         },
         Commands::Help(args) => commands::help(

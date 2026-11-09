@@ -168,6 +168,7 @@ seal bump [OPTIONS] <VERSION>
 </dd><dt id="seal-bump--no-changelog"><a href="#seal-bump--no-changelog"><code>--no-changelog</code></a></dt><dd><p>Skip generating or updating the changelog</p>
 </dd><dt id="seal-bump--no-progress"><a href="#seal-bump--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-bump--only-sections"><a href="#seal-bump--only-sections"><code>--only-sections</code></a> <i>section</i></dt><dd><p>Include only this configured changelog section (repeat to include more)</p>
 </dd><dt id="seal-bump--output-format"><a href="#seal-bump--output-format"><code>--output-format</code></a> <i>output-format</i></dt><dd><p>Select the output format (JSON requires --dry-run)</p>
 <p>[default: text]</p><p>Possible values:</p>
 <ul>
@@ -176,6 +177,7 @@ seal bump [OPTIONS] <VERSION>
 </ul></dd><dt id="seal-bump--quiet"><a href="#seal-bump--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-bump--verbose"><a href="#seal-bump--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd><dt id="seal-bump--without-sections"><a href="#seal-bump--without-sections"><code>--without-sections</code></a> <i>section</i></dt><dd><p>Exclude this configured changelog section, even if included (repeat for more)</p>
 </dd><dt id="seal-bump--yes"><a href="#seal-bump--yes"><code>--yes</code></a>, <code>-y</code></dt><dd><p>Skip confirmation before applying changes</p>
 </dd></dl>
 
@@ -226,10 +228,12 @@ seal generate changelog [OPTIONS]
 <p>Defaults to 100.</p>
 </dd><dt id="seal-generate-changelog--no-progress"><a href="#seal-generate-changelog--no-progress"><code>--no-progress</code></a></dt><dd><p>Hide all progress outputs.</p>
 <p>For example, spinners or progress bars.</p>
+</dd><dt id="seal-generate-changelog--only-sections"><a href="#seal-generate-changelog--only-sections"><code>--only-sections</code></a> <i>section</i></dt><dd><p>Include only this configured changelog section (repeat to include more)</p>
 </dd><dt id="seal-generate-changelog--overwrite"><a href="#seal-generate-changelog--overwrite"><code>--overwrite</code></a></dt><dd><p>Overwrite the changelog file if it already exists</p>
 </dd><dt id="seal-generate-changelog--quiet"><a href="#seal-generate-changelog--quiet"><code>--quiet</code></a>, <code>-q</code></dt><dd><p>Use quiet output.</p>
 <p>Repeating this option, e.g., <code>-qq</code>, will enable a silent mode in which seal will write no output to stdout.</p>
 </dd><dt id="seal-generate-changelog--verbose"><a href="#seal-generate-changelog--verbose"><code>--verbose</code></a>, <code>-v</code></dt><dd><p>Use verbose output</p>
+</dd><dt id="seal-generate-changelog--without-sections"><a href="#seal-generate-changelog--without-sections"><code>--without-sections</code></a> <i>section</i></dt><dd><p>Exclude this configured changelog section, even if included (repeat for more)</p>
 </dd></dl>
 
 ### seal generate release

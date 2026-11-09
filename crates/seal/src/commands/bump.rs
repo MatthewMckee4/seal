@@ -5,6 +5,7 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use seal_bump::{VersionBump, calculate_version_file_changes};
+use seal_changelog::SectionFilter;
 use seal_command::CommandWrapper;
 use seal_fs::FileResolver;
 use seal_github::{GitHubPullRequest, GitHubPullRequestOptions, GitHubService};
@@ -123,6 +124,18 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         ));
     };
 
+    let sections = if let Some(changelog) = config.changelog.as_ref() {
+        SectionFilter::new(
+            changelog,
+            &args.sections.only_sections,
+            &args.sections.without_sections,
+        )?
+    } else if args.sections.only_sections.is_empty() && args.sections.without_sections.is_empty() {
+        SectionFilter::default()
+    } else {
+        anyhow::bail!("Changelog section filters require a [changelog] configuration");
+    };
+
     let current_version_string = &release_config.current_version;
 
     let uses_github = parsed_version_bump.is_none()
@@ -230,6 +243,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
                     &new_version_string,
                     changelog_config,
                     pull_requests,
+                    &sections,
                 )
             } else {
                 seal_changelog::prepare_changelog_changes(
@@ -239,6 +253,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
                     github_client
                         .as_ref()
                         .context("Changelog generation requires a GitHub client")?,
+                    &sections,
                 )
                 .await
             }

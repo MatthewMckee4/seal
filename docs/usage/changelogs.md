@@ -20,7 +20,7 @@ include-contributors = true
 "Other changes" = ["__unknown__"]
 ```
 
-Pull requests can appear in more than one section when they have labels from multiple mappings.
+Pull requests with labels matching multiple sections use the first matching section in alphabetical order.
 Use the special `__unknown__` label to include pull requests without labels. Pull requests with
 labels that are not mapped to a section do not appear in a section.
 When no pull requests match a section, Seal writes `No changelog entries for this release.` for the release.
@@ -55,6 +55,29 @@ seal generate changelog
 
 Seal refuses to replace an existing changelog unless `--overwrite` is passed. Use `--max-prs` to
 limit how many recent pull requests Seal fetches before grouping them by release.
+
+## Select Changelog Sections
+
+Use `--only-sections` to include selected configured headings, or `--without-sections` to exclude
+headings. Both flags work with `seal bump` and `seal generate changelog`:
+
+```console
+seal bump minor --only-sections "Enhancements" --only-sections "Bug fixes" --dry-run
+seal generate changelog --without-sections "Other changes" --dry-run
+```
+
+Repeat either flag for additional sections. Names must exactly match headings in
+`changelog.section-labels`; unknown names are errors. If both flags name the same section,
+`--without-sections` takes precedence. These filters cannot be combined with `bump --no-changelog`
+and require changelog configuration.
+
+Existing ignored labels and contributors still apply. Section filters select from the usual
+section assignments; excluding a section does not move its pull requests into another matching
+section. Contributors are credited only for included entries. If no entries remain, the release
+says `No changelog entries for this release.`
+
+Omit `--dry-run` to write the same selected entries. Filters change release notes only: they do
+not change which pull requests determine `bump auto`'s version.
 
 ## Generate Release Metadata
 

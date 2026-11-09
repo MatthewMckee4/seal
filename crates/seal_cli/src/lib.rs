@@ -156,6 +156,17 @@ pub enum Commands {
 }
 
 #[derive(Args, Debug)]
+pub struct ChangelogSectionArgs {
+    /// Include only this configured changelog section (repeat to include more).
+    #[arg(long, value_name = "SECTION")]
+    pub only_sections: Vec<String>,
+
+    /// Exclude this configured changelog section, even if included (repeat for more).
+    #[arg(long, value_name = "SECTION")]
+    pub without_sections: Vec<String>,
+}
+
+#[derive(Args, Debug)]
 pub struct BumpArgs {
     /// Version bump to perform (e.g., 'major', 'minor', 'patch', 'alpha', 'major-beta', 'auto', or '1.2.3')
     pub version: String,
@@ -169,8 +180,11 @@ pub struct BumpArgs {
     pub yes: bool,
 
     /// Skip generating or updating the changelog
-    #[arg(long)]
+    #[arg(long, conflicts_with_all = ["only_sections", "without_sections"])]
     pub no_changelog: bool,
+
+    #[command(flatten)]
+    pub sections: ChangelogSectionArgs,
 
     /// Bypass the clean working tree and index check
     #[arg(long)]
@@ -267,6 +281,9 @@ pub enum GenerateCommand {
         /// Overwrite the changelog file if it already exists
         #[arg(long, default_missing_value = "true", num_args = 0..1)]
         overwrite: Option<bool>,
+
+        #[command(flatten)]
+        sections: ChangelogSectionArgs,
     },
     /// Generate release body JSON from latest changelog section
     Release,

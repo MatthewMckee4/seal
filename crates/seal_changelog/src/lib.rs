@@ -77,6 +77,54 @@ struct CategorizedPRs {
     contributors: Vec<String>,
 }
 
+#[derive(Default)]
+pub struct SectionFilter<'a> {
+    only: &'a [String],
+    without: &'a [String],
+}
+
+impl<'a> SectionFilter<'a> {
+    pub fn new(
+        config: &ChangelogConfig,
+        only: &'a [String],
+        without: &'a [String],
+    ) -> Result<Self> {
+        let sections = config.section_labels();
+        for name in only.iter().chain(without) {
+            if !sections.contains_key(name) {
+                let available = sections
+                    .keys()
+                    .map(String::as_str)
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                anyhow::bail!(
+                    "Unknown changelog section `{name}`. Available sections: {available}"
+                );
+            }
+        }
+        Ok(Self { only, without })
+    }
+
+    fn apply(&self, mut categorized: CategorizedPRs) -> CategorizedPRs {
+        if self.only.is_empty() && self.without.is_empty() {
+            return categorized;
+        }
+
+        categorized.sections.retain(|name, _| {
+            (self.only.is_empty() || self.only.contains(name)) && !self.without.contains(name)
+        });
+        categorized.contributors = categorized
+            .sections
+            .values()
+            .flatten()
+            .filter_map(|pr| pr.author.clone())
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .collect();
+        categorized
+    }
+}
+
 fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> CategorizedPRs {
     let ignore_labels: HashSet<&String> = config.ignore_labels().iter().collect();
     let section_labels = config.section_labels();
@@ -129,7 +177,9 @@ fn write_categorized_prs(
     output: &mut String,
     categorized: CategorizedPRs,
     config: &ChangelogConfig,
+    sections: &SectionFilter<'_>,
 ) -> Result<()> {
+    let categorized = sections.apply(categorized);
     if categorized.sections.is_empty() {
         output.push_str("No changelog entries for this release.\n\n");
         return Ok(());
@@ -156,6 +206,7 @@ fn format_changelog_content(
     version: &str,
     prs: Vec<GitHubPullRequest>,
     config: &ChangelogConfig,
+    sections: &SectionFilter<'_>,
 ) -> Result<String> {
     let categorized = categorize_prs(prs, config);
 
@@ -167,7 +218,7 @@ fn format_changelog_content(
 
     write!(output, "## {heading}\n\n")?;
 
-    write_categorized_prs(&mut output, categorized, config)?;
+    write_categorized_prs(&mut output, categorized, config, sections)?;
 
     Ok(output)
 }
@@ -229,10 +280,11 @@ pub async fn prepare_changelog_changes(
     version: &str,
     config: &ChangelogConfig,
     github_client: &Arc<dyn GitHubService>,
+    sections: &SectionFilter<'_>,
 ) -> Result<PreparedChangelog> {
     let prs = get_pull_requests_for_next_release(github_client).await?;
 
-    prepare_changelog_changes_from_prs(root, version, config, prs)
+    prepare_changelog_changes_from_prs(root, version, config, prs, sections)
 }
 
 pub fn prepare_changelog_changes_from_prs(
@@ -240,8 +292,9 @@ pub fn prepare_changelog_changes_from_prs(
     version: &str,
     config: &ChangelogConfig,
     prs: Vec<GitHubPullRequest>,
+    sections: &SectionFilter<'_>,
 ) -> Result<PreparedChangelog> {
-    let changelog_content = format_changelog_content(version, prs, config)?;
+    let changelog_content = format_changelog_content(version, prs, config, sections)?;
 
     let changelog_path = if let Some(path) = config.changelog_path.as_ref() {
         root.join(path)
@@ -257,6 +310,7 @@ pub async fn generate_full_changelog(
     config: &ChangelogConfig,
     github_client: &Arc<dyn GitHubService>,
     max_prs: usize,
+    sections: &SectionFilter<'_>,
 ) -> Result<String> {
     let releases = github_client.get_all_releases().await?;
 
@@ -298,7 +352,7 @@ pub async fn generate_full_changelog(
             )?;
         }
 
-        write_categorized_prs(&mut output, categorized, config)?;
+        write_categorized_prs(&mut output, categorized, config, sections)?;
     }
 
     Ok(output)
@@ -430,6 +484,54 @@ mod tests {
     }
 
     #[test]
+    fn section_filter_preserves_assignment_and_existing_ignores() {
+        let included = GitHubPullRequest {
+            title: "Feature".to_string(),
+            number: 1,
+            url: "https://github.com/owner/repo/pull/1".to_string(),
+            labels: vec!["feature".to_string()],
+            author: Some("alice".to_string()),
+            merged_at: Utc::now(),
+        };
+        let ambiguous = GitHubPullRequest {
+            number: 2,
+            labels: vec!["bug".to_string(), "feature".to_string()],
+            author: Some("bob".to_string()),
+            ..included.clone()
+        };
+        let ignored_label = GitHubPullRequest {
+            number: 3,
+            labels: vec!["feature".to_string(), "internal".to_string()],
+            ..included.clone()
+        };
+        let ignored_author = GitHubPullRequest {
+            number: 4,
+            author: Some("ignored".to_string()),
+            ..included.clone()
+        };
+        let config = ChangelogConfig {
+            section_labels: Some(BTreeMap::from([
+                ("Bug fixes".to_string(), vec!["bug".to_string()]),
+                ("Features".to_string(), vec!["feature".to_string()]),
+            ])),
+            ignore_labels: Some(vec!["internal".to_string()]),
+            ignore_contributors: Some(vec!["ignored".to_string()]),
+            ..Default::default()
+        };
+        let only = ["Features".to_string()];
+        let filter = SectionFilter::new(&config, &only, &[]).expect("Valid section");
+        let categorized = filter.apply(categorize_prs(
+            vec![included, ambiguous, ignored_label, ignored_author],
+            &config,
+        ));
+
+        assert_eq!(categorized.sections.len(), 1);
+        assert_eq!(categorized.sections["Features"].len(), 1);
+        assert_eq!(categorized.sections["Features"][0].number, 1);
+        assert_eq!(categorized.contributors, ["alice"]);
+    }
+
+    #[test]
     fn test_format_changelog_with_section_labels() {
         let prs = vec![
             GitHubPullRequest {
@@ -475,7 +577,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @r###"
         ## 1.0.0
@@ -541,7 +644,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @r###"
         ## 1.0.0
@@ -582,7 +686,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @r###"
         ## Version 1.0.0 - Released
@@ -617,7 +722,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @r###"
         ## 1.0.0
@@ -648,7 +754,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         assert!(
             result.contains("- [@github-actions[bot]](https://github.com/apps/github-actions)")
@@ -688,7 +795,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @"
         ## 1.0.0
@@ -733,7 +841,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @r"
         ## 1.0.0
@@ -758,7 +867,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @"
         ## 1.0.0
@@ -854,7 +964,8 @@ mod tests {
             ..Default::default()
         };
 
-        let result = format_changelog_content("1.0.0", prs, &config).unwrap();
+        let result =
+            format_changelog_content("1.0.0", prs, &config, &SectionFilter::default()).unwrap();
 
         insta::assert_snapshot!(result, @"
         ## 1.0.0
