@@ -40,7 +40,7 @@ reviewed commit SHA, and pin the installed Seal version separately:
 permissions: {}
 
 steps:
-  - uses: MatthewMckee4/seal/.github/actions/setup-seal@<full-commit-sha>
+  - uses: MatthewMckee4/seal@<full-commit-sha>
     with:
       version: 0.0.1-alpha.8
 ```
