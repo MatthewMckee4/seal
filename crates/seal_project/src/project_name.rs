@@ -9,7 +9,7 @@ use crate::error::ConfigValidationError;
 pub struct ProjectName(String);
 
 impl ProjectName {
-    pub fn new(value: String) -> Result<Self, ConfigValidationError> {
+    pub(super) fn new(value: String) -> Result<Self, ConfigValidationError> {
         if value.trim().is_empty() {
             return Err(ConfigValidationError::EmptyProjectName);
         }
@@ -24,7 +24,8 @@ impl ProjectName {
         Ok(Self(value))
     }
 
-    pub fn as_str(&self) -> &str {
+    #[cfg(test)]
+    fn as_str(&self) -> &str {
         &self.0
     }
 }

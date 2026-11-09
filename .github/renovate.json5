@@ -30,7 +30,8 @@
       ],
       "matchStrings": [
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+cargo-dist-version = \"(?<currentValue>[^\"]+)\"",
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+tool: [^@\\s]+@(?<currentValue>\\S+)"
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+tool: [^@\\s]+@(?<currentValue>\\S+)",
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+HAWK_VERSION: (?<currentValue>\\S+)"
       ]
     },
     {

@@ -72,12 +72,12 @@ pub async fn get_pull_requests_for_next_release(
         .await
 }
 
-pub struct CategorizedPRs {
-    pub sections: BTreeMap<String, Vec<GitHubPullRequest>>,
-    pub contributors: Vec<String>,
+struct CategorizedPRs {
+    sections: BTreeMap<String, Vec<GitHubPullRequest>>,
+    contributors: Vec<String>,
 }
 
-pub fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> CategorizedPRs {
+fn categorize_prs(prs: Vec<GitHubPullRequest>, config: &ChangelogConfig) -> CategorizedPRs {
     let ignore_labels: HashSet<&String> = config.ignore_labels().iter().collect();
     let section_labels = config.section_labels();
 
@@ -152,7 +152,7 @@ fn write_categorized_prs(
     Ok(())
 }
 
-pub fn format_changelog_content(
+fn format_changelog_content(
     version: &str,
     prs: Vec<GitHubPullRequest>,
     config: &ChangelogConfig,
@@ -172,10 +172,7 @@ pub fn format_changelog_content(
     Ok(output)
 }
 
-pub fn prepare_changelog_file_change(
-    changelog_path: &Path,
-    new_content: &str,
-) -> Result<FileChange> {
+fn prepare_changelog_file_change(changelog_path: &Path, new_content: &str) -> Result<FileChange> {
     let existing_content = if changelog_path.exists() {
         fs_err::read_to_string(changelog_path)?
     } else {
@@ -309,18 +306,18 @@ pub async fn generate_full_changelog(
 
 #[derive(Debug, Clone)]
 pub struct ChangelogSection {
-    pub version: String,
-    pub body: String,
+    version: String,
+    body: String,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ReleaseBody {
-    pub title: String,
-    pub body: String,
-    pub prerelease: bool,
+    title: String,
+    body: String,
+    prerelease: bool,
 }
 
-pub fn parse_latest_changelog_section(changelog_content: &str) -> Result<ChangelogSection> {
+fn parse_latest_changelog_section(changelog_content: &str) -> Result<ChangelogSection> {
     let lines: Vec<&str> = changelog_content.lines().collect();
 
     let section_start = lines

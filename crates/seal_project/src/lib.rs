@@ -3,16 +3,14 @@ mod error;
 mod git;
 mod project;
 mod project_name;
-mod workspace_member;
 
 pub use config::{
     BranchName, BumpLabelsConfig, ChangelogConfig, ChangelogHeading, CommitMessage, Config,
     PreCommitFailure, PullRequestConfig, ReleaseConfig, VersionFile, VersionFileTextFormat,
 };
-pub use error::{ConfigValidationError, ProjectError};
-pub use git::{
-    ensure_clean_worktree, ensure_release_branch_available, find_git_root, get_current_branch,
-};
+pub use error::ConfigValidationError;
+use error::ProjectError;
+use git::find_git_root;
+pub use git::{ensure_clean_worktree, ensure_release_branch_available, get_current_branch};
 pub use project::ProjectWorkspace;
 pub use project_name::ProjectName;
-pub use workspace_member::WorkspaceMember;
