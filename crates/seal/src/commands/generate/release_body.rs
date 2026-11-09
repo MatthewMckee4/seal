@@ -17,7 +17,10 @@ pub async fn generate_release_body(printer: Printer) -> Result<ExitStatus> {
         .changelog
         .as_ref()
         .and_then(|c| c.changelog_path.clone())
-        .unwrap_or_else(|| workspace.root().join(DEFAULT_CHANGELOG_PATH));
+        .map_or_else(
+            || workspace.root().join(DEFAULT_CHANGELOG_PATH),
+            |path| workspace.root().join(path),
+        );
 
     if !changelog_path.exists() {
         anyhow::bail!("Changelog not found at `{}`", changelog_path.display());

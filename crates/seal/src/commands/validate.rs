@@ -8,7 +8,7 @@ use seal_project::ProjectWorkspace;
 use crate::{ExitStatus, printer::Printer};
 
 /// Validate only the configuration file
-/// If `config_file` is None, discovers seal.toml in the current directory
+/// If `config_file` is None, discovers seal.toml from the current directory up to the Git root
 pub fn validate_config(config_file: Option<PathBuf>, printer: Printer) -> Result<ExitStatus> {
     let workspace = if let Some(path) = config_file {
         ProjectWorkspace::from_config_file(&path)?
@@ -29,7 +29,7 @@ pub fn validate_config(config_file: Option<PathBuf>, printer: Printer) -> Result
 }
 
 /// Validate full project workspace including members
-/// If `project_path` is None, uses the current directory
+/// If `project_path` is None, discovers seal.toml from the current directory up to the Git root
 pub fn validate_project(project_path: Option<PathBuf>, printer: Printer) -> Result<ExitStatus> {
     let workspace = if let Some(path) = project_path {
         ProjectWorkspace::from_project_path(&path)?

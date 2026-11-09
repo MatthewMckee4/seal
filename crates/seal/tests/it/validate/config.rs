@@ -28,6 +28,27 @@ confirm = false
 }
 
 #[test]
+fn validate_config_from_parent_directory() {
+    let context = TestContext::new();
+    context.init_git();
+    context.minimal_seal_toml("1.0.0");
+    let subdirectory = context.root.child("crates/seal");
+    subdirectory.create_dir_all().unwrap();
+
+    let mut command = context.command();
+    command.current_dir(subdirectory.path());
+
+    seal_snapshot!(context.filters(), command.arg("validate").arg("config"), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Config file `seal.toml` is valid
+
+    ----- stderr -----
+    ");
+}
+
+#[test]
 fn validate_config_with_pull_request() {
     let context = TestContext::new();
     context.seal_toml(
@@ -99,14 +120,14 @@ fn validate_config_minimal() {
 fn validate_config_file_not_found() {
     let context = TestContext::new().with_filtered_missing_file_error();
 
-    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @r"
+    seal_snapshot!(context.filters(), context.command().arg("validate").arg("config"), @"
     success: false
     exit_code: 2
     ----- stdout -----
 
     ----- stderr -----
-    error: Failed to read config file [TEMP]/seal.toml: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
-      Caused by: failed to open file `[TEMP]/seal.toml`: [OS ERROR 2]
+    error: Could not find seal.toml. Searched directories:
+      - [TEMP]/
     ");
 }
 
