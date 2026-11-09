@@ -469,3 +469,77 @@ current-version = "1.0.0"
     ----- stderr -----
     ");
 }
+
+#[test]
+fn generate_changelog_section_exclusions_win_for_preview_and_write() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+[changelog.section-labels]
+Documentation = ["documentation"]
+"#,
+    );
+    context.init_git();
+    let filters = [
+        "--only-sections",
+        "Documentation",
+        "--without-sections",
+        "Documentation",
+    ];
+    let preview = seal_snapshot!(context.filters(), context.command().args(["generate", "changelog", "--dry-run"]).args(filters), @"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    ## 1.0.0
+
+    No changelog entries for this release.
+
+    ## 0.2.0
+
+    No changelog entries for this release.
+
+    ## Release 2025-11-05
+
+    No changelog entries for this release.
+
+
+    ----- stderr -----
+    ");
+    assert!(!context.root.child("CHANGELOG.md").path().exists());
+    seal_snapshot!(context.filters(), context.command().args(["generate", "changelog"]).args(filters), @"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Changelog generated successfully at `CHANGELOG.md`.
+
+    ----- stderr -----
+    ");
+    assert_eq!(
+        context.read_file("CHANGELOG.md"),
+        String::from_utf8(preview.stdout).expect("Changelog must be UTF-8")
+    );
+}
+
+#[test]
+fn generate_changelog_rejects_unknown_section_before_write() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.0.0"
+[changelog.section-labels]
+Documentation = ["documentation"]
+"#,
+    );
+    seal_snapshot!(context.filters(), context.command().args(["generate", "changelog", "--without-sections", "Missing"]), @"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Unknown changelog section `Missing`. Available sections: Documentation
+    ");
+    assert!(!context.root.child("CHANGELOG.md").path().exists());
+}

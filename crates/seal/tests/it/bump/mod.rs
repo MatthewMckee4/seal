@@ -1,4 +1,5 @@
 use assert_fs::prelude::*;
+use insta::allow_duplicates;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 
@@ -3034,4 +3035,232 @@ minor = ["enhancement"]
         serde_json::from_slice(&output.stdout).expect("Expected only JSON");
     assert_eq!(plan["new_version"], "1.3.0");
     assert!(context.read_file("seal.toml").contains("1.2.3"));
+}
+
+#[test]
+fn bump_filters_changelog_sections_in_preview_and_write() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+confirm = false
+[changelog]
+ignore-contributors = ["ignored"]
+[changelog.section-labels]
+"Bug fixes" = ["bug"]
+Features = ["enhancement"]
+Other = ["documentation"]
+"#,
+    );
+    context.init_git();
+    let config_before = context.read_file("seal.toml");
+    let filters = [
+        "--only-sections",
+        "Bug fixes",
+        "--only-sections",
+        "Features",
+        "--without-sections",
+        "Bug fixes",
+    ];
+
+    seal_snapshot!(context.filters(), context.command().args(["bump", "patch", "--dry-run"]).args(filters), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ confirm = false
+        4     4 │ [changelog]
+        5     5 │ ignore-contributors = ["ignored"]
+        6     6 │ [changelog.section-labels]
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: CHANGELOG.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+              1 │+# Changelog
+              2 │+
+              3 │+## 1.2.4
+              4 │+
+              5 │+### Features
+              6 │+
+              7 │+- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+              8 │+
+              9 │+### Contributors
+             10 │+
+             11 │+- [@alice](https://github.com/alice)
+             12 │+
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+      - Update `CHANGELOG.md`
+
+    Preflight checks:
+      - Working tree and index are clean
+
+    Dry run complete. No changes made.
+
+    ----- stderr -----
+    "#);
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert!(!context.root.child("CHANGELOG.md").path().exists());
+
+    seal_snapshot!(context.filters(), context.command().args(["bump", "patch"]).args(filters), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ confirm = false
+        4     4 │ [changelog]
+        5     5 │ ignore-contributors = ["ignored"]
+        6     6 │ [changelog.section-labels]
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Source: CHANGELOG.md
+    ────────────┬───────────────────────────────────────────────────────────────────
+              1 │+# Changelog
+              2 │+
+              3 │+## 1.2.4
+              4 │+
+              5 │+### Features
+              6 │+
+              7 │+- Add new feature X ([#6](https://github.com/owner/repo/pull/6))
+              8 │+
+              9 │+### Contributors
+             10 │+
+             11 │+- [@alice](https://github.com/alice)
+             12 │+
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+      - Update `CHANGELOG.md`
+
+    Updating files...
+    Successfully bumped to 1.2.4
+
+    ----- stderr -----
+    "#);
+    let changelog = context.read_file("CHANGELOG.md");
+    assert!(changelog.contains("### Features"));
+    assert!(changelog.contains("[@alice]"));
+    assert!(!changelog.contains("Bug fixes"));
+    assert!(!changelog.contains("[@bob]"));
+    assert!(!changelog.contains("[@ignored]"));
+    assert!(!changelog.contains("[@joe]"));
+}
+
+#[test]
+fn bump_rejects_unknown_changelog_section_before_changes() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+[changelog.section-labels]
+Features = ["enhancement"]
+"#,
+    );
+    let config_before = context.read_file("seal.toml");
+    allow_duplicates! {
+    for flag in ["--only-sections", "--without-sections"] {
+        seal_snapshot!(context.filters(), context.command().args(["bump", "patch", flag, "Missing"]), @"
+        success: false
+        exit_code: 2
+        ----- stdout -----
+
+        ----- stderr -----
+        error: Unknown changelog section `Missing`. Available sections: Features
+        ");
+    }
+    }
+    assert_eq!(context.read_file("seal.toml"), config_before);
+    assert!(!context.root.child("CHANGELOG.md").path().exists());
+}
+
+#[test]
+fn bump_section_filters_require_changelog_config() {
+    let context = TestContext::new();
+    context.minimal_seal_toml("1.2.3");
+    seal_snapshot!(context.filters(), context.command().args(["bump", "patch", "--only-sections", "Features"]), @"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: Changelog section filters require a [changelog] configuration
+    ");
+}
+
+#[test]
+fn bump_section_filters_conflict_with_no_changelog() {
+    let context = TestContext::new();
+    seal_snapshot!(context.filters(), context.command().args(["bump", "patch", "--no-changelog", "--only-sections", "Features"]), @"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+
+    ----- stderr -----
+    error: the argument '--no-changelog' cannot be used with '--only-sections <SECTION>'
+
+    Usage: seal bump --no-changelog <VERSION>
+
+    For more information, try '--help'.
+    ");
+}
+
+#[test]
+fn bump_section_filters_do_not_change_automatic_version_selection() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+[release.bump-labels]
+minor = ["enhancement"]
+patch = ["bug"]
+[changelog.section-labels]
+"Bug fixes" = ["bug"]
+Features = ["enhancement"]
+"#,
+    );
+    context.init_git();
+    seal_snapshot!(context.filters(), context.command().args([
+        "bump", "auto", "--dry-run", "--output-format", "json", "--only-sections", "Bug fixes",
+    ]), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    {
+      "current_version": "1.2.3",
+      "new_version": "1.3.0",
+      "changed_files": [
+        "seal.toml",
+        "CHANGELOG.md"
+      ],
+      "branch": null,
+      "commit_message": null,
+      "commands": [],
+      "push": false,
+      "pull_request": null
+    }
+
+    ----- stderr -----
+    "#);
+    assert!(context.read_file("seal.toml").contains("1.2.3"));
+    assert!(!context.root.child("CHANGELOG.md").path().exists());
 }

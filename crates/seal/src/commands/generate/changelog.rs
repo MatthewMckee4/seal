@@ -2,7 +2,8 @@ use std::fmt::Write as _;
 use std::sync::Arc;
 
 use anyhow::Result;
-use seal_changelog::DEFAULT_CHANGELOG_PATH;
+use seal_changelog::{DEFAULT_CHANGELOG_PATH, SectionFilter};
+use seal_cli::ChangelogSectionArgs;
 use seal_fs::FileResolver;
 use seal_github::GitHubService;
 use seal_project::ProjectWorkspace;
@@ -17,6 +18,7 @@ pub async fn generate_changelog(
     printer: Printer,
     overwrite: Option<bool>,
     max_prs: Option<usize>,
+    sections: &ChangelogSectionArgs,
 ) -> Result<ExitStatus> {
     let mut stdout = printer.stdout();
 
@@ -29,6 +31,12 @@ pub async fn generate_changelog(
             workspace.root().display()
         );
     };
+
+    let sections = SectionFilter::new(
+        changelog_config,
+        &sections.only_sections,
+        &sections.without_sections,
+    )?;
 
     let changelog_path = changelog_config.changelog_path.clone().map_or_else(
         || workspace.root().join(DEFAULT_CHANGELOG_PATH),
@@ -54,6 +62,7 @@ pub async fn generate_changelog(
         changelog_config,
         &github_client,
         max_prs.unwrap_or(MAX_PRS),
+        &sections,
     )
     .await?;
 
