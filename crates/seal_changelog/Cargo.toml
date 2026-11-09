@@ -25,6 +25,7 @@ serde = { workspace = true }
 chrono = { workspace = true }
 insta = { workspace = true }
 tempfile = { workspace = true }
+tokio = { workspace = true }
 
 [lints]
 workspace = true
