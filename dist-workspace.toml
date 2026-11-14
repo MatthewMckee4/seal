@@ -12,6 +12,7 @@ cargo-dist-version = "0.32.0"
 dist = false
 # CI backends to support
 ci = "github"
+github-build-setup = "../release-build-setup.yml"
 # The installers to generate for each app
 installers = ["shell", "powershell"]
 # The archive format to use for windows builds (defaults .zip)
