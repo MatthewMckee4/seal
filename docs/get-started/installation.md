@@ -7,13 +7,13 @@ Seal is currently distributed through GitHub Releases.
 On macOS and Linux:
 
 ```sh
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.8/seal-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.9/seal-installer.sh | sh
 ```
 
 On Windows:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -c "irm https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.8/seal-installer.ps1 | iex"
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/MatthewMckee4/seal/releases/download/0.0.1-alpha.9/seal-installer.ps1 | iex"
 ```
 
 The installer selects the correct prebuilt archive and places `seal` on your path. Confirm the
@@ -42,7 +42,7 @@ permissions: {}
 steps:
   - uses: MatthewMckee4/seal@<full-commit-sha>
     with:
-      version: 0.0.1-alpha.8
+      version: 0.0.1-alpha.9
 ```
 
 The setup action only installs Seal and requires no token or write permission. For a read-only
