@@ -151,6 +151,18 @@ pub struct ReleaseConfig {
     )]
     pub commit_message: Option<CommitMessage>,
 
+    /// Sign the release commit using Git's configured signing key.
+    /// Requires `commit-message` to create a commit. When false, Git's signing
+    /// configuration still applies. A signing failure aborts the release, leaving
+    /// the updated files staged.
+    #[serde(default)]
+    #[field(
+        default = "false",
+        value_type = "boolean",
+        example = "sign-commit = true"
+    )]
+    pub sign_commit: bool,
+
     /// The branch name to use when creating a new release branch.
     #[field(
         default = "null",
@@ -613,6 +625,7 @@ branch-name = "release-{version}"
               "package.json"
             ],
             "commit-message": "release v{version}",
+            "sign-commit": false,
             "branch-name": "release-{version}",
             "push": false,
             "confirm": true
@@ -640,6 +653,7 @@ version-files = ["VERSION"]
               "VERSION"
             ],
             "commit-message": null,
+            "sign-commit": false,
             "branch-name": null,
             "push": false,
             "confirm": true
@@ -672,6 +686,7 @@ draft = true
           "release": {
             "current-version": "1.2.3",
             "commit-message": "Release v{version}",
+            "sign-commit": false,
             "branch-name": "release/v{version}",
             "push": true,
             "confirm": true,
@@ -706,6 +721,7 @@ push = true
           "release": {
             "current-version": "1.2.3",
             "commit-message": "Release v{version}",
+            "sign-commit": false,
             "branch-name": "release/v{version}",
             "push": true,
             "confirm": true,
@@ -738,7 +754,7 @@ unknown-field = "value"
         assert_debug_snapshot!(err, @r#"
         ConfigParseError(
             Error {
-                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `branch-name`, `push`, `confirm`, `bump-labels`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`",
+                message: "unknown field `unknown-field`, expected one of `current-version`, `version-files`, `commit-message`, `sign-commit`, `branch-name`, `push`, `confirm`, `bump-labels`, `pre-commit-commands`, `on-pre-commit-failure`, `pull-request`",
                 input: Some(
                     "\n[release]\nunknown-field = \"value\"\n",
                 ),
@@ -973,6 +989,7 @@ branch-name = ""
                 current_version: "1.2.3".to_string(),
                 version_files: Some(vec![VersionFile::Simple("Cargo.toml".to_string())]),
                 commit_message: Some(CommitMessage::new("Release v{version}".to_string()).unwrap()),
+                sign_commit: true,
                 branch_name: Some(BranchName::new("release/v{version}".to_string()).unwrap()),
                 push: true,
                 confirm: true,
@@ -996,6 +1013,7 @@ branch-name = ""
               "Cargo.toml"
             ],
             "commit-message": "Release v{version}",
+            "sign-commit": true,
             "branch-name": "release/v{version}",
             "push": true,
             "confirm": true
@@ -1027,6 +1045,7 @@ commit-message = "Release {version} with {version} tag"
                             "Release {version} with {version} tag",
                         ),
                     ),
+                    sign_commit: false,
                     branch_name: None,
                     push: false,
                     confirm: true,
@@ -1099,6 +1118,7 @@ version-files = ["Cargo.toml", "package.json", "VERSION"]
                         ],
                     ),
                     commit_message: None,
+                    sign_commit: false,
                     branch_name: None,
                     push: false,
                     confirm: true,
@@ -1132,6 +1152,7 @@ version-files = []
                         [],
                     ),
                     commit_message: None,
+                    sign_commit: false,
                     branch_name: None,
                     push: false,
                     confirm: true,

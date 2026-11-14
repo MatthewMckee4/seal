@@ -331,7 +331,7 @@ pub async fn bump(args: &BumpArgs, printer: Printer) -> Result<ExitStatus> {
         }
 
         commands.push(TaggedCommand {
-            command: CommandWrapper::git_commit(message),
+            command: CommandWrapper::git_commit(message, release_config.sign_commit),
             is_pre_commit: false,
         });
     }

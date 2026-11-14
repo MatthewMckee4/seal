@@ -287,6 +287,29 @@ Whether to push the release changes to the remote repository.
 
 ---
 
+<span id="release_sign-commit"></span>
+#### [`sign-commit`](#release_sign-commit)
+
+Sign the release commit using Git's configured signing key.
+Requires `commit-message` to create a commit. When false, Git's signing
+configuration still applies. A signing failure aborts the release, leaving
+the updated files staged.
+
+**Default value**: `false`
+
+**Type**: `boolean`
+
+**Example usage**:
+
+=== "seal.toml"
+
+    ```toml
+    [release]
+    sign-commit = true
+    ```
+
+---
+
 <span id="release_version-files"></span>
 #### [`version-files`](#release_version-files)
 

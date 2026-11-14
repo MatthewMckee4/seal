@@ -89,8 +89,13 @@ impl CommandWrapper {
         Self::new(vec!["git", "add", "-A"])
     }
 
-    pub fn git_commit(message: &str) -> Self {
-        Self::new(vec!["git", "commit", "-m", message])
+    pub fn git_commit(message: &str, sign: bool) -> Self {
+        let mut args = vec!["git", "commit"];
+        if sign {
+            args.push("--gpg-sign");
+        }
+        args.extend(["-m", message]);
+        Self::new(args)
     }
 
     pub fn create_branch(name: &str) -> Self {
