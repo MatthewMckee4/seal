@@ -12,6 +12,7 @@ cargo-dist-version = "0.32.0"
 dist = false
 # CI backends to support
 ci = "github"
+github-build-setup = "../release-build-setup.yml"
 # The installers to generate for each app
 installers = ["shell", "powershell"]
 # The archive format to use for windows builds (defaults .zip)
@@ -58,6 +59,9 @@ install-updater = false
 install-path = ["$XDG_BIN_HOME/", "$XDG_DATA_HOME/../bin", "~/.local/bin"]
 # Whether source tarballs should include submodules
 recursive-tarball = true
+
+[dist.github-custom-runners]
+aarch64-apple-darwin = "macos-15"
 
 [dist.github-action-commits]
 "actions/checkout" = "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0" # v7.0.0
