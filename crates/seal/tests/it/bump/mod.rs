@@ -2,6 +2,7 @@ use assert_fs::prelude::*;
 use insta::allow_duplicates;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+use std::process::Command;
 
 use crate::{common::TestContext, seal_snapshot};
 
@@ -1058,6 +1059,170 @@ commit-message = "Release v{version}"
 
     insta::assert_snapshot!(context.git_current_branch(), @"main");
     insta::assert_snapshot!(context.git_last_commit_message(), @"Release v1.2.4");
+}
+
+#[test]
+fn bump_sign_commit_overrides_git_config() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+sign-commit = true
+confirm = false
+"#,
+    );
+
+    context.init_git();
+
+    let key = context.root.join(".git/signing-key");
+    let output = Command::new("ssh-keygen")
+        .args(["-t", "ed25519", "-N", "", "-f"])
+        .arg(&key)
+        .output()
+        .expect("Failed to generate signing key");
+    assert!(output.status.success(), "{output:?}");
+
+    for (name, value) in [("gpg.format", "ssh"), ("commit.gpgsign", "false")] {
+        let output = Command::new("git")
+            .args(["config", name, value])
+            .current_dir(context.root.path())
+            .output()
+            .expect("Failed to configure Git signing");
+        assert!(output.status.success(), "{output:?}");
+    }
+    let output = Command::new("git")
+        .args(["config", "user.signingkey"])
+        .arg(&key)
+        .current_dir(context.root.path())
+        .output()
+        .expect("Failed to configure signing key");
+    assert!(output.status.success(), "{output:?}");
+
+    seal_snapshot!(context.filters(), context.command().arg("bump").arg("patch"), @r#"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ commit-message = "Release v{version}"
+        4     4 │ sign-commit = true
+        5     5 │ confirm = false
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git add -A`
+      `git commit --gpg-sign -m Release v1.2.4`
+
+    Updating files...
+    Executing command: `git add -A`
+    Executing command: `git commit --gpg-sign -m Release v1.2.4`
+    Successfully bumped to 1.2.4
+
+    ----- stderr -----
+    "#);
+
+    let output = Command::new("git")
+        .args(["cat-file", "commit", "HEAD"])
+        .current_dir(context.root.path())
+        .output()
+        .expect("Failed to read signed commit");
+    assert!(output.status.success(), "{output:?}");
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("gpgsig -----BEGIN SSH SIGNATURE-----")
+    );
+    assert_eq!(context.git_last_commit_message(), "Release v1.2.4");
+}
+
+#[cfg(unix)]
+#[test]
+fn bump_sign_commit_failure_does_not_commit_unsigned() {
+    let context = TestContext::new();
+    context.seal_toml(
+        r#"
+[release]
+current-version = "1.2.3"
+commit-message = "Release v{version}"
+sign-commit = true
+confirm = false
+on-pre-commit-failure = "continue"
+"#,
+    );
+    context.init_git();
+
+    for (name, value) in [
+        ("gpg.format", "openpgp"),
+        ("gpg.program", "false"),
+        ("user.signingkey", "test"),
+        ("commit.gpgsign", "false"),
+    ] {
+        let output = Command::new("git")
+            .args(["config", name, value])
+            .current_dir(context.root.path())
+            .output()
+            .expect("Failed to configure failing signer");
+        assert!(output.status.success(), "{output:?}");
+    }
+
+    let mut filters = context.filters();
+    filters.push((
+        r"error: gpg failed to sign the data:?\n(?:\(no gpg output\)\n)?",
+        "error: gpg failed to sign the data\n",
+    ));
+    seal_snapshot!(filters, context.command().arg("bump").arg("patch"), @r#"
+    success: false
+    exit_code: 2
+    ----- stdout -----
+    Bumping version from 1.2.3 to 1.2.4
+
+    Preview of changes:
+    ────────────────────────────────────────────────────────────────────────────────
+    Source: seal.toml
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ [release]
+        2       │-current-version = "1.2.3"
+              2 │+current-version = "1.2.4"
+        3     3 │ commit-message = "Release v{version}"
+        4     4 │ sign-commit = true
+        5     5 │ confirm = false
+        6     6 │ on-pre-commit-failure = "continue"
+    ────────────┴───────────────────────────────────────────────────────────────────
+
+    Changes to be made:
+      - Update `seal.toml`
+
+    Commands to be executed:
+      `git add -A`
+      `git commit --gpg-sign -m Release v1.2.4`
+
+    Updating files...
+    Executing command: `git add -A`
+    Executing command: `git commit --gpg-sign -m Release v1.2.4`
+
+    ----- stderr -----
+    error: Command `git commit --gpg-sign -m Release v1.2.4` failed (exit code 128)
+    error: gpg failed to sign the data
+    fatal: failed to write commit object
+    "#);
+
+    assert_eq!(context.git_last_commit_message(), "Initial commit");
+    assert_eq!(context.git_status(), "M  seal.toml\n");
+    assert!(
+        context
+            .read_file("seal.toml")
+            .contains("current-version = \"1.2.4\"")
+    );
 }
 
 #[test]

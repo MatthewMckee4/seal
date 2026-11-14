@@ -196,6 +196,7 @@ version-files = ["test.txt"]
               "test.txt"
             ],
             "commit-message": null,
+            "sign-commit": false,
             "branch-name": null,
             "push": false,
             "confirm": true
@@ -232,6 +233,7 @@ version-files = ["Cargo.toml"]
               "Cargo.toml"
             ],
             "commit-message": null,
+            "sign-commit": false,
             "branch-name": null,
             "push": false,
             "confirm": true
@@ -265,6 +267,7 @@ current-version = "3.0.0"
           "release": {
             "current-version": "3.0.0",
             "commit-message": null,
+            "sign-commit": false,
             "branch-name": null,
             "push": false,
             "confirm": true
