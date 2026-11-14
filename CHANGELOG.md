@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.0.1-alpha.9
+
+### Bug Fixes
+
+- Cover local version bumps without GitHub remotes ([#161](https://github.com/MatthewMckee4/seal/pull/161))
+- Describe releases with no changelog entries ([#133](https://github.com/MatthewMckee4/seal/pull/133))
+- Restore seal.toml discovery from parent directories ([#156](https://github.com/MatthewMckee4/seal/pull/156))
+- Detect every missing version file ([#120](https://github.com/MatthewMckee4/seal/pull/120))
+- Continue changelog pagination past unmerged pull requests ([#155](https://github.com/MatthewMckee4/seal/pull/155))
+
+### Bumping
+
+- Add an option to sign release commits ([#182](https://github.com/MatthewMckee4/seal/pull/182))
+- Add label driven automatic version bumps ([#163](https://github.com/MatthewMckee4/seal/pull/163))
+- Add JSON output for bump dry-run ([#157](https://github.com/MatthewMckee4/seal/pull/157))
+- Check Git state before applying a bump ([#98](https://github.com/MatthewMckee4/seal/pull/98))
+
+### CLI
+
+- Add noninteractive bump confirmation flag ([#151](https://github.com/MatthewMckee4/seal/pull/151))
+
+### Changelog
+
+- Filter release notes by changelog section ([#181](https://github.com/MatthewMckee4/seal/pull/181))
+
+### Documentation
+
+- Require command snapshots and focused PR labels ([#162](https://github.com/MatthewMckee4/seal/pull/162))
+
+### New Features
+
+- Add pinned Seal setup action ([#159](https://github.com/MatthewMckee4/seal/pull/159))
+
+### Contributors
+
+- [@MatthewMckee4](https://github.com/MatthewMckee4)
+
 ## 0.0.1-alpha.8
 
 ### Bug Fixes
